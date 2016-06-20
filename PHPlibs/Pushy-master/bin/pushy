@@ -1,0 +1,65 @@
+#!/usr/bin/env php
+<?php
+
+if (is_file(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+} else {
+    require_once __DIR__ . '/../../../autoload.php';
+}
+
+// Set up options.
+$options = getopt(
+    null,
+    [
+        'token:',
+        'user-id:',
+        'user-device:',
+        'message:',
+        'title:',
+        'url:',
+        'url-title:',
+        'priority:',
+        'timestamp:',
+        'sound:',
+    ]
+);
+
+try {
+    // Ensure token is passed.
+    if (!isset($options['token'])) {
+        throw new \Exception('Token is required');
+    }
+
+    // Set up client.
+    $client = new \Pushy\Client($options['token']);
+
+    // Ensure at least a user id is passed.
+    if (!isset($options['user-id'])) {
+        throw new \Exception('User Id is required');
+    }
+
+    // Set up user.
+    $user = new \Pushy\User($options['user-id']);
+
+    isset($options['user-device']) && $user->setDeviceName($options['user-device']);
+
+    // Set up message.
+    $message = new \Pushy\Message;
+    $message->setUser($user);
+
+    isset($options['message']) && $message->setMessage($options['message']);
+    isset($options['title']) && $message->setTitle($options['title']);
+    isset($options['url']) && $message->setUrl($options['url']);
+    isset($options['url-title']) && $message->setUrlTitle($options['url-title']);
+    isset($options['timestamp']) && $message->setTimestamp($options['timestamp']);
+    isset($options['sound'])
+        && $message->setSound(\Pushy\Sound\SoundFactory::createSound($options['sound']));
+    isset($options['priority'])
+        && $message->setPriority(\Pushy\Priority\PriorityFactory::createPriority($options['priority']));
+
+    // Send message.
+    $client->sendMessage($message);
+} catch (\Exception $e) {
+    echo 'Error: ' . $e->getMessage(), "\n";
+    exit(1);
+}

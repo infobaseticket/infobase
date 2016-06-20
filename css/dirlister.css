@@ -1,0 +1,43 @@
+﻿/* ---------------------------------------------------------------------------------------------- */
+/* -----| DIRECTORY LISTER |--------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+
+#directory-list-header {
+    font-family: 'Cutive Mono', monospace, serif;
+    font-weight: bold;
+    padding: 10px 15px;
+}
+
+#directory-listing {
+    font-family: 'Cutive Mono', monospace, serif;
+}
+
+#directory-listing li {
+    position: relative;
+}
+
+.file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.file-name i {
+    color: #555;
+}
+
+.file-info-button,
+.web-link-button {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 100%;
+    padding: 6px 10px !important;
+    position: absolute !important;
+    top: 4px;
+}
+
+.web-link-button i,
+.file-info-button i {
+    color: #999;
+}

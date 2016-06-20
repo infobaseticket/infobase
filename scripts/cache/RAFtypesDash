@@ -1,0 +1,104 @@
+<div id="chart-container"></div>
+
+<script type="text/javascript">
+FusionCharts.ready(function () {
+    var ageGroupChart = new FusionCharts({
+       type: 'bar3d',
+
+        renderAt: 'chart-container',
+        width: '450',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+            "chart": {
+                "caption": "RAF's ONGOING",
+                "alignCaptionWithCanvas": "0",
+                "canvasBgAlpha": "0",
+                //Theme  
+                "theme" : "fint"
+            },
+            "data": [
+                {
+          "label": "TECHNO Upgrade",
+          "value": "802"
+      },{
+          "label": "MOD Upgrade",
+          "value": "492"
+      },{
+          "label": "New Macro",
+          "value": "443"
+      },{
+          "label": "CTX Upgrade",
+          "value": "175"
+      },{
+          "label": "New Replacement",
+          "value": "146"
+      },{
+          "label": "New All Areas",
+          "value": "111"
+      },{
+          "label": "New Indoor",
+          "value": "92"
+      },{
+          "label": "DISM Upgrade",
+          "value": "81"
+      },{
+          "label": "IND Upgrade",
+          "value": "65"
+      },{
+          "label": "LTEX Upgrade",
+          "value": "60"
+      },{
+          "label": "MOV Upgrade",
+          "value": "55"
+      },{
+          "label": "Dismantling",
+          "value": "47"
+      },{
+          "label": "New Mobile Truck",
+          "value": "37"
+      },{
+          "label": "ANT Upgrade",
+          "value": "34"
+      },{
+          "label": "CWK Upgrade",
+          "value": "32"
+      },{
+          "label": "RPT Upgrade",
+          "value": "31"
+      },{
+          "label": "Add U900 to U2100 Upgrade",
+          "value": "23"
+      },{
+          "label": "New Micro",
+          "value": "13"
+      },{
+          "label": "CAB Upgrade",
+          "value": "13"
+      },{
+          "label": "ASC Upgrade",
+          "value": "7"
+      },{
+          "label": "New Macro (v2)",
+          "value": "5"
+      },{
+          "label": "New All Areas (v2)",
+          "value": "4"
+      },{
+          "label": "SWAP Upgrade",
+          "value": "2"
+      },{
+          "label": "New Temp Replacement",
+          "value": "2"
+      },{
+          "label": "New Macrocell",
+          "value": "1"
+      },{
+          "label": "New Replacement (v2)",
+          "value": "1"
+      },            ]
+        }
+    }).render();
+});
+</script>
+

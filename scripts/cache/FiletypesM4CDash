@@ -1,0 +1,44 @@
+<div id="Filteypes-container"></div>
+
+<script type="text/javascript">
+FusionCharts.ready(function () {
+    var ageGroupChart = new FusionCharts({
+       type: 'pie2d',
+        renderAt: 'Filteypes-container',
+        
+        width: '350',
+        height: '300',
+        dataFormat: 'json',
+        dataSource: {
+            "chart": {
+                "caption": "FILETYPES ON RAN M4C",
+                "showPercentValues": "0",
+                "showPercentInTooltip": "1",
+                //"enableSmartLabels": "1",
+                "decimals": "1",
+                "skipOverlapLabels": "1",
+                //Theme
+                "theme": "fint"
+            },
+            "data": [
+                {
+          "label": "HSP",
+          "value": "5"
+      },{
+          "label": "CJ",
+          "value": "4"
+      },{
+          "label": "PIF",
+          "value": "6"
+      },{
+          "label": "ABDWG",
+          "value": "2"
+      },{
+          "label": "KOR",
+          "value": "18"
+      },            ]
+        }
+    }).render();
+});
+</script>
+

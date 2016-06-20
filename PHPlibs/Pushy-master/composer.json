@@ -1,0 +1,36 @@
+{
+    "name": "sqmk/pushy",
+    "description": "A PHP client for Pushover.net",
+    "type": "library",
+    "keywords": [
+        "pushy",
+        "pushover",
+        "client"
+    ],
+    "homepage": "http://github.com/sqmk/Pushy",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name":  "Michael Squires",
+            "email": "sqmk@php.net",
+            "role":  "lead"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "mockery/mockery": "0.8.0",
+        "phpunit/PHPUnit": "3.7.25",
+        "squizlabs/php_codesniffer": "1.4.6"
+    },
+    "autoload": {
+        "psr-0": {
+            "Pushy": "library/"
+        }
+    },
+    "bin": [
+        "bin/pushy"
+    ]
+}

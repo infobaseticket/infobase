@@ -1,0 +1,626 @@
+<?php
+
+if($_POST['band']=="G9" || $_POST['band']=="G18"){
+
+	$LAC=get_LAC($_POST['siteID']);
+
+	//MAKE 100% sure that vars are empty
+	for ($i=1;$i<=4;$i++){
+		foreach ($cols_pl_sec['COLUMN_NAME'] as $key => $column) {
+			$cur_parname=$column."_".$i;					
+			$$cur_parname="";
+		}			
+	}
+	for ($i=1;$i<=4;$i++){
+		foreach ($cols_pl['COLUMN_NAME'] as $key => $column) {
+			$cur_parname=$column;					
+			$$cur_parname="";
+		}			
+	}
+
+	// GET ASSET CURRENT INFO
+	$currentdata=get_data($_POST['band'],$sec1,"CURRENT_ASSET",$viewtype,$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['donor'],$_POST['lognodeID_GSM']);
+	$AMOUNT_ASSET_INFO=count($currentdata['SITEKEY']);
+	$j=1;
+	$start="yes";
+
+	for ($i=0;$i<$AMOUNT_ASSET_INFO;$i++){
+
+		$SECTORID=$currentdata['SECTORID'][$i];
+		$ID=substr($SECTORID,-1);
+		$last_sect=substr($SECTORID,-1);
+
+		if ($last_sect!=$vorige){
+			$k=1;
+		}else{
+			$k=2;
+		}
+		if ($ID==6){
+			$j=3;
+		}else if ($ID==5){
+			$j=2;
+		}else if ($ID==4){
+			$j=1;
+		}else if ($ID==3){
+			$j=3;
+		}else if ($ID==2){
+			$j=2;
+		}else if ($ID==1){
+			$j=1;
+		}else if ($ID==0){
+			$j=4;
+		}
+
+		$STATE="STATE_$j";
+
+		$$STATE=get_config($currentdata['CELLSTATUS'][$i],$_POST['band']);
+		if ($$STATE=="ACTIVE"){
+			$CONFIG="CONFIG_".$j;
+			$$CONFIG=$currentdata['CELLEQUIPMENT'][$i];
+			$AZI1="AZI1_".$j;
+			$$AZI1=$currentdata['AZIMUTH'][$i];
+			$AZI2="AZI2_".$j;
+			$$AZI2=$currentdata['AZIMUTH2'][$i];
+			$FEEDER="FEEDER_$j";
+			$$FEEDER=$currentdata['FEEDERKEY'][$i];
+			$FEEDERLEN="FEEDERLEN_$j";
+			$$FEEDERLEN=number_format(round($currentdata['FEEDERLENGTH'][$i],2),2);
+			$ANTTYPE="ANTTYPE".$k."_".$j;
+			$$ANTTYPE=$currentdata['ANTENNATYPE'][$i];
+			$ANTHEIGHT="ANTHEIGHT".$k."_".$j;
+			$$ANTHEIGHT=number_format(round($currentdata['ANTENNAHEIGHT'][$i],2),2);
+			$MECHTILT="MECHTILT".$k."_".$j;
+			$MECHTILT_t="MECHTILT_DIR".$k."_".$j; 
+			$$MECHTILT=trim(abs($currentdata['DOWNTILT'][$i]));
+
+			$$MECHTILT_t=get_mechtilt_dir($currentdata['DOWNTILT'][$i]);
+			$ELECTILT="ELECTILT".$k."_".$j;
+			$$ELECTILT=$currentdata['ANTENNATYPE'][$i];
+			$$ELECTILT=substr($$ANTTYPE, -2);
+			$$ELECTILT."<br>";
+			if ($currentdata['ANTENNATYPE'][$i]=="K80010292_T_900_95"){
+				$$ELECTILT="9,5";
+			}else{
+				if (!is_numeric($$ELECTILT)){
+					$$ELECTILT=substr($$ANTTYPE, -1);
+					if (!is_numeric($$ELECTILT)){
+						$$ELECTILT=substr($$ANTTYPE, -3,1);
+					}
+				}
+			}
+		}else{
+			$CONFIG="tmp_CONFIG_$j";
+			$$CONFIG=$currentdata['CELLEQUIPMENT'][$i];
+			$AZI1="tmp_AZI1_$j";
+			$$AZI1=$currentdata['AZIMUTH'][$i];
+			$AZI2="tmp_AZI2_$j";
+			$$AZI2=$currentdata['AZIMUTH2'][$i];
+			$FEEDER="tmp_FEEDER_$j";
+			$$FEEDER=$currentdata['FEEDERKEY'][$i];
+			$FEEDERLEN="tmp_FEEDERLEN_$j";
+			$$FEEDERLEN=number_format(round($currentdata['FEEDERLENGTH'][$i],2),2);
+			$ANTTYPE="tmp_ANTTYPE".$k."_".$j;
+			$$ANTTYPE=$currentdata['ANTENNATYPE'][$i];
+			$ANTHEIGHT="tmp_ANTHEIGHT".$k."_".$j;
+			$$ANTHEIGHT=number_format(round($currentdata['ANTENNAHEIGHT'][$i],2),2);
+			$MECHTILT="tmp_MECHTILT".$k."_".$j;
+			$MECHTILT_t="tmp_MECHTILT1_".$j."_t";
+			$$MECHTILT=trim(abs($currentdata['DOWNTILT'][$i]));
+			$$MECHTILT_t=get_mechtilt_dir($currentdata['DOWNTILT'][$i]);
+			$ELECTILT="tmp_ELECTILT".$k."_".$j;
+			$$ELECTILT=$currentdata['ANTENNATYPE'][$i];
+			$$ELECTILT=substr($$ANTTYPE, -2);
+			$$ELECTILT."<br>";
+			if (!is_numeric($$ELECTILT)){
+				$$ELECTILT=substr($$ANTTYPE, -1);
+				if (!is_numeric($$ELECTILT)){
+					$$ELECTILT=substr($$ANTTYPE, -3,1);
+				}
+			}
+		}
+		$vorige=$last_sect;
+	}
+
+
+	if ($check_current_exists=="0"){ // GET SAVED CURRENT INFO
+
+		$freq=get_freq($sec1,$_POST['siteID']);
+			$FREQ_ACTIVE1_1=$freq[0];
+			$FREQ_ACTIVE2_1=$freq[1];
+			$FREQ_ACTIVE3_1=$freq[2];
+		$freq=get_freq($sec2,$_POST['siteID']);
+			$FREQ_ACTIVE1_2=$freq[0];
+			$FREQ_ACTIVE2_2=$freq[1];
+			$FREQ_ACTIVE3_2=$freq[2];
+		$freq=get_freq($sec3,$_POST['siteID']);
+			$FREQ_ACTIVE1_3=$freq[0];
+			$FREQ_ACTIVE2_3=$freq[1];
+			$FREQ_ACTIVE3_3=$freq[2];
+		$freq=get_freq($sec4,$_POST['siteID']);
+			$FREQ_ACTIVE1_4=$freq[0];
+			$FREQ_ACTIVE2_4=$freq[1];
+			$FREQ_ACTIVE3_4=$freq[2];
+
+		$cabdata=get_cabinettype($_POST['band'],$_POST['siteID']);
+		$CABTYPE=$cabdata['type'];
+		$NR_OF_CAB=$cabdata['number'];
+		$CDUTYPE=$cabdata['CDU'];
+
+		$TRU_data=get_TRU_data($_POST['band'],$_POST['siteID']);
+
+	}else{ //GET CURRENT DATA WHICH CAN NOT BE RETREIVED FROM ASSET AND WHICH IS SAVED IN INFOBASE DB
+
+			$currentdata=get_data($_POST['band'],'',"CURRENT_EXISTING",$viewtype,$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['donor'],$_POST['lognodeID_GSM']);
+			$CHANGEDATE = $currentdata['CHANGEDATE'][0];
+			//TAKE ALWAYS FROM SWITCH
+			$freq=get_freq($sec1,$_POST['siteID']);
+				$FREQ_ACTIVE1_1=$freq[0];
+				$FREQ_ACTIVE2_1=$freq[1];
+				$FREQ_ACTIVE3_1=$freq[2];
+				//$CDUTYPE=$freq[99]['CDU'];
+			$freq=get_freq($sec2,$_POST['siteID']);
+				$FREQ_ACTIVE1_2=$freq[0];
+				$FREQ_ACTIVE2_2=$freq[1];
+				$FREQ_ACTIVE3_2=$freq[2];
+			$freq=get_freq($sec3,$_POST['siteID']);
+				$FREQ_ACTIVE1_3=$freq[0];
+				$FREQ_ACTIVE2_3=$freq[1];
+				$FREQ_ACTIVE3_3=$freq[2];
+			$freq=get_freq($sec4,$_POST['siteID']);
+				$FREQ_ACTIVE1_4=$freq[0];
+				$FREQ_ACTIVE2_4=$freq[1];
+				$FREQ_ACTIVE3_4=$freq[2];
+
+			$cabdata=get_cabinettype($_POST['band'],$_POST['siteID']);
+			$CABTYPE=$cabdata['type'];
+			$NR_OF_CAB=$cabdata['number'];
+			$CDUTYPE=$cabdata['CDU'];
+
+			$TRU_data=get_TRU_data($sec1,$_POST['siteID']);
+
+			$TRU_INST1_1_1=$TRU_data[0]['INST'][0];
+			$TRU_TYPE1_1_1=$TRU_data[0]['TYPE'][0];
+			if ($TRU_TYPE1_1_1=="EDTRU" || $TRU_TYPE1_1_1=="DTRU"){
+				$TRU_INST1_1_1=ceil($TRU_data[0]['INST'][0]/2);
+			}
+
+			$TRU_INST1_2_1=$TRU_data[0]['INST'][1];
+			$TRU_TYPE1_2_1=$TRU_data[0]['TYPE'][1];
+			if ($TRU_TYPE1_2_1=="EDTRU" || $TRU_TYPE1_2_1=="DTRU"){
+				$TRU_INST1_2_1=ceil($TRU_data[0]['INST'][1]/2);
+			}
+
+			$TRU_INST2_1_1=$TRU_data[1]['INST'][0];
+			$TRU_TYPE2_1_1=$TRU_data[1]['TYPE'][0];
+			if ($TRU_TYPE2_1_1=="EDTRU" || $TRU_TYPE2_1_1=="DTRU"){
+				$TRU_INST2_1_1=ceil($TRU_data[1]['INST'][0]/2);
+			}
+			$TRU_INST2_2_1=$TRU_data[1]['INST'][1];
+			$TRU_TYPE2_2_1=$TRU_data[1]['TYPE'][1];
+			if ($TRU_TYPE2_2_1=="EDTRU" || $TRU_TYPE2_2_1=="DTRU"){
+				$TRU_INST2_2_1=ceil($TRU_data[1]['INST'][1]/2);
+			}
+
+			$TRU_INST3_1_1=$TRU_data[2]['INST'][0];
+			$TRU_TYPE3_1_1=$TRU_data[2]['TYPE'][0];
+			if ($TRU_TYPE3_1_1=="EDTRU" || $TRU_TYPE3_1_1=="DTRU"){
+				$TRU_INST3_1_1=ceil($TRU_data[2]['INST'][0]/2);
+			}
+
+			$TRU_INST3_2_1=$TRU_data[2]['INST'][1];
+			$TRU_TYPE3_2_1=$TRU_data[2]['TYPE'][1];
+			if ($TRU_TYPE3_2_1=="EDTRU" || $TRU_TYPE3_2_1=="DTRU"){
+				$TRU_INST3_2_1=ceil($TRU_data[2]['INST'][1]/2);
+			}
+//CAB **** SEC
+			$TRU_data=get_TRU_data($sec2,$_POST['siteID']);
+			$TRU_INST1_1_2=$TRU_data[0]['INST'][0];
+			$TRU_TYPE1_1_2=$TRU_data[0]['TYPE'][0];
+			if ($TRU_TYPE1_1_2=="EDTRU" || $TRU_TYPE1_1_2=="DTRU"){
+				$TRU_INST1_1_2=ceil($TRU_data[0]['INST'][0]/2);
+			}
+
+			$TRU_INST1_2_2=$TRU_data[0]['INST'][1];
+			$TRU_TYPE1_2_2=$TRU_data[0]['TYPE'][1];
+			if ($TRU_TYPE1_2_2=="EDTRU" || $TRU_TYPE1_2_2=="DTRU"){
+				$TRU_INST1_2_2=ceil($TRU_data[0]['INST'][1]/2);
+			}
+
+			$TRU_INST2_1_2=$TRU_data[1]['INST'][0];
+			$TRU_TYPE2_1_2=$TRU_data[1]['TYPE'][0];
+			if ($TRU_TYPE2_1_2=="EDTRU" || $TRU_TYPE2_1_2=="DTRU"){
+				$TRU_INST2_1_2=ceil($TRU_data[1]['INST'][0]/2);
+			}
+
+			$TRU_INST2_2_2=$TRU_data[1]['INST'][1];
+			$TRU_TYPE2_2_2=$TRU_data[1]['TYPE'][1];
+			if ($TRU_TYPE2_2_2=="EDTRU" || $TRU_TYPE2_2_2=="DTRU"){
+				$TRU_INST2_2_2=ceil($TRU_data[1]['INST'][1]/2);
+			}
+
+			$TRU_INST3_1_2=$TRU_data[2]['INST'][0];
+			$TRU_TYPE3_1_2=$TRU_data[2]['TYPE'][0];
+			if ($TRU_TYPE3_1_2=="EDTRU" || $TRU_TYPE3_1_2=="DTRU"){
+				$TRU_INST3_1_2=ceil($TRU_data[2]['INST'][0]/2);
+			}
+
+			$TRU_INST3_2_2=$TRU_data[2]['INST'][1];
+			$TRU_TYPE3_2_2=$TRU_data[2]['TYPE'][1];
+			if ($TRU_TYPE3_2_2=="EDTRU" || $TRU_TYPE3_2_2=="DTRU"){
+				$TRU_INST3_2_2=ceil($TRU_data[2]['INST'][1]/2);
+			}
+
+			$TRU_data=get_TRU_data($sec3,$_POST['siteID']);
+			$TRU_INST1_1_3=$TRU_data[0]['INST'][0];
+			$TRU_TYPE1_1_3=$TRU_data[0]['TYPE'][0];
+			if ($TRU_TYPE1_1_3=="EDTRU" || $TRU_TYPE1_1_3=="DTRU"){
+				$TRU_INST1_1_3=ceil($TRU_data[0]['INST'][0]/2);
+			}
+
+			$TRU_INST1_2_3=$TRU_data[0]['INST'][1];
+			$TRU_TYPE1_2_3=$TRU_data[0]['TYPE'][1];
+			if ($TRU_TYPE1_2_3=="EDTRU" || $TRU_TYPE1_2_3=="DTRU"){
+				$TRU_INST1_2_3=ceil($TRU_data[0]['INST'][1]/2);
+			}
+
+			$TRU_INST2_1_3=$TRU_data[1]['INST'][0];
+			$TRU_TYPE2_1_3=$TRU_data[1]['TYPE'][0];
+			if ($TRU_TYPE2_1_3=="EDTRU" || $TRU_TYPE2_1_3=="DTRU"){
+				$TRU_INST2_1_3=ceil($TRU_data[1]['INST'][0]/2);
+			}
+
+			$TRU_INST2_2_3=$TRU_data[1]['INST'][1];
+			$TRU_TYPE2_2_3=$TRU_data[1]['TYPE'][1];
+			if ($TRU_TYPE2_2_3=="EDTRU" || $TRU_TYPE2_2_3=="DTRU"){
+				$TRU_INST2_2_3=ceil($TRU_data[1]['INST'][1]/2);
+			}
+
+			$TRU_INST3_1_3=$TRU_data[2]['INST'][0];
+			$TRU_TYPE3_1_3=$TRU_data[2]['TYPE'][0];
+			if ($TRU_TYPE3_1_3=="EDTRU" || $TRU_TYPE3_1_3=="DTRU"){
+				$TRU_INST3_1_3=ceil($TRU_data[2]['INST'][0]/2);
+			}
+
+			$TRU_INST3_2_3=$TRU_data[2]['INST'][1];
+			$TRU_TYPE3_2_3=$TRU_data[2]['TYPE'][1];
+			if ($TRU_TYPE3_2_3=="EDTRU" || $TRU_TYPE3_2_3=="DTRU"){
+				$TRU_INST3_2_3=ceil($TRU_data[2]['INST'][1]/2);
+			}
+
+			$TRU_INST1_2=$TRU_data[0]['TRU_INST2'];
+			$TRU_TYPE1_2=$TRU_data[0]['TRU_TYPE2'];
+
+			$TRU_INST2_2=$TRU_data[1]['TRU_INST2'];
+			$TRU_TYPE2_2=$TRU_data[1]['TRU_TYPE2'];
+
+			$TRU_INST1_3=$TRU_data[0]['TRU_INST3'];
+			$TRU_TYPE1_3=$TRU_data[0]['TRU_TYPE3'];
+			$TRU_INST2_3=$TRU_data[1]['TRU_INST3'];
+			$TRU_TYPE2_3=$TRU_data[1]['TRU_TYPE3'];
+
+			$TRU_INST1_4=$TRU_data[0]['TRU_INST4'];
+			$TRU_TYPE1_4=$TRU_data[0]['TRU_TYPE4'];
+			$TRU_INST2_4=$TRU_data[1]['TRU_INST4'];
+			$TRU_TYPE2_4=$TRU_data[1]['TRU_TYPE4'];
+
+			$TMA_1=$currentdata['TMA_1'][0];
+			$TMA_2=$currentdata['TMA_2'][0];
+			$TMA_3=$currentdata['TMA_3'][0];
+			$TMA_4=$currentdata['TMA_4'][0];
+
+			$COMB_1=$currentdata['COMB_1'][0];
+			$COMB_2=$currentdata['COMB_2'][0];
+			$COMB_3=$currentdata['COMB_3'][0];
+			$COMB_4=$currentdata['COMB_4'][0];
+
+			$DCBLOCK_1=$currentdata['DCBLOCK_1'][0];
+			$DCBLOCK_2=$currentdata['DCBLOCK_2'][0];
+			$DCBLOCK_3=$currentdata['DCBLOCK_3'][0];
+			$DCBLOCK_4=$currentdata['DCBLOCK_4'][0];
+
+			$BBS=$currentdata['BBS'][0];
+
+			$DXUTYPE1=$currentdata['DXUTYPE1'][0];
+			$DXUTYPE2=$currentdata['DXUTYPE2'][0];
+			$DXUTYPE3=$currentdata['DXUTYPE3'][0];
+			$DXUTYPE4=$currentdata['DXUTYPE4'][0];
+
+			$PLAYSTATION=$currentdata['PLAYSTATION'][0];
+
+			$feedershare=get_data($_POST['band'],'','FEEDERSHARE_CURRENT',$viewtype,$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['donor'],$_POST['lognodeID_GSM']);
+
+			if ($_POST['band']=="G9"){
+				$FEEDERSHARE_1=$feedershare['GSM900_1'][0];
+				$FEEDERSHARE_2=$feedershare['GSM900_2'][0];
+				$FEEDERSHARE_3=$feedershare['GSM900_3'][0];
+				$FEEDERSHARE_4=$feedershare['GSM900_4'][0];
+			}
+			if ($_POST['band']=="G18"){
+				$FEEDERSHARE_1=$feedershare['GSM1800_1'][0];
+				$FEEDERSHARE_2=$feedershare['GSM1800_2'][0];
+				$FEEDERSHARE_3=$feedershare['GSM1800_3'][0];
+				$FEEDERSHARE_4=$feedershare['GSM1800_4'][0];
+			}
+	}
+
+
+}else if($_POST['band']=="U21" || $_POST['band']=="U9" || $_POST['band']=="L18" || $_POST['band']=="L26" || $_POST['band']=="L8"){
+	//MAKE 100% sure that vars are empty
+	for ($i=1;$i<=4;$i++){
+		foreach ($cols_pl_sec['COLUMN_NAME'] as $key => $column) {
+			//echo $column."<br>";
+			$cur_parname=$column."_".$i;					
+			$$cur_parname="";
+		}			
+	}
+	for ($i=1;$i<=4;$i++){
+		foreach ($cols_pl['COLUMN_NAME'] as $key => $column) {
+			$cur_parname=$column;
+			//echo $column."<br>";					
+			$$cur_parname="";
+		}			
+	}
+	if ($viewtype!="FUND"){
+		$view="PRE";
+	}else{
+		$view="FUND"; 
+	}
+	$currentdata=get_data($_POST['band'],"","CURRENT_EXISTING",$view,$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['donor'],$lognode);
+
+	$LOGNODEID=$currentdata['LOGNODE'][0];
+	//echo $LOGNODEID;
+	$CHANGEDATE=$currentdata['CHANGEDATE'][0];
+	$POWERSUP=$currentdata['POWERSUP'][0];
+	$CABTYPE=$currentdata['CABTYPE'][0];
+	$IPB=$currentdata['IPB'][0];
+	$PSU=$currentdata['PSU'][0];
+	$TXBHW=$currentdata['TXBHW'][0];
+	$TXBSW=$currentdata['TXBSW'][0];
+	$RAXBHW=$currentdata['RAXBHW'][0];
+	$RAXBSW=$currentdata['RAXBSW'][0];
+
+	$RAXEHW=$currentdata['RAXEHW'][0];
+	$RAXESW=$currentdata['RAXESW'][0];
+	$HSTXHW=$currentdata['HSTXHW'][0];
+	$HSTXSW=$currentdata['HSTXSW'][0];
+	if ($_POST['band']=="L18" or $_POST['band']=="L26" or $_POST['band']=="L8"){
+		$BPL=$currentdata['BPL'][0];
+	}else if ($_POST['band']=="U21" or $_POST['band']=="U9"){
+		$BPC=$currentdata['BPC'][0];
+		$BPK=$currentdata['BPK'][0];
+		$CC=$currentdata['CC'][0];
+	}
+	$MBPS=$currentdata['MBPS'][0];
+	$PLAYSTATION=$currentdata['PLAYSTATION'][0];
+	$SERVICE=$currentdata['SERVICE'][0];
+	$CHANGEDATE=$currentdata['CHANGE_DATE'][0];
+
+
+	//GET CURRENT DATA WHICH IS NOT SAVED = DYNAMIC
+	$currentdata=get_data($_POST['band'], "","CURRENT_ASSET",$viewtype,$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['donor'],$lognode);
+	$AMOUNT_ASSET_INFO=count($currentdata['UMTSCELLID']);
+
+	//echo "AMOUNT_ASSET_INFO $AMOUNT_ASSET_INFO"; //Amount of sectors
+	$j=1;
+	$start="yes";
+
+	for ($i=0;$i<$AMOUNT_ASSET_INFO;$i++){
+
+		$SECTORID=$currentdata['UMTSCELLID'][$i];
+		$last_sect=substr($SECTORID,-2,1);
+
+		if ($last_sect!=$vorige){
+			$k=1;
+			if ($start!="yes"){
+				$j++;
+			}else{
+				$start="no";
+			}
+
+		}else{
+			$k=2;
+		}
+		//echo "$k SECTORID $SECTORID / ".$currentdata['ANTTYPE'][$i]."<br>";
+		$STATE="STATE_$j";
+		$$STATE=strtoupper(get_config($currentdata['UMTSCELLID'][$i],$_POST['band']));
+		$UMTSCELLID="UMTSCELLID_$j";
+		$$UMTSCELLID=$currentdata['UMTSCELLID'][$i];
+
+		if ($$STATE=="ACTIVE"){
+		
+			$FEEDER="FEEDER_$j";
+			$$FEEDER=$currentdata['FEEDERTYPE'][$i];
+			$FEEDERLEN="FEEDERLEN_$j";
+			$$FEEDERLEN=number_format(round($currentdata['FEEDERLENGTH'][$i],2),2);
+			$UMTSCELLID="UMTSCELLID_".$j;
+			$$UMTSCELLID=$currentdata['UMTSCELLID'][$i];
+
+			if ($LOGNODEID==""){
+				$LOGNODEID=$currentdata['LOGNODE'][$i];//ALL SAME FOR THREE SECTORS!
+			}
+
+			$UMTSCELLPK="UMTSCELLPK_$j";
+			$$UMTSCELLPK=$currentdata['UMTSCELLPK'][$i];
+
+			if ($k=="1"){
+				$AZI1="AZI1_$j";
+				$$AZI1=$currentdata['AZIMUTH'][$i];
+				
+				$ANTTYPE1="ANTTYPE1_$j";
+				$$ANTTYPE1=$currentdata['ANTTYPE'][$i];
+				//echo "$k SECTORID $SECTORID / $ANTTYPE1".$currentdata['ANTTYPE'][$i]."<br>";
+				$ANTHEIGHT1="ANTHEIGHT1_$j";
+				$$ANTHEIGHT1=number_format(round($currentdata['HEIGHT'][$i],2),2);
+				$ELECTILT1="ELECTILT1_$j";
+				$temp=explode("_",$$ANTTYPE1);
+				$amount1=count($temp)-1;
+				$amount2=count($temp)-2;
+				//echo $amount;
+				if(is_numeric($temp[$amount1])){
+					$$ELECTILT1=$temp[$amount1];
+				}else{
+					$$ELECTILT1=$temp[$amount2];
+				}
+				$MECHTILT1="MECHTILT1_$j";
+				$$MECHTILT1=trim(abs($currentdata['MECH_TILT'][$i]));
+				$MECHTILT1_t="MECHTILT1_".$j."_t";
+				$$MECHTILT1_t=get_mechtilt_dir($currentdata['MECH_TILT'][$i]);
+			}else if ($k=="2"){
+				$AZI2="AZI2_$j";
+				$$AZI2=$currentdata['AZIMUTH2'][$i];
+				$ANTTYPE2="ANTTYPE2_".$j;
+				$$ANTTYPE2=$currentdata['ANTTYPE'][$i];
+				//echo "=>$k SECTORID $SECTORID / $ANTTYPE2".$currentdata['ANTTYPE'][$i]."<br>";
+				$ANTHEIGHT2="ANTHEIGHT2_$j";
+				$$ANTHEIGHT2=number_format(round($currentdata['HEIGHT'][$i],2),2);
+				$MECHTILT2="MECHTILT2_$j";
+				$$MECHTILT2=$currentdata['MECH_TILT'][$i];
+				$ELECTILT2="ELECTILT2_$j";
+				$$ELECTILT2=$currentdata['ELEC_TILT'][$i];
+				$MECHTILT2_t="MECHTILT2_".$j."_t";
+				$$MECHTILT2_t=get_mechtilt_dir($currentdata['MECH_TILT'][$i]);
+			}
+		}else{
+			
+			$FEEDER="tmp_FEEDER_$j";
+			$$FEEDER=$currentdata['FEEDERTYPE'][$i];
+			$FEEDERLEN="tmp_FEEDERLEN_$j";		
+			$$FEEDERLEN=number_format(round($currentdata['FEEDERLENGTH'][$i],2),2);
+			$UMTSCELLID="tmp_UMTSCELLID_$j";
+			$$UMTSCELLID=$currentdata['UMTSCELLID'][$i];
+
+			if ($LOGNODEID==""){
+				$LOGNODEID=$currentdata['LOGNODE'][$i];//ALL SAME FOR THREE SECTORS!
+			}
+			$UMTSCELLPK="tmp_UMTSCELLPK_$j";
+			$$UMTSCELLPK=$currentdata['UMTSCELLPK'][$i];
+
+			if ($k=="1"){
+				$AZI1="tmp_AZI1_$j";
+				$$AZI1=$currentdata['AZIMUTH'][$i];
+				$ANTTYPE1="tmp_ANTTYPE1_$j";
+				$$ANTTYPE1=$currentdata['ANTTYPE'][$i];
+				$ELECTILT1="tmp_ELECTILT1_$j";
+				$temp=explode("_",$$ANTTYPE1);
+				$amount1=count($temp)-1;
+				$amount2=count($temp)-2;
+				//echo $amount;
+				if(is_numeric($temp[$amount1])){
+					$$ELECTILT1=$temp[$amount1];
+				}else{
+					$$ELECTILT1=$temp[$amount2];
+				}
+				$ANTHEIGHT1="tmp_ANTHEIGHT1_$j";
+				$$ANTHEIGHT1=number_format(round($currentdata['HEIGHT'][$i],2),2);
+				$MECHTILT1="tmp_MECHTILT1_$j";
+				$$MECHTILT1=$currentdata['MECH_TILT'][$i];
+				$MECHTILT1_t="tmp_MECHTILT1_".$j."_t";
+				$$MECHTILT1_t=get_mechtilt_dir($currentdata['MECHTILT_DIR1'][$i]);
+
+			}else if ($k=="2"){
+				$AZI2="tmp_AZI2_$j";
+				$$AZI2=$currentdata['AZIMUTH2'][$i];
+				$ANTTYPE2="tmp_ANTTYPE2_$j";
+				$$ANTTYPE2=$currentdata['ANTTYPE'][$i];
+				$ANTHEIGHT2="tmp_ANTHEIGHT2_$j";
+				$$ANTHEIGHT2=number_format(round($currentdata['HEIGHT'][$i],2),2);
+				$MECHTILT2="tmp_MECHTILT2_$j";
+				$$MECHTILT2=$currentdata['MECH_TILT'][$i];
+				$ELECTILT2="tmp_ELECTILT2_$j";
+				$$ELECTILT2=$currentdata['ELEC_TILT'][$i];
+				$MECHTILT2_t="tmp_MECHTILT2_".$j."_t";
+				$$MECHTILT2_t=get_mechtilt_dir($currentdata['MECHTILT_DIR2'][$i]);
+			}
+		}
+	$vorige=$last_sect;
+	$k++;
+	}
+
+	//SAVED CURRENT PER SECTOR
+	$j=1;
+	for ($i = 1; $i <= 3; $i++){
+		//echo $viewtype;
+		if ($viewtype!="FUND"){
+			$view="PRE";
+		}else{
+			$view="FUND"; 
+		}
+		$currentdata=get_data($_POST['band'],$i,"CURRENT_EXISTING",$view,$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['donor'],$lognode);
+		$STATE="STATE_$j";
+
+		if ($$STATE=="ACTIVE"){
+			$UMTSCELLPK="UMTSCELLPK_$i";
+			$$UMTSCELLPK=$currentdata['UMTSCELLPK'][0];
+			$TRU_INST1="TRU_INST1_$i";
+			$$TRU_INST1=$currentdata['TRU_INST1'][0];
+			$TRU_INST2="TRU_INST2_$i";
+			$$TRU_INST2=$currentdata['TRU_INST2'][0];
+			$FREQ_ACTIVE="FREQ_ACTIVE_$i";
+			$$FREQ_ACTIVE=$currentdata['FREQ_ACTIVE'][0];
+			$MCPAMODE="MCPAMODE_$i";
+			$$MCPAMODE=$currentdata['MCPAMODE'][0];
+			$MCPATYPE="MCPATYPE_$i";
+			$$MCPATYPE=$currentdata['MCPATYPE'][0];
+			$ACS="ACS_$i";
+			$$ACS=$currentdata['ACS'][0];
+			$RET="RET_$i";
+			$$RET=$currentdata['RET'][0];
+		}else{
+			$UMTSCELLID="tmp_UMTSCELLID_$i";
+			$$UMTSCELLID=$currentdata['UMTSCELLID'][0];
+			$UMTSCELLPK="tmp_UMTSCELLPK_$i";
+			$$UMTSCELLPK=$currentdata['UMTSCELLPK'][0];
+			$TRU_INST1="tmp_TRU_INST1_$i";
+			$$TRU_INST1=$currentdata['TRU_INST1'][0];
+			$TRU_INST2="tmp_TRU_INST2_$i";
+			$$TRU_INST2=$currentdata['TRU_INST2'][0];
+			$FREQ_ACTIVE="tmp_FREQ_ACTIVE_$i";
+			$$FREQ_ACTIVE=$currentdata['FREQ_ACTIVE'][0];
+			$MCPAMODE="tmp_MCPAMODE_$i";
+			$$MCPAMODE=$currentdata['MCPAMODE'][0];
+			$MCPATYPE="tmp_MCPATYPE_$i";
+			$$MCPATYPE=$currentdata['MCPATYPE'][0];
+			$ACS="tmp_ACS_$i";
+			$$ACS=$currentdata['ACS'][0];
+			//echo $$ACS;
+			$RET="tmp_RET_$i";
+			$$RET=$currentdata['RET'][0];
+		}
+		$j++;
+	}
+
+	$feedershare=get_data($_POST['band'],'','FEEDERSHARE_CURRENT',$viewtype,$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['donor'],$lognode);
+
+	if ($_POST['band']=="U9"){
+		$FEEDERSHARE_1=$feedershare['UMTS900_1'][0];
+		$FEEDERSHARE_2=$feedershare['UMTS900_2'][0];
+		$FEEDERSHARE_3=$feedershare['UMTS900_3'][0];
+		$FEEDERSHARE_4=$feedershare['UMTS900_4'][0];
+	}
+	if ($_POST['band']=="U21"){
+		$FEEDERSHARE_1=$feedershare['UMTS2100_1'][0];
+		$FEEDERSHARE_2=$feedershare['UMTS2100_2'][0];
+		$FEEDERSHARE_3=$feedershare['UMTS2100_3'][0];
+		$FEEDERSHARE_4=$feedershare['UMTS2100_4'][0];
+
+	}
+	if ($_POST['band']=="L18"){
+		$FEEDERSHARE_1=$feedershare['LTE1800_1'][0];
+		$FEEDERSHARE_2=$feedershare['LTE1800_2'][0];
+		$FEEDERSHARE_3=$feedershare['LTE1800_3'][0];
+		$FEEDERSHARE_4=$feedershare['LTE1800_4'][0];
+	}
+	if ($_POST['band']=="L26"){
+		$FEEDERSHARE_1=$feedershare['LTE2600_1'][0];
+		$FEEDERSHARE_2=$feedershare['LTE2600_2'][0];
+		$FEEDERSHARE_3=$feedershare['LTE2600_3'][0];
+		$FEEDERSHARE_4=$feedershare['LTE2600_4'][0];
+	}
+	if ($_POST['band']=="L8"){
+		$FEEDERSHARE_1=$feedershare['LTE800_1'][0];
+		$FEEDERSHARE_2=$feedershare['LTE800_2'][0];
+		$FEEDERSHARE_3=$feedershare['LTE800_3'][0];
+		$FEEDERSHARE_4=$feedershare['LTE800_4'][0];
+	}
+}
+?>

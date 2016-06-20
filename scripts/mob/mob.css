@@ -1,0 +1,40 @@
+	
+/* TABLES */
+.generaltable {
+	color: #434751;
+	background-color: #ECF0FC;
+	font-size:12px;
+	text-align:center;
+	padding: 5px;
+}
+
+.generaltable_header {
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #434751;
+	font-size:10px;
+	text-align:center;
+	padding: 3px;
+}
+
+.generaltable_superheader {
+	font-weight: bold;
+	color: white;
+	background-color: blue;
+	font-size:8px;
+	text-align:left;
+}
+
+.generaltable_footer {
+	background-color: #434751;
+	font-size:10px;
+	color:#FFFFFF;
+	font-weight:bold;
+}
+
+table.mobdata .data{
+	vertical-align:top;
+	padding: 4px;
+	text-align:center;
+	border: 1px solid black;
+}

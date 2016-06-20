@@ -1,0 +1,44 @@
+#reporttable {
+  border-collapse: collapse;
+  font-size:10px;
+  padding:0;
+  margin:0;
+ }
+ #reporttable th
+ {
+  background-color:black;
+  color:#FFFFFF;
+ }
+ #reporttable th,
+ #reporttable td
+ {
+  border: 1px solid #000;
+  text-align:center;
+ }
+ tr.highlight {
+  background-color: #FFFF5C;
+ }
+
+
+.even{
+	background-color:#CCDDDD;
+}
+
+.odd{
+	background-color:#AAC4C4;
+}
+
+#reportfilters{
+	clear:both; 
+	text-align: center;
+	margin-bottom: 5px;
+}
+#my_chart{
+	text-align: center;
+	width:100%;
+}
+#my_chart2{
+	margin-top: 20px;
+	text-align: center;
+	width:100%;
+}

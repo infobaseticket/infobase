@@ -1,0 +1,66 @@
+
+#auditfilter{
+	margin: 15px;
+}
+.audit_superheader {
+	font-weight: bold;
+	color: white;
+	background-color: blue;
+	font-size:12px;
+	text-align:left;
+}
+.audit_header {
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #434751;
+	font-size:10px;
+	padding:3px 0 3px 0;
+}
+tr.auditdata1 td{
+	color: #434751;
+	background-color: #bfe4ff;
+	font-size:10px;
+	text-align:left;
+	padding: 3px;
+	border-right: 1px solid #AABCFE;
+}
+tr.auditdata2 td{
+	color: #434751;
+	background-color: #ffe2bb;
+	font-size:10px;
+	text-align:left;
+	padding: 3px;
+	border-right: 1px solid #AABCFE;
+}
+tr.auditdata1 td table tr td,tr.auditdata2 td table tr td{
+	border:0;
+}
+tr.auditdata1 td table tr td.title,tr.auditdata2 td table tr td.title{
+	font-weight:bold;
+	color:blue;
+}
+tr.auditdata1 td.type,tr.auditdata2 td.type{
+	font-weight:bold;
+	background-color:#ffcc00;
+}
+.audit_attach{
+	padding: 5px;
+}
+
+#audit_uploadform{
+	margin: 5px;
+}
+.auditfile{
+         float:left;
+         margin:10px;
+         padding: 10px 0;
+         border:1px dotted;
+         height:160px;
+         width:230px;
+         text-align:center;
+}	
+
+.auditfile_delete{
+  float:left;
+  display:block;
+}

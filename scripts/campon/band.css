@@ -1,0 +1,39 @@
+.parameter{
+	background-color: #C0D8F0;
+	width:400px;
+}
+
+.band{
+	background-color: #78A8D8;	
+	text-align: center;
+}
+
+.sector{
+	background-color: #F0F0F0;
+	text-align: center;
+}
+.bandtype{
+	background-color: orange;
+	text-align: center;
+}
+.OK{
+	background-color: lightgreen;
+	text-align: center;
+	width:80px;
+}
+.NOT_OK{
+	background-color:red;
+	text-align: center;
+	width:80px;
+}
+.NA{
+	background-color:#FFFF8F;
+	text-align: center;
+	width:80px;	
+}
+
+.donorcell{
+	background-color:red;
+	text-align: center;
+	font-weight:bold;
+}
