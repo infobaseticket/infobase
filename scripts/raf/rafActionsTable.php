@@ -11,20 +11,7 @@ if ($guard_username=="bruno" or $guard_username=="nasifkha"){
 }else{
   $cachefile = '../cache/'.basename(__FILE__, '.php'); 
 }
-/*
-$cachetime = 120 * 60; // 2 hours
-// Serve from the cache if it is younger than $cachetime
-if (file_exists($cachefile) && (time() - $cachetime < filemtime($cachefile))) {
-include($cachefile);
-echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
-$caching='no';
-exit;
-}
 
-$caching='yes';
-
-ob_start();
-*/
 $conn_Infobase = oci_connect($user_Infobase,$passwd_Infobase, $sid_Infobase);
 $stmt = OCIParse($conn_Infobase,"ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY HH24:MI:SS'");
 OCIExecute($stmt,OCI_DEFAULT);
@@ -131,9 +118,3 @@ if ($_POST['partner']=='' or $_POST['partner']=='all') {
 <br><br><div class="pull-right"><i>Please not that there is a delay of 5 min in data refresh</i></div><br>
 <?php 
 include('rafActionsTable_data.php');
-/*
-$fp = fopen($cachefile, 'w'); // open the cache file for writing
-fwrite($fp, ob_get_contents()); // save the contents of output buffer to the file
-fclose($fp); // close the file
-ob_end_flush(); // Send the output to the browser
-*/
