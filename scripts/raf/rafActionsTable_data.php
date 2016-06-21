@@ -11,7 +11,6 @@ $conn_Infobase = oci_connect($user_Infobase,$passwd_Infobase, $sid_Infobase);
 $stmt = OCIParse($conn_Infobase,"ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY HH24:MI:SS'");
 OCIExecute($stmt,OCI_DEFAULT);
 
-
 function getHighlightColor($col,$action_by){
 
   if ($col=="REGION"){
@@ -66,7 +65,7 @@ if ($_POST['cluster']!=''){
 }
 
 //Here we get the detailed sitelist per action
-$query="SELECT * FROM VW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
+$query="SELECT * FROM VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
   if ($partner=='benchmark') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='m4c') {
@@ -100,7 +99,7 @@ $query="SELECT
   ACTION,
   COUNT (SITEID) AS AMOUNT
 FROM
-  VW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
+  VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
   if ($partner=='benchmark') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='m4c') {
@@ -134,7 +133,7 @@ for ($i = 0; $i <$amount; $i++){
 //echo "<pre>".print_r($data,true)."</pre>";
 
 //Here we get the different actions for the headers
-$query="SELECT DISTINCT(ACTION),MAX(UNID),ACTION_BY from VW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
+$query="SELECT DISTINCT(ACTION),MAX(UNID),ACTION_BY from VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
  if ($partner=='benchmark') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='m4c') {
@@ -159,7 +158,7 @@ if (!$stmt) {
 
 
 //Here we get the regions
-$query2="SELECT DISTINCT(SUBSTR (SITEID, 0, 2)) AS REGION from VW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
+$query2="SELECT DISTINCT(SUBSTR (SITEID, 0, 2)) AS REGION from VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
  if ($partner=='benchmark') {
     $query2.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='m4c') {

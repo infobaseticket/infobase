@@ -97,11 +97,11 @@ if (!$stmtMA) {
  	exit;
 } else {
 	OCIFreeStatement($stmtMA);
-	if (substr($resMA['N1_SITEID'][0],0,1)=="_"){
+	//if (substr($resMA['N1_SITEID'][0],0,1)=="_"){
 		$folderSITEID=substr($resMA['N1_SITEID'][0],1,6);
-	}else{
-		$folderSITEID=$resMA['N1_SITEID'][0];
-	}
+	//}else{
+	//	$folderSITEID=$resMA['N1_SITEID'][0];
+	//}
 }
 
 if ($ran=='M4C_RAN' && $res3['N1_NBUP'][0]=='UPG'){
@@ -110,11 +110,6 @@ if ($ran=='M4C_RAN' && $res3['N1_NBUP'][0]=='UPG'){
 		
 }else{
 	if ($res3['N1_NBUP'][0]=='NB' or $res3['N1_NBUP'][0]=='NB REPL'){ 
-		if (substr($res3['N1_CANDIDATE'][0],0,1)=="_"){
-			$site=substr($res3['N1_CANDIDATE'][0],1,6);
-		}else{
-			$site=substr($res3['N1_CANDIDATE'][0],0,7);
-		}
 		$ranSubfolder=substr($res3['N1_CANDIDATE'][0],1,2)."/".$folderSITEID."/".$res3['N1_CANDIDATE'][0]."/NB".$res3['N1_CANDIDATE'][0];
 		$directory = $ranloc.$ranSubfolder;
 	}else if ($res3['N1_NBUP'][0]=='UPG'){ 

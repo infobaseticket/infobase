@@ -26,7 +26,7 @@ FusionCharts.ready(function () {
           "value": "492"
       },{
           "label": "New Macro",
-          "value": "443"
+          "value": "445"
       },{
           "label": "CTX Upgrade",
           "value": "175"
@@ -80,7 +80,7 @@ FusionCharts.ready(function () {
           "value": "7"
       },{
           "label": "New Macro (v2)",
-          "value": "5"
+          "value": "6"
       },{
           "label": "New All Areas (v2)",
           "value": "4"
