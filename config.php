@@ -1,7 +1,7 @@
 <?php
 
 $config['debug']=false;
-$config['cache']=false;
+$config['cache']=true;
 $config['mail']=true;
 if ($config['debug']===false){
 	//include_once('ChromePhp.php');

@@ -179,9 +179,11 @@ protect("","Base_RF,Base_TXMN,Base_delivery,Base_other,Base_risk,Partner,Adminis
         <div class="tab-pane" role="tabpanel" id="ABdashbord">
           <br><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading AB dashboard...
         </div>
+        <?php if (substr_count($guard_groups, 'Base')==1 || substr_count($guard_groups, 'Administrators')==1){ ?>
         <div class="tab-pane" role="tabpanel" id="MODdashbord">
           <br><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading MODERNISATION dashboard...
         </div>
+        <?php } ?>
       </div>
     </div>
   </section>
@@ -217,5 +219,16 @@ protect("","Base_RF,Base_TXMN,Base_delivery,Base_other,Base_risk,Partner,Adminis
 
     <script src="<?=$config['explorer_url']?>javascripts/fusioncharts/js/fusioncharts.js"></script>
     <script src="<?=$config['explorer_url']?>javascripts/fusioncharts/js/themes/fusioncharts.theme.fint.js"></script>
+    <?php if (substr_count($guard_groups, 'Base')==1 || substr_count($guard_groups, 'Administrators')==1){ ?>
+    <script type="text/javascript">
+    $.ajax({
+          type: "POST",
+          url: "scripts/explorer/MODdashboard.php",
+          success : function(data){
+              $('#MODdashbord').html(data); 
+          }
+    });
+    </script>
+    <?php } ?>
   </body>
 </html>

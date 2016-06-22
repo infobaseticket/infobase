@@ -170,13 +170,6 @@ $(document).ready( function(){
               $('#ABdashbord').html(data); 
           }
     });
-    $.ajax({
-          type: "POST",
-          url: "scripts/explorer/MODdashboard.php",
-          success : function(data){
-              $('#MODdashbord').html(data); 
-          }
-    });
 	
 	$("#mainnavbar").on("click",".mainnav",function( e ){
 

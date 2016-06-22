@@ -191,6 +191,34 @@ for ($i = 0; $i <$Amountactions; $i++) {
       },';
 }
 
+$query="SELECT RUN FROM IMPORT_STATUS WHERE TYPE='RAN_SCAN_M4C_RAN'";
+$stmtT = parse_exec_fetch($conn_Infobase, $query, $error_str, $resT);
+if (!$stmtT) {
+    die_silently($conn_Infobase, $error_str);
+    exit;
+} else {
+    OCIFreeStatement($stmtT);
+    $run=$resT['RUN'][0];
+}
+
+$query="SELECT COUNT(RAFID) AS AMOUNT FROM BSDS_RAFV2 WHERE TYPE='MOD Upgrade'";
+$stmtT = parse_exec_fetch($conn_Infobase, $query, $error_str, $resT);
+if (!$stmtT) {
+    die_silently($conn_Infobase, $error_str);
+    exit;
+} else {
+    OCIFreeStatement($stmtT);
+    $Amountactions=count($resT['ACTION']);
+}
+    $total=2846-$resT['AMOUNT'][0];
+    $data_available='{
+          "label": "AVAILABLE",
+          "value": "'.$resT['AMOUNT'][0].'"
+      },{
+          "label": "MISSING",
+          "value": "'.$total.'"
+      },';
+
 ?>
 <br>
 <div class="pull-left" style="margin: 0 10px;min-width:300px;">
@@ -209,6 +237,14 @@ for ($i = 0; $i <$Amountactions; $i++) {
   <div class="panel panel-default">
     <div class="panel-body" id="Actionsdashbord">
       <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading graph 'RAF MOD ACTIONS'...
+    </div>
+  </div>
+</div>
+
+<div class="pull-left" style="margin: 0 10px;min-width:300px;">
+  <div class="panel panel-default">
+    <div class="panel-body" id="Availabledashbord">
+      <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading graph 'TARGET MOD UPGRADES'...
     </div>
   </div>
 </div>
@@ -234,6 +270,7 @@ FusionCharts.ready(function () {
         dataSource: {
             "chart": {
                 "caption": "FILETYPES ON RAN M4C",
+                "subCaption": "Last refresh: <?=$run?>",
                 "showPercentValues": "0",
                 "showPercentInTooltip": "1",
                 "exportenabled": "1",
@@ -293,7 +330,7 @@ FusionCharts.ready(function () {
         dataFormat: 'json',
         dataSource: {
             "chart": {
-                "caption": "VALIDATED FILETYPES ON RAN M4C",
+                "caption": "FILES AVAILABLE FOR VALIDATION ON RAN M4C",
                 "showPercentValues": "0",
                 "showPercentInTooltip": "1",
                 "exportenabled": "1",
@@ -378,7 +415,6 @@ FusionCharts.ready(function () {
     var actionsChart = new FusionCharts({
        type: 'pie2d',
         renderAt: 'Actionsdashbord',
-        
         width: '400',
         height: '300',
         dataFormat: 'json',
@@ -403,6 +439,39 @@ FusionCharts.ready(function () {
             },
             "data": [
                 <?=$data_actions?>
+            ]
+        }
+    }).render();
+});
+
+FusionCharts.ready(function () {
+    var actionsChart = new FusionCharts({
+       type: 'doughnut2D',
+        renderAt: 'Availabledashbord',
+        width: '400',
+        height: '300',
+        dataFormat: 'json',
+        dataSource: {
+            "chart": {
+                "caption": "RAF's created FROM TARGET OF 2846",
+                "showPercentValues": "0",
+                "defaultCenterLabel": "Total target: 2846",
+                "showPercentInTooltip": "1",
+                "exportenabled": "1",
+                "exportatclient": "0",
+                "exporthandler": "http://export.api3.fusioncharts.com",
+                "html5exporthandler": "http://export.api3.fusioncharts.com",
+                "logoURL": "http://infobase/bsds/images/logoInfobase.png",
+                "logoAlpha": "40",
+                "logoScale": "50",
+                "logoPosition": "BR",
+                "decimals": "1",
+                "showLegend": "1",
+                "interactivelegend": "1",
+                "theme": "fint"
+            },
+            "data": [
+                <?=$data_available?>
             ]
         }
     }).render();

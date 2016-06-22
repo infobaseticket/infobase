@@ -20,19 +20,19 @@ FusionCharts.ready(function () {
             "data": [
                 {
           "label": "TECHNO Upgrade",
-          "value": "802"
+          "value": "801"
       },{
           "label": "MOD Upgrade",
           "value": "492"
       },{
           "label": "New Macro",
-          "value": "445"
+          "value": "444"
       },{
           "label": "CTX Upgrade",
           "value": "175"
       },{
           "label": "New Replacement",
-          "value": "146"
+          "value": "145"
       },{
           "label": "New All Areas",
           "value": "111"
@@ -53,7 +53,7 @@ FusionCharts.ready(function () {
           "value": "55"
       },{
           "label": "Dismantling",
-          "value": "47"
+          "value": "46"
       },{
           "label": "New Mobile Truck",
           "value": "37"
@@ -76,11 +76,11 @@ FusionCharts.ready(function () {
           "label": "CAB Upgrade",
           "value": "13"
       },{
-          "label": "ASC Upgrade",
+          "label": "New Macro (v2)",
           "value": "7"
       },{
-          "label": "New Macro (v2)",
-          "value": "6"
+          "label": "ASC Upgrade",
+          "value": "7"
       },{
           "label": "New All Areas (v2)",
           "value": "4"

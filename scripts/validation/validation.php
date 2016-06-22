@@ -128,11 +128,12 @@ if ($ran=='M4C_RAN' && $res3['N1_NBUP'][0]=='UPG'){
 
 	require("filevalidations.php");
 
+	/*
 	if ($res3['N1_NBUP'][0]=='UPG'){ //for UPG we always check in general folder for some files
 		$ran='RAN-ALU';
 		$directory = $config['ranfolder'].substr($res3['N1_CANDIDATE'][0],1,2)."/".$folderSITEID."/".$res3['N1_CANDIDATE'][0]."/01. H&S";
 		require("filevalidations.php");
-	}
+	}*/
 
 	//OVERRULING
 	$query="SELECT * FROM VALIDATION_OVERRULE WHERE SITEUPGNR='".$siteupgnr."'";
@@ -227,6 +228,10 @@ if ($ran=='M4C_RAN' && $res3['N1_NBUP'][0]=='UPG'){
 				if (strpos($res3['RADIO_FUND'][0], 'L26')!==false){
 					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
 				} //else do nothing
+			}else if ($resVALA['RULE'][$i]=="ACQ_PARTNER!='BASE' && ACQ_PARTNER!='KPNGB'"){
+				if ($res3['IB_SAC'][0]!='BASE' && $res3['IB_SAC'][0]!='KPNGB'){
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+				} 
 			/*}else
 				if (($res3['A34U334'][0]=$res3['A41U341'][0] AND $res3['A34U334'][0]!='') or $res3['N1_SAC'][0]=='KPNGB' or $res3['N1_SAC'][0]=='BASE' or $res3['AU680'][0]!=''){ 
 					$checkCON++;
