@@ -18,28 +18,34 @@ protect("","Base_RF,Base_TXMN,Base_delivery,Base_other,Base_risk,Partner,Adminis
     <meta name="description" content="Infobase developed for BASECOMPANY">
     <meta name="author" content="Frederick Eyland">
 
-    <link rel="stylesheet" href="<?=$config['explorer_url']?>bootstrap/css/bootstrap.min.css" media="all">
-    <link rel="stylesheet" href="<?=$config['explorer_url']?>bootstrap/css/bootstrap-responsive.min.css" media="all">
+   
     <link rel="shortcut icon" href="bootstrap/ico/favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?=$config['explorer_url']?>bootstrap/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?=$config['explorer_url']?>bootstrap/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?=$config['explorer_url']?>bootstrap/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="<?=$config['explorer_url']?>bootstrap/ico/apple-touch-icon-57-precomposed.png">
-   
+   <!--
+    <link rel="stylesheet" href="<?=$config['explorer_url']?>bootstrap/css/bootstrap.min.css" media="all">
+    <link rel="stylesheet" href="<?=$config['explorer_url']?>bootstrap/css/bootstrap-responsive.min.css" media="all">
+
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>bootstrap/css/datepicker.css">
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>bootstrap/css/bootstrap-editable.css">
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>css/messenger.css">
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>css/messenger-theme-future.css">
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>bootstrap/css/selectize.bootstrap3.css">
-    
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>bootstrap/css/select2.css">
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>bootstrap/css/select2-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>css/style2.css" media="all">
+-->
+    <link rel="stylesheet" type="text/css" href="<?=$config['explorer_url']?>css/allinone.css" media="all">
 
+    <script src="<?=$config['explorer_url']?>javascripts/allinone.js"></script>
+<!--
     <script src="<?=$config['explorer_url']?>javascripts/jquery.js"></script>
     <script src="<?=$config['explorer_url']?>javascripts/infobase.js"></script>
     <script src="<?=$config['explorer_url']?>javascripts/jquery.form.js"></script>
     <script src="<?=$config['explorer_url']?>javascripts/jquery.PrintArea.js"></script>
+    -->
   </head>
   <body>
   <nav class="navbar navbar-fixed-top navbar-inverse" role="navigation" id="navbar">
@@ -205,7 +211,12 @@ protect("","Base_RF,Base_TXMN,Base_delivery,Base_other,Base_risk,Partner,Adminis
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+ 
+  <script src="<?=$config['explorer_url']?>javascripts/allinone_footer.js"></script>
+  <script src="<?=$config['explorer_url']?>javascripts/fusioncharts/js/fusioncharts.js"></script>
+  <script src="<?=$config['explorer_url']?>javascripts/fusioncharts/js/themes/fusioncharts.theme.fint.js"></script>
 
+   <!-- 
     <script src="<?=$config['explorer_url']?>bootstrap/js/bootstrap.min.js"></script>
     <script src="<?=$config['explorer_url']?>bootstrap/js/bootstrap-datepicker.js"></script>
     <script src="<?=$config['explorer_url']?>bootstrap/js/bootpag.js"></script>
@@ -219,6 +230,7 @@ protect("","Base_RF,Base_TXMN,Base_delivery,Base_other,Base_risk,Partner,Adminis
 
     <script src="<?=$config['explorer_url']?>javascripts/fusioncharts/js/fusioncharts.js"></script>
     <script src="<?=$config['explorer_url']?>javascripts/fusioncharts/js/themes/fusioncharts.theme.fint.js"></script>
+ -->
     <?php if (substr_count($guard_groups, 'Base')==1 || substr_count($guard_groups, 'Administrators')==1){ ?>
     <script type="text/javascript">
     $.ajax({
