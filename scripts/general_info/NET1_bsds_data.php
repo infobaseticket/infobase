@@ -233,6 +233,7 @@ function check_NET1_BSDS_funded($fname,$filter){
 
 						$start = 0;
 
+
 						if (trim($res1['A71'][$i])!=""){
 							$BSDS_funded[$UPGNR]['ASBUILD']=trim($res1['A71'][$i]);
 							$BSDS_funded[$UPGNR]['DATE']=trim($res1['A71'][$i]);

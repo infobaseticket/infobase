@@ -6,10 +6,10 @@ $pop_data.="
     	<div class='modal-content'>
 		<div class='modal-header'>
 			<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
-			<h3 id='myModalLabel'>.:: ".$status." ::.</h3>
+			<h3 id='myModalLabel ".$statuscolor."'>.:: ".$STATUS_BSDS." ::.</h3>
 		</div>
 		<div class='modal-body'>
-		<table class='table'>
+		<table class='table table-striped'>
 			<tr>
 			<td><b>Initially created:</b></td>
 			<td>".$ORIGIN_DATE."<br>";
@@ -60,7 +60,7 @@ $pop_data.="
 			if (trim($fullname_update_AFTER_COPY)!=""){
 				$pop_data.="<tr><td valign=top><b>Latest update SITE FUNDED: </b></td><td>".$UPDATE_AFTER_COPY."<br>";
 			}
-			$pop_data.="<tr><td valign=top><b>Forecast Integration date: </b></td><td>".$ESTIM."<br>";
+			$pop_data.="<tr><td valign=top>";
 			if ($fullname_update_AFTER_COPY){
 			$pop_data.=$fullname_update_AFTER_COPY."<br>";
 			}

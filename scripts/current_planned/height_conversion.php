@@ -51,6 +51,32 @@ if ($ANTHEIGHT2_4=="-" || ($ANTHEIGHT2_4!="" && $ANTHEIGHT2_4_t=="")){
 	$ANTHEIGHT2_4_t="0";
 }
 
+$ANTHEIGHT_x=explode(".",$ANTHEIGHT1_5);
+$ANTHEIGHT1_5=$ANTHEIGHT_x[0];
+$ANTHEIGHT1_5_t=$ANTHEIGHT_x[1];
+if ($ANTHEIGHT1_5=="-" || ($ANTHEIGHT1_5!="" && $ANTHEIGHT1_5_t=="")){
+	$ANTHEIGHT1_5_t="0";
+}
+$ANTHEIGHT_y=explode(".",$ANTHEIGHT2_5);
+$ANTHEIGHT2_5=$ANTHEIGHT_y[0];
+$ANTHEIGHT2_5_t=$ANTHEIGHT_y[1];
+if ($ANTHEIGHT2_5=="-" || ($ANTHEIGHT2_5!="" && $ANTHEIGHT2_5_t=="")){
+	$ANTHEIGHT2_5_t="0";
+}
+
+$ANTHEIGHT_x=explode(".",$ANTHEIGHT1_6);
+$ANTHEIGHT1_6=$ANTHEIGHT_x[0];
+$ANTHEIGHT1_6_t=$ANTHEIGHT_x[1];
+if ($ANTHEIGHT1_6=="-" || ($ANTHEIGHT1_6!="" && $ANTHEIGHT1_6_t=="")){
+	$ANTHEIGHT1_6_t="0";
+}
+$ANTHEIGHT_y=explode(".",$ANTHEIGHT2_6);
+$ANTHEIGHT2_6=$ANTHEIGHT_y[0];
+$ANTHEIGHT2_6_t=$ANTHEIGHT_y[1];
+if ($ANTHEIGHT2_6=="-" || ($ANTHEIGHT2_6!="" && $ANTHEIGHT2_6_t=="")){
+	$ANTHEIGHT2_6_t="0";
+}
+
 $FEEDERLEN_y=explode(".",$FEEDERLEN_1);
 $FEEDERLEN_1=$FEEDERLEN_y[0];
 $FEEDERLEN_1_t=$FEEDERLEN_y[1];
@@ -79,6 +105,19 @@ if ($FEEDERLEN_4=="-" || ($FEEDERLEN_4!="" && $FEEDERLEN_4_t=="")){
 	$FEEDERLEN_4_t="0";
 }
 
+$FEEDERLEN_y=explode(".",$FEEDERLEN_5);
+$FEEDERLEN_5=$FEEDERLEN_y[0];
+$FEEDERLEN_5_t=$FEEDERLEN_y[1];
+if ($FEEDERLEN_5=="-" || ($FEEDERLEN_5!="" && $FEEDERLEN_5_t=="")){
+	$FEEDERLEN_5_t="0";
+}
+
+$FEEDERLEN_y=explode(".",$FEEDERLEN_6);
+$FEEDERLEN_6=$FEEDERLEN_y[0];
+$FEEDERLEN_6_t=$FEEDERLEN_y[1];
+if ($FEEDERLEN_6=="-" || ($FEEDERLEN_6!="" && $FEEDERLEN_6_t=="")){
+	$FEEDERLEN_6_t="0";
+}
 
 if (strlen($ANTHEIGHT1_1_t)==1){
    $ANTHEIGHT1_1_t=$ANTHEIGHT1_1_t."0";
@@ -92,6 +131,12 @@ if (strlen($ANTHEIGHT1_3_t)==1){
 if (strlen($ANTHEIGHT1_4_t)==1){
    $ANTHEIGHT1_4_t=$ANTHEIGHT1_4_t."0";
 }
+if (strlen($ANTHEIGHT1_5_t)==1){
+   $ANTHEIGHT1_5_t=$ANTHEIGHT1_5_t."0";
+}
+if (strlen($ANTHEIGHT1_6_t)==1){
+   $ANTHEIGHT1_6_t=$ANTHEIGHT1_6_t."0";
+}
 
 if (strlen($FEEDERLEN_1_t)==1 && $FEEDERLEN_1_t!=0){
    $FEEDERLEN_1_t=$FEEDERLEN_1_t."0";
@@ -102,8 +147,14 @@ if (strlen($FEEDERLEN_2_t)==1 && $FEEDERLEN_2_t!=0){
 if (strlen($FEEDERLEN_3_t)==1 && $FEEDERLEN_3_t!=0){
    $FEEDERLEN_3_t=$FEEDERLEN_3_t."0";
 }
-if (strlen($FEEDERLEN_3_t)==1 && $FEEDERLEN_4_t!=0){
+if (strlen($FEEDERLEN_4_t)==1 && $FEEDERLEN_4_t!=0){
    $FEEDERLEN_4_t=$FEEDERLEN_4_t."0";
+}
+if (strlen($FEEDERLEN_5_t)==1 && $FEEDERLEN_5_t!=0){
+   $FEEDERLEN_5_t=$FEEDERLEN_5_t."0";
+}
+if (strlen($FEEDERLEN_6_t)==1 && $FEEDERLEN_6_t!=0){
+   $FEEDERLEN_6_t=$FEEDERLEN_6_t."0";
 }
 
 if ($_POST['action']!="save"){
@@ -157,6 +208,30 @@ if ($_POST['action']!="save"){
 	if ($pl_ANTHEIGHT2_4=="-" || ($pl_ANTHEIGHT2_4!="" && $pl_ANTHEIGHT2_4_t=="")){
 		$pl_ANTHEIGHT2_4_t="0";
 	}
+	$pl_ANTHEIGHT_x=explode(".",$pl_ANTHEIGHT1_5);
+	$pl_ANTHEIGHT1_5=$pl_ANTHEIGHT_x[0];
+	$pl_ANTHEIGHT1_5_t=$pl_ANTHEIGHT_x[1];
+	if ($pl_ANTHEIGHT1_5=="-" || ($pl_ANTHEIGHT1_5!="" && $pl_ANTHEIGHT1_5_t=="")){
+		$pl_ANTHEIGHT1_5_t="0";
+	}
+	$pl_ANTHEIGHT_y=explode(".",$pl_ANTHEIGHT2_5);
+	$pl_ANTHEIGHT2_5=$pl_ANTHEIGHT_y[0];
+	$pl_ANTHEIGHT2_5_t=$pl_ANTHEIGHT_y[1];
+	if ($pl_ANTHEIGHT2_5=="-" || ($pl_ANTHEIGHT2_5!="" && $pl_ANTHEIGHT2_5_t=="")){
+		$pl_ANTHEIGHT2_5_t="0";
+	}
+	$pl_ANTHEIGHT_x=explode(".",$pl_ANTHEIGHT1_6);
+	$pl_ANTHEIGHT1_6=$pl_ANTHEIGHT_x[0];
+	$pl_ANTHEIGHT1_6_t=$pl_ANTHEIGHT_x[1];
+	if ($pl_ANTHEIGHT1_6=="-" || ($pl_ANTHEIGHT1_6!="" && $pl_ANTHEIGHT1_6_t=="")){
+		$pl_ANTHEIGHT1_6_t="0";
+	}
+	$pl_ANTHEIGHT_y=explode(".",$pl_ANTHEIGHT2_6);
+	$pl_ANTHEIGHT2_6=$pl_ANTHEIGHT_y[0];
+	$pl_ANTHEIGHT2_6_t=$pl_ANTHEIGHT_y[1];
+	if ($pl_ANTHEIGHT2_6=="-" || ($pl_ANTHEIGHT2_6!="" && $pl_ANTHEIGHT2_6_t=="")){
+		$pl_ANTHEIGHT2_6_t="0";
+	}
 
 	if (strlen($pl_ANTHEIGHT1_1_t)==1){
 		$pl_ANTHEIGHT1_1_t=$pl_ANTHEIGHT1_1_t."0";
@@ -181,6 +256,18 @@ if ($_POST['action']!="save"){
 	}
 	if (strlen($pl_ANTHEIGHT2_4_t)==1){
 		$pl_ANTHEIGHT2_4_t=$pl_ANTHEIGHT2_4_t."0";
+	}
+	if (strlen($pl_ANTHEIGHT1_5_t)==1){
+		$pl_ANTHEIGHT1_5_t=$pl_ANTHEIGHT1_5_t."0";
+	}
+	if (strlen($pl_ANTHEIGHT2_5_t)==1){
+		$pl_ANTHEIGHT2_5_t=$pl_ANTHEIGHT2_5_t."0";
+	}
+	if (strlen($pl_ANTHEIGHT1_6_t)==1){
+		$pl_ANTHEIGHT1_6_t=$pl_ANTHEIGHT1_6_t."0";
+	}
+	if (strlen($pl_ANTHEIGHT2_6_t)==1){
+		$pl_ANTHEIGHT2_6_t=$pl_ANTHEIGHT2_6_t."0";
 	}
 
 	$pl_FEEDERLEN_y=explode(".",$pl_FEEDERLEN_1);
@@ -210,14 +297,35 @@ if ($_POST['action']!="save"){
 	if ($pl_FEEDERLEN_4=="-" || ($pl_FEEDERLEN_4!="" && $pl_FEEDERLEN_4_t=="")){
 		$pl_FEEDERLEN_4_t="0";
 	}
+
+	$pl_FEEDERLEN_y=explode(".",$pl_FEEDERLEN_5);
+	$pl_FEEDERLEN_5=$pl_FEEDERLEN_y[0];
+	$pl_FEEDERLEN_5_t=$pl_FEEDERLEN_y[1];
+	if ($pl_FEEDERLEN_5=="-" || ($pl_FEEDERLEN_5!="" && $pl_FEEDERLEN_5_t=="")){
+		$pl_FEEDERLEN_5_t="0";
+	}
+
+	$pl_FEEDERLEN_y=explode(".",$pl_FEEDERLEN_6);
+	$pl_FEEDERLEN_6=$pl_FEEDERLEN_y[0];
+	$pl_FEEDERLEN_6_t=$pl_FEEDERLEN_y[1];
+	if ($pl_FEEDERLEN_6=="-" || ($pl_FEEDERLEN_6!="" && $pl_FEEDERLEN_6_t=="")){
+		$pl_FEEDERLEN_6_t="0";
+	}
 }
 
 $pl_DXUTYPE1=str_replace("-"," ",$pl_DXUTYPE1);
 $pl_DXUTYPE2=str_replace("-"," ",$pl_DXUTYPE2);
 $pl_DXUTYPE3=str_replace("-"," ",$pl_DXUTYPE3);
+$pl_DXUTYPE4=str_replace("-"," ",$pl_DXUTYPE4);
+$pl_DXUTYPE5=str_replace("-"," ",$pl_DXUTYPE5);
+$pl_DXUTYPE6=str_replace("-"," ",$pl_DXUTYPE6);
+
 $DXUTYPE1=str_replace("-"," ",$DXUTYPE1);
 $DXUTYPE2=str_replace("-"," ",$DXUTYPE2);
 $DXUTYPE3=str_replace("-"," ",$DXUTYPE3);
+$DXUTYPE4=str_replace("-"," ",$DXUTYPE4);
+$DXUTYPE5=str_replace("-"," ",$DXUTYPE5);
+$DXUTYPE6=str_replace("-"," ",$DXUTYPE6);
 $BBS=strtoupper($BBS);
 $pl_BBS=strtoupper($pl_BBS);
 

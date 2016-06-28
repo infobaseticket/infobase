@@ -10,9 +10,10 @@ OCIExecute($stmt,OCI_DEFAULT);
 
 if ($_POST['action']=="insert_new_bsds"){
 	$COMMENTS=str_replace("'","''",$_POST['COMMENTS']);
-	$query = "INSERT INTO BSDS_GENERALINFO VALUES ('','".$_POST['ADDRESSFK']."' ,'".$_POST['candidate']."','no',
-	'Pending','Pending','no','". $guard_username."',SYSDATE, SYSDATE,'".$_POST['BSDS_TYPE']."','".$COMMENTS."','','".$_POST['BSDS_TR']."','','". $guard_username."','','','no','','')";
-	//echo $query;
+
+	$query = "INSERT INTO BSDS_GENERALINFO2 VALUES ('','".$_POST['ADDRESSFK']."' ,'".$_POST['candidate']."','no',
+	'Pending','Pending','no','". $guard_username."',SYSDATE, SYSDATE,'".$_POST['BSDS_TYPE']."','".$COMMENTS."','','".$_POST['BSDS_TR']."','','". $guard_username."','','','no','','','')";
+	echo $query;
 	$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
 	if (!$stmt) {
 		die_silently($conn_Infobase, $error_str);
@@ -112,7 +113,7 @@ if ($_POST['action']=="delete_bsds"){
 	
 	if ($_POST['bsdsid']!=""){
 
-		$query="UPDATE INFOBASE.BSDS_GENERALINFO SET DELETEDSTATUS='yes', DELETED_BY='".$guard_username."',DELETED_DATE=SYSDATE
+		$query="UPDATE INFOBASE.BSDS_GENERALINFO2 SET DELETEDSTATUS='yes', DELETED_BY='".$guard_username."',DELETED_DATE=SYSDATE
 		WHERE BSDSKEY = '". $_POST['bsdsid'] ."'";
 		//echo $query."<br>";
 		$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
@@ -121,6 +122,74 @@ if ($_POST['action']=="delete_bsds"){
 		}
 		OCICommit($conn_Infobase);		
 		echo "BSDS ".$_POST['bsdsid']." has been successfully deleted!";
+	}
+}
+
+if ($_POST['action']=="add_bsds_funded"){
+	
+	if ($_POST['bsdsid']!=""){
+
+		$query="SELECT N1_CANDIDATE, N1_NBUP, N1_UPGNR,N1_SITEID, IB_TECHNOS_CON, AU353, AU305 FROM MASTER_REPORT WHERE IB_RAFID = '".$_POST['rafid']."'";
+		//echo $query;
+		$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res);
+	   	if (!$stmt) {
+	      die_silently($conn_Infobase, $error_str);
+	      exit;
+	   	} else {
+	      OCIFreeStatement($stmt);
+	   	}
+
+	   	if ($_POST['todo']=="add"){
+	   		$au305=date('d-m-Y');
+	   		$au305_before='';
+	   		$actionstatus="ADD BSDS FUNDED";
+	   		$currentstatus='BSDS FUNDED';
+	   		$currentms=date('d-m-Y');
+	   	}else if($_POST['todo']=="remove"){
+	   		$au305='';
+	   		$au305_before=$res['AU305'][0];
+	   		$actionstatus="REMOVE BSDS FUNDED";
+	   		$currentstatus='SITE FUNDED';
+	   		$currentms=$res['AU353'][0];
+	   	}
+
+	   	if ($res['N1_CANDIDATE'][0]!=''){
+
+	   		if ($res['N1_NBUP'][0]=='UPG'){
+	   			$queryUP = "INSERT INTO INFOBASE.NET1UPDATER_CSV VALUES ('".substr($res['N1_CANDIDATE'][0],0,7)."','".$res['N1_UPGNR'][0]."','U305','".$au305."','BSDS ".$guard_username."',SYSDATE,'0','','','".$res['N1_CANDIDATE'][0]."')";
+				//echo $queryUP;
+				$stmtUP = parse_exec_free($conn_Infobase, $queryUP, $error_str);
+				if (!$stmtUP) {
+					die_silently($conn_Infobase, $error_str);
+				}else{
+					OCICommit($conn_Infobase);
+				}
+	   		}elseif ($res['N1_NBUP'][0]=='NB'){
+	   			$queryNB = "INSERT INTO INFOBASE.NET1UPDATER_CSV VALUES ('".$res['N1_SITEID'][0]."','','A305','".$au305."','BSDS ".$guard_username."',SYSDATE,'0','','','".$res['N1_CANDIDATE'][0]."')";
+				//echo $queryNB."<br>";
+				$stmtUP = parse_exec_free($conn_Infobase, $queryNB, $error_str);
+				if (!$stmtUP) {
+					die_silently($conn_Infobase, $error_str);
+				}else{
+					OCICommit($conn_Infobase);
+				}
+	   		}
+		
+			$query = "INSERT INTO BSDS_STATUS_CHANGES VALUES ('',SYSDATE,'".$res['N1_SITEID'][0]."','".$res['N1_CANDIDATE'][0]."','".$res['N1_NBUP'][0]."',
+				'".$res['N1_UPGNR'][0]."','".$res['AU353'][0]."','".$res['AU353'][0]."','".str_replace("-", "/", $au305)."','".str_replace("-", "/", $au305_before)."','','',
+				'".$_POST['rafid']."','".$_POST['bsdsid']."','".$actionstatus."','".$currentstatus."','".str_replace("-", "/", $currentms)."','0', '".$res['IB_TECHNOS_CON'][0]."')";
+			//echo $query;				
+			$stmtCH = parse_exec_free($conn_Infobase, $query, $error_str);
+			if (!$stmtCH) {
+				die_silently($conn_Infobase, $error_str);
+			}else{
+				OCICommit($conn_Infobase);
+			}
+	
+			echo "BSDS ".$_POST['bsdsid']." FUNDING has been changed and will synced to N1 in about 30 minutes!";
+	   	}
+
+		
 	}
 }
 
@@ -136,13 +205,13 @@ if ($_POST['action']=="remove_funding"){
 		if ($to=="FUND"){
 			$code="U305";
 		}else if ($to=="BUILD"){
-			$code="U71";
+			$code="U380";
 		}else if ($to=="POST"){
 			$code="U353";
 		}
-		$query="UPDATE INFOBASE.NET1_UPGRADES_2 SET $code=''
+		$query="UPDATE NET1_UPGRADES_2 SET $code=''
 		WHERE WOR_UDK = '". $upgnr ."'";
-		//echo $query."<br>";
+		echo $query."<br>";
 		$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
 		if (!$stmt) {
 			die_silently($conn_Infobase, $error_str);
@@ -152,10 +221,18 @@ if ($_POST['action']=="remove_funding"){
 		if ($to=="FUND"){
 			$code="A305";
 		}else if ($to=="BUILD"){
-			$code="A71";
+			$code="A80";
 		}else if ($to=="POST"){
 			$code="A353";
 		}
+		$query="UPDATE NET1_NEWBUILDS_2 SET $code=''
+		WHERE WOR_UDK = '". $upgnr ."'";
+		//echo $query."<br>";
+		$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
+		if (!$stmt) {
+			die_silently($conn_Infobase, $error_str);
+		}
+		OCICommit($conn_Infobase);
 	}
 }
 

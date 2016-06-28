@@ -467,11 +467,11 @@ if ($amount_of_RAFS>=1){
                   </button>
                   <ul class='dropdown-menu' role='menu'>";
                   if ($res1['NET1_LINK'][$i]!="NOT OK"){
-                    $$output_raf2.="<li><button type='button' class='btn btn-xs btn-default rafnav' data-action='net1explorer' data-siteid='".$res1['SITEID'][$i]."' data-net1link='".$res1['NET1_LINK'][$i]."' title='OPEN corresponding NET1 info'><span class='glyphicon glyphicon-th-large'> NET1</span></button></li>";
+                    $$output_raf2.="<li><a href='#' class='rafnav' data-action='net1explorer' data-siteid='".$res1['SITEID'][$i]."' data-net1link='".$res1['NET1_LINK'][$i]."' title='OPEN corresponding NET1 info'><span class='glyphicon glyphicon-th-large'> NET1</span></a></li>";
                     }
                     $$output_raf2.="<li><a href='scripts/raf/raf_details_history.php' class='rafnav' data-action='history' data-id='".$res1['RAFID'][$i]."' data-siteid='".$res1['SITEID'][$i]."'><span class='glyphicon glyphicon-time'></span> ACTION LOG</a></li>
                     <li><a href='#' data-toggle='modal' data-target='#RAFBOX_".$res1['RAFID'][$i]."'><span class='glyphicon glyphicon-user'></span> USERS</a></li>
-                    <li><a href='#' class='validation' title='validation' data-siteupgnr='".$res1['NET1_LINK'][$i]."' data-nbup='NB'><span class='glyphicon glyphicon-check'></span> VALIDATION</a></li>";
+                    <li><a href='#' class='validation' title='validation' data-rafid='".$res1['RAFID'][$i]."' data-siteupgnr='".$res1['NET1_LINK'][$i]."' data-nbup='NB'><span class='glyphicon glyphicon-check'></span> VALIDATION</a></li>";
                     if (substr_count($guard_groups, 'Administrators')==1
                         || ($guard_username=$res1['CREATED_BY'][$i] && $res1['TXMN_INP'][$i]!="OK" && $res1['NET1_LINK'][$i]=="")){ 
                          $$output_raf2.="<li class='divider'></li>

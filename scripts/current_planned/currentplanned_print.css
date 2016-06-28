@@ -9,6 +9,7 @@
     font-size:8px;
     text-align:center;
     border-bottom:2px dotted red;
+    background-color: yellow;
 }
 .print td {
 	font-size: 8px;

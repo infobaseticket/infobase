@@ -463,17 +463,18 @@ $("body").on("click",".cluster",function( e ){
 *****************************************************************************************/
 	$("body").on("click",".validation",function( e ){
 		var siteupgnr=$(this).data('siteupgnr');
+		var rafid=$(this).data('rafid');
 		var nbup=$(this).data('nbup');
 		$.ajax({
 			type: "POST",
 			url: 'scripts/validation/validation.php',
-			data: { siteupgnr:siteupgnr},
+			data: { siteupgnr:siteupgnr,rafid:rafid},
 			success : function(data){
 				$("#myModalDialog").addClass("modalwide");
 				$("#savemodal").hide();
 				$("#savemodal").addClass("disabled");
 				$("#savemodal").data("module","signoff");
-				$('#myModal .modal-header').html('<h4>Validation for '+siteupgnr+':</h4>');
+				$('#myModal .modal-header').html('<h4>Validation for '+rafid+':</h4>');
 			    $('#myModal .modal-body').html(data); 
 			    $('#myModal').modal('show');
 			    $('#spinner').spin(false);
@@ -488,6 +489,8 @@ $("body").on("click",".cluster",function( e ){
 	$("body").on("click",".overruleVali",function( e ){
 		var checktype=$(this).data('checktype');
 		var siteupgnr=$(this).data('siteupgnr');
+		var rafid=$(this).data('rafid');
+		var type=$(this).data('type');
 
 		bootbox.prompt({
 		  	title: "Please provide a reason why document/MS validation is not needed?",
@@ -499,7 +502,9 @@ $("body").on("click",".cluster",function( e ){
 						checktype:checktype,
 						siteupgnr:siteupgnr,
 						action:'overruleValidation',
-						reason:result
+						reason:result,
+						rafid: rafid,
+						type:type
 					},
 					success : function(data){
 						var response = $.parseJSON(data);
@@ -1847,7 +1852,9 @@ $("body").on("click","#Net1TaskListform",function( e ){
 				}
 				if (technos.indexOf('L26')!=-1){			
 					load_curpl2('L26',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-				}
+				}		
+				load_curpl2('BBU',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
+
 			}else if (clicked_tab==="BIPT"){
 
 				var title=clicked_tab+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
@@ -1992,7 +1999,12 @@ $("body").on("click","#Net1TaskListform",function( e ){
 					var title='L26'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
 					$('#siteTabs').addtab(targettype,'glyphicon-book',title);	
 					load_curpl2('L26',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);
-				}
+				}	
+				var targettype='BBU'+'_'+bsdskey+'_'+status;
+				var title='BBU'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
+				$('#siteTabs').addtab(targettype,'glyphicon-book',title);	
+				load_curpl2('BBU',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);
+
 			}else{
 				var title=status+' '+clicked_tab+'<br><span class="badge pull-left">RAF '+rafid+'</span><span class="badge pull-right">'+candidate+'</span>';
 				$('#siteTabs').addtab(targettype,'glyphicon-book',title);
@@ -2022,7 +2034,6 @@ $("body").on("click","#Net1TaskListform",function( e ){
 		}else{
 			alert('NOT YET PROGRAMMED');
 		}	
-
 	});
 		
 
@@ -2870,6 +2881,8 @@ function load_curpl2(band,targettype,loadstatus,bsdskey,bsdsbobrefresh,id,print,
 		var link="scripts/current_planned2/current_planned_GSM_output.php";
 	}else if(band==="U9" || band==="U21" || band==="L18" || band==="L26" || band==="L8"){
 		var link="scripts/current_planned2/current_planned_UMTS_output.php";
+	}else if(band==="BBU"){
+		var link="scripts/current_planned2/current_planned_BBU_output.php";
 	}	
 
 	var bsdsbobrefreshDiv=str_replace(':', '', bsdsbobrefresh);

@@ -19,29 +19,29 @@ FusionCharts.ready(function () {
             },
             "data": [
                 {
+          "label": "MOD Upgrade",
+          "value": "859"
+      },{
           "label": "TECHNO Upgrade",
           "value": "801"
       },{
-          "label": "MOD Upgrade",
-          "value": "492"
-      },{
           "label": "New Macro",
-          "value": "444"
+          "value": "429"
       },{
           "label": "CTX Upgrade",
           "value": "175"
       },{
           "label": "New Replacement",
-          "value": "145"
+          "value": "143"
       },{
           "label": "New All Areas",
           "value": "111"
       },{
           "label": "New Indoor",
-          "value": "92"
+          "value": "91"
       },{
           "label": "DISM Upgrade",
-          "value": "81"
+          "value": "83"
       },{
           "label": "IND Upgrade",
           "value": "65"
@@ -67,6 +67,9 @@ FusionCharts.ready(function () {
           "label": "RPT Upgrade",
           "value": "31"
       },{
+          "label": "New Macro (v2)",
+          "value": "26"
+      },{
           "label": "Add U900 to U2100 Upgrade",
           "value": "23"
       },{
@@ -76,25 +79,25 @@ FusionCharts.ready(function () {
           "label": "CAB Upgrade",
           "value": "13"
       },{
-          "label": "New Macro (v2)",
-          "value": "7"
-      },{
           "label": "ASC Upgrade",
           "value": "7"
+      },{
+          "label": "New Indoor (v2)",
+          "value": "6"
       },{
           "label": "New All Areas (v2)",
           "value": "4"
       },{
-          "label": "SWAP Upgrade",
-          "value": "2"
+          "label": "New Replacement (v2)",
+          "value": "3"
       },{
           "label": "New Temp Replacement",
           "value": "2"
       },{
-          "label": "New Macrocell",
-          "value": "1"
+          "label": "SWAP Upgrade",
+          "value": "2"
       },{
-          "label": "New Replacement (v2)",
+          "label": "New Macrocell",
           "value": "1"
       },            ]
         }

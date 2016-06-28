@@ -176,7 +176,9 @@ protect("","Base_RF,Base_TXMN,Base_delivery,Base_other,Base_risk,Partner,Adminis
       <ul class="nav nav-tabs" id="MainsiteTabs" role="tablist">
         <li class="active" id="tab_SuperContent"><a href="#SuperContent" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-fire"></span> MAIN </a></li>
         <li id="tab_ABdashbord"><a href="#ABdashbord" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-heart"></span> AB DASHBOARD </a></li>
+        <?php if (substr_count($guard_groups, 'Base')==1 || substr_count($guard_groups, 'Administrators')==1){ ?>
         <li id="tab_MODdashbord"><a href="#MODdashbord" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-plane"></span> MODERNISATION DASHBOARD </a></li>
+        <?php } ?>
       </ul>
       <div class="tab-content" role="tabpanel" id="SuperContentTabs">
         <div class="tab-pane active" id="SuperContent"> 
@@ -185,7 +187,8 @@ protect("","Base_RF,Base_TXMN,Base_delivery,Base_other,Base_risk,Partner,Adminis
         <div class="tab-pane" role="tabpanel" id="ABdashbord">
           <br><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading AB dashboard...
         </div>
-        <?php if (substr_count($guard_groups, 'Base')==1 || substr_count($guard_groups, 'Administrators')==1){ ?>
+        <?php 
+        if (substr_count($guard_groups, 'Base')==1 || substr_count($guard_groups, 'Administrators')==1){ ?>
         <div class="tab-pane" role="tabpanel" id="MODdashbord">
           <br><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading MODERNISATION dashboard...
         </div>

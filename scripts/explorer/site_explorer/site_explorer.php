@@ -35,7 +35,7 @@ if ($SiteID){
 	$data4GZTE=get_4GZTE_data($SiteID);
 	$G4=count($data4GZTE);
 
-	//echo "<pre>".print_r($data2G,true)."</pre>";
+	//qecho "<pre>".print_r($data4GZTE,true)."</pre>";
 
 }
 
@@ -358,6 +358,68 @@ if ($message){
 							</table>
 						   </td>
 					    </tr>
+					    <tr>
+						  <td class='data' colspan="2">
+						  	BBU layout:
+						  	<table style="height:150px;">
+						  		<tbody>
+						  			<tr>
+						  				<td>
+						  					<table class="table table-bordered" style="height:150px;">
+					  						<tr>
+					  							<td><?=$techno['SLOTDATA'][15]?></td>
+					  							<td><b>15</b></td>
+					  						</tr>
+					  						<tr>
+					  							<td><?=$techno['SLOTDATA'][14]?></td>
+					  							<td><b>14</b></td>
+					  						</tr>
+					  						<tr>
+					  							<td><?=$techno['SLOTDATA'][13]?></td>
+					  							<td><b>13</b></td>
+					  						</tr>
+						  					</table>
+						  				</td>
+						  				<td>
+						  					<table class="table table-bordered" style="height:150px;">
+						  					<tr>
+								  				<td><?=$techno['SLOTDATA'][4]?></td>
+								  				<td><b>4</b></td>
+								  				<td><?=$techno['SLOTDATA'][8]?></td>
+								  				<td><b>8</b></td>
+								  			</tr>
+								  			<tr>
+								  				<td><?=$techno['SLOTDATA'][3]?></td>
+								  				<td><b>3</b></td>
+								  				<td><?=$techno['SLOTDATA'][7]?></td>
+								  				<td><b>7</b></td>
+								  			</tr>
+								  			<tr>
+								  				<td><?=$techno['SLOTDATA'][2]?></td>
+								  				<td><b>2</b></td>
+								  				<td><?=$techno['SLOTDATA'][6]?></td>
+								  				<td><b>6</b></td>
+								  			</tr>
+								  			<tr>
+								  				<td><?=$techno['SLOTDATA'][1]?></td>
+								  				<td><b>1</b></td>
+								  				<td><?=$techno['SLOTDATA'][5]?></td>
+								  				<td><b>5</b></td>
+								  			</tr>
+								  			</table>
+								  		</td>
+								  		<td>
+								  			<table class="table table-bordered" style="height:150px;">
+						  					<tr>
+								  				<td>F<br>A<br>N</td>
+								  			</tr>
+								  			</table>
+						  				</td>
+						  			</tr>
+								</tbody>
+							</table>
+						   </td>
+					    </tr>
 					   </tbody>
 				   </table>
 				</div>
@@ -415,6 +477,89 @@ if ($message){
 							}
 							?>
 							</td>
+					    </tr>
+					     <tr>
+						  <td class='title'>SLOTS:</td>
+						  <td class='data'>
+						  	<table calss="table table-condensed">
+						  		<thead>
+						  			<th>Slot</th>
+						  			<th>&nbsp;</th>
+						  		</thead>
+						  		<tbody>
+						  	<?php
+						  	 if (is_array($techno['SLOTS'])){
+						  		foreach ($techno['SLOTS'] as $key=>$SLOT){
+						  		echo "<tr><td>".$SLOT['SLOTNO']."</td><td>".$SLOT['PRODNAME']."</td></tr>";
+								}
+								}
+							?>
+								</tbody>
+							</table>
+						   </td>
+					    </tr>
+					    <tr>
+					    <tr>
+						  <td class='data' colspan="2">
+						  	BBU layout:
+						  	<table style="height:150px;">
+					  		<tbody>
+			  			<tr>
+			  				<td>
+			  					<table class="table table-bordered" style="height:150px;">
+		  						<tr>
+		  							<td><?=$techno['SLOTDATA'][15]?></td>
+		  							<td><b>15</b></td>
+		  						</tr>
+		  						<tr>
+		  							<td><?=$techno['SLOTDATA'][14]?></td>
+		  							<td><b>14</b></td>
+		  						</tr>
+		  						<tr>
+		  							<td><?=$techno['SLOTDATA'][13]?></td>
+		  							<td><b>13</b></td>
+		  						</tr>
+			  					</table>
+			  				</td>
+			  				<td>
+			  					<table class="table table-bordered" style="height:150px;">
+			  					<tr>
+					  				<td><?=$techno['SLOTDATA'][4]?></td>
+					  				<td><b>4</b></td>
+					  				<td><?=$techno['SLOTDATA'][8]?></td>
+					  				<td><b>8</b></td>
+					  			</tr>
+					  			<tr>
+					  				<td><?=$techno['SLOTDATA'][3]?></td>
+					  				<td><b>3</b></td>
+					  				<td><?=$techno['SLOTDATA'][7]?></td>
+					  				<td><b>7</b></td>
+					  			</tr>
+					  			<tr>
+					  				<td><?=$techno['SLOTDATA'][2]?></td>
+					  				<td><b>2</b></td>
+					  				<td><?=$techno['SLOTDATA'][6]?></td>
+					  				<td><b>6</b></td>
+					  			</tr>
+					  			<tr>
+					  				<td><?=$techno['SLOTDATA'][1]?></td>
+					  				<td><b>1</b></td>
+					  				<td><?=$techno['SLOTDATA'][5]?></td>
+					  				<td><b>5</b></td>
+					  			</tr>
+					  			</table>
+					  		</td>
+					  		<td>
+					  			<table class="table table-bordered" style="height:150px;">
+			  					<tr>
+					  				<td>F<br>A<br>N</td>
+					  			</tr>
+					  			</table>
+			  				</td>
+				  			</tr>
+							</tbody>
+							</table>
+						   </td>
 					    </tr>
 					   </tbody>
 				   	</table>

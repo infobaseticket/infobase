@@ -14,6 +14,7 @@ $commandline='no';
 $insertindb='no';
 
 if ($_POST['siteupgnr']){
+	$rafid=$_POST['rafid'];
 	$BSDSrefresh=get_BSDSrefresh();
 
 	$siteupgnr=$_POST['siteupgnr'];
@@ -39,7 +40,7 @@ if ($_POST['siteupgnr']){
 	}
 
 	$query="select N1_CANDIDATE, N1_UPGNR, N1_SITEID, RA.RAFID, RADIO_FUND,BUFFER, PARTNER_DESIGN, BP_NEEDED, MA.BSDSKEY AS MA_BSDSKEY, SH.BSDSKEY as SN_BSDSKEY, 
-	SH.BSDSBOBREFRESH AS SN_BSDSBOBREFRESH, TYPE, N1_CANDIDATE,N1_NBUP,N1_SAC,N1_SAC,N1_CON,N1_PRO,A72U418,AU407,AU353,IB_SAC, IB_CON
+	SH.BSDSBOBREFRESH AS SN_BSDSBOBREFRESH, TYPE, N1_CANDIDATE,N1_NBUP,N1_SAC,N1_SAC,N1_CON,N1_PRO,A72U418,AU407,AU353,IB_SAC, IB_CON, ACQ_PARTNER, CON_PARTNER,
 	".substr($milestones, 0,-1).",AU680,AU353 from BSDS_RAFV2 RA 
 	LEFT JOIN MASTER_REPORT MA on RA.RAFID=MA.IB_RAFID 
 	LEFT JOIN SN_SHIPPINGLIST SH on RA.RAFID=SH.RAFID
@@ -61,8 +62,6 @@ if ($_POST['siteupgnr']){
 	}else{
 		$con_active="in active";
 	}
-}
-
 
 /* HERE WE DO THE FILE VALIDATIONS */
 
@@ -136,15 +135,15 @@ if ($ran=='M4C_RAN' && $res3['N1_NBUP'][0]=='UPG'){
 	}*/
 
 	//OVERRULING
-	$query="SELECT * FROM VALIDATION_OVERRULE WHERE SITEUPGNR='".$siteupgnr."'";
-
+	$query="SELECT * FROM VALIDATION_OVERRULE WHERE RAFID='".$rafid."'";
+	//echo $query;
 	$stmtval = parse_exec_fetch($conn_Infobase, $query, $error_str, $resval);
 	if (!$stmtval){
 	    die_silently($conn_Infobase, $error_str);
 	    exit;
 	} else {
 	    OCIFreeStatement($stmtval);
-	    $amount_overrule=count($resval['SITEUPGNR']);
+	    $amount_overrule=count($resval['RAFID']);
 	}
 	for ($i = 0; $i <$amount_overrule; $i++) {
 		$checktype=$resval['CHECKTYPE'][$i];
@@ -184,7 +183,7 @@ if ($ran=='M4C_RAN' && $res3['N1_NBUP'][0]=='UPG'){
 			//echo $received_reason."=".$$received_reason."<br>";
 			$received_ran=$resVALA['CHECKTYPE'][$i]."_received_ran";
 			
-			$$GROUP.=generatebutton($siteupgnr,$checktype,$resVALA['FULLFILENAME'][$i],$$received,$$filedate,$$received_fullpath,$$received_filename,$$received_ran,$$received_reason);
+			$$GROUP.=generatebutton($siteupgnr,$checktype,$resVALA['FULLFILENAME'][$i],$$received,$$filedate,$$received_fullpath,$$received_filename,$$received_ran,$$received_reason,$rafid);
 
 		}else if ($resVALA['TOCHECK'][$i]=='MS'){
 
@@ -194,57 +193,50 @@ if ($ran=='M4C_RAN' && $res3['N1_NBUP'][0]=='UPG'){
 
 			if ($resVALA['RULE'][$i]=='!UPG'){
 				if ($res3['N1_NBUP'][0]!='UPG'){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='UPG'){
 				if ($res3['N1_NBUP'][0]=='UPG'){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='G9'){
 				if (strpos($res3['RADIO_FUND'][0], 'G9')!==false){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='G18'){
 				if (strpos($res3['RADIO_FUND'][0], 'G18')!==false){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='U9'){
 				if (strpos($res3['RADIO_FUND'][0], 'U9')!==false){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='U21'){
 				if (strpos($res3['RADIO_FUND'][0], 'U21')!==false){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='L8'){
 				if (strpos($res3['RADIO_FUND'][0], 'L8')!==false){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='L18'){
 				if (strpos($res3['RADIO_FUND'][0], 'L18')!==false){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=='L26'){
 				if (strpos($res3['RADIO_FUND'][0], 'L26')!==false){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} //else do nothing
 			}else if ($resVALA['RULE'][$i]=="ACQ_PARTNER!='BASE' && ACQ_PARTNER!='KPNGB'"){
-				if ($res3['IB_SAC'][0]!='BASE' && $res3['IB_SAC'][0]!='KPNGB'){
-					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+				if ($res3['ACQ_PARTNER'][0]!='BASE' && $res3['ACQ_PARTNER'][0]!='KPNGB'){
+					$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 				} 
-			/*}else
-				if (($res3['A34U334'][0]=$res3['A41U341'][0] AND $res3['A34U334'][0]!='') or $res3['N1_SAC'][0]=='KPNGB' or $res3['N1_SAC'][0]=='BASE' or $res3['AU680'][0]!=''){ 
-					$checkCON++;
-					$AU680=1;
-				}else{ 
-					$AU680=0;
-				}*/
 			}else{
-				$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason);
+				$$GROUP.=generateMilestone2($siteupgnr,$checktype,$MS,$res2[$MS][0],$res3[$MS][0],$$received_reason,$rafid);
 			}	
 		}
 	}
-
+}
 ?>
 <div class="well">
 	<div class="row">

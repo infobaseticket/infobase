@@ -47,6 +47,7 @@ if (substr_count($guard_groups, 'Benchmark')==1){
   $partner="M4C";
 }
 
+
 if ($_POST['raftype']!=''){
   foreach ($_POST['raftype'] as $key => $raftype) {
     $filter.=" RAFTYPE LIKE '%".$raftype."%' OR";
@@ -66,11 +67,11 @@ if ($_POST['cluster']!=''){
 
 //Here we get the detailed sitelist per action
 $query="SELECT * FROM VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
-  if ($partner=='benchmark') {
+  if ($partner=='BENCHMARK') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
-  }else if ($partner=='m4c') {
+  }else if ($partner=='M4C') {
     $query.=" AND SAC='M4C' or CON='M4C'";
-  }else  if ($partner=='techm') {
+  }else  if ($partner=='TECHM') {
     $query.=" AND SAC='TECHM' OR CON='TECHM' OR SAC='ALU' OR CON='ALU'";
   }
 
@@ -100,11 +101,11 @@ $query="SELECT
   COUNT (SITEID) AS AMOUNT
 FROM
   VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
-  if ($partner=='benchmark') {
+  if ($partner=='BENCHMARK') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
-  }else if ($partner=='m4c') {
+  }else if ($partner=='M4C') {
     $query.=" AND SAC='M4C' or CON='M4C'";
-  }else  if ($partner=='techm') {
+  }else  if ($partner=='TECHM') {
     $query.=" AND SAC='TECHM' OR CON='TECHM' OR SAC='ALU' OR CON='ALU'";
   }
 
@@ -134,11 +135,11 @@ for ($i = 0; $i <$amount; $i++){
 
 //Here we get the different actions for the headers
 $query="SELECT DISTINCT(ACTION),MAX(UNID),ACTION_BY from VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
- if ($partner=='benchmark') {
+ if ($partner=='BENCHMARK') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
-  }else if ($partner=='m4c') {
+  }else if ($partner=='M4C') {
     $query.=" AND SAC='M4C' or CON='M4C'";
-  }else  if ($partner=='techm') {
+  }else  if ($partner=='TECHM') {
     $query.=" AND SAC='TECHM' OR CON='TECHM' OR SAC='ALU' OR CON='ALU'";
   }
 
@@ -159,11 +160,11 @@ if (!$stmt) {
 
 //Here we get the regions
 $query2="SELECT DISTINCT(SUBSTR (SITEID, 0, 2)) AS REGION from VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
- if ($partner=='benchmark') {
+ if ($partner=='BENCHMARK') {
     $query2.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
-  }else if ($partner=='m4c') {
+  }else if ($partner=='M4C') {
     $query2.=" AND SAC='M4C' or CON='M4C'";
-  }else  if ($partner=='techm') {
+  }else  if ($partner=='TECHM') {
     $query2.=" AND SAC='TECHM' OR CON='TECHM' OR SAC='ALU' OR CON='ALU'";
   }
 

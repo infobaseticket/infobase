@@ -31,7 +31,7 @@ function format_bytes($bytes) {
   </thead>
   <tbody>
 <?php
-if ($_POST['typeRANALU']=='ALU' or $_POST['typeRANOLD']=='OLD' or $_POST['typeRANBENCH']=='BENCH' or $_POST['typeRANLEASE']=='LEASE'){
+if ($_POST['typeRANALU']=='ALU' or $_POST['typeRANOLD']=='OLD' or $_POST['typeRANBENCH']=='BENCH' or $_POST['typeRANLEASE']=='LEASE' or $_POST['typeRANM4C']=='M4C'){
   $query="SELECT * FROM  RAN_SCAN_TODAY  WHERE SUBPATHNAME IS NOT NULL";
   if (trim($_POST['searchfor'])!=''){
     $query.=" AND SUBPATHNAME LIKE '%".escape_sq($_POST['searchfor'])."%'";
@@ -41,16 +41,16 @@ if ($_POST['typeRANALU']=='ALU' or $_POST['typeRANOLD']=='OLD' or $_POST['typeRA
     $query.=" OR KEY LIKE '%ALURAN%'";
   }
   if ($_POST['typeRANOLD']=='OLD'){
-    $query.=" OR KEY LIKE '%RAN_ARCHIVE%'";
+    $query.=" OR PARTNER='RAN_ARCHIVE'";
   }
   if ($_POST['typeRANBASE']=='BASE'){
-    $query.=" OR KEY LIKE '%BASE-RAN%'";
+    $query.=" OR PARTNER='BASE-RAN'";
   }
   if ($_POST['typeRANM4C']=='M4C'){
-    $query.=" OR KEY LIKE '%M4C_RAN%'";
+    $query.=" OR PARTNER = 'M4C_RAN'";
   }
   if ($_POST['typeRANBENCH']=='BENCH'){
-    $query.=" OR KEY LIKE '%BENCHMARK_RAN%' OR KEY LIKE '%RAN_BENCH%'";
+    $query.=" OR PARTNER='BENCHMARK_RAN' OR PARTNER='RAN_BENCH'";
   }
   if ($_POST['typeRANLEASE']=='LEASE'){
     $query.=" OR KEY LIKE '%RAN-BASELeaseBP%'";
@@ -85,7 +85,7 @@ if ($_POST['typeRANALU']=='ALU' or $_POST['typeRANOLD']=='OLD' or $_POST['typeRA
      $query.=substr($queryt,0,-2).")";
   }
   $query.=" ORDER BY SUBPATHNAME ASC";
-  //echo ")))".$query."<br>";
+ // echo ")))".$query."<br>";
 
   $stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
   if (!$stmt) {

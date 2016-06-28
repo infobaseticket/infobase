@@ -425,7 +425,7 @@ if ($_POST['siteID']){
 			        <div class='btn-toolbar' role='toolbar'>
 			          <div class='btn-group'>
 			            <button class='btn btn-default btn-xs' title='View' data-action='view'  data-toggle='modal' data-target='#NEW_".$res1['SIT_UDK'][$i].$res1['WOR_UDK'][$i]."'><span class='glyphicon glyphicon-eye-open'></span></button>
-						<button class='btn btn-default btn-xs validation' title='validation' data-siteupgnr='".$res1['SIT_UDK'][$i]."' data-nbup='NB'><span class='glyphicon glyphicon-check'></span></button>			          
+						<button class='btn btn-default btn-xs validation' title='validation' data-rafid='".$rafid."' data-siteupgnr='".$res1['SIT_UDK'][$i]."' data-nbup='NB'><span class='glyphicon glyphicon-check'></span></button>			          
 			          	<button class='btn btn-default btn-xs liveran' title='View files LIVE on the RAN' data-ranurl='".$ranurl."'><span class='glyphicon glyphicon-folder-open'></span></button>	
 			          </div>
 			        </div>

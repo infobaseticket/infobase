@@ -16,166 +16,193 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 /*************************
 // CURRENT SAVE OR UPDATE
 *************************/
-	$check_current_exists=check_current_exists($_POST['band'],$_POST['bsdskey'],$_POST['bsdsbobrefresh'],'allsec',$_POST['donor'],$_POST['lognode'],$_POST['viewtype']);
-	if ($check_current_exists=="0"){
-		//ONly a current PRE can be inserted or updated. (FOR POST => BSDS funded can not be updated)
-		$query = "INSERT INTO BSDS_CU_GSM
-		VALUES ('','".$_POST['lognode']."', SYSDATE,
-		'".$_POST['FREQ_ACTIVE_1']."','".$_POST['FREQ_ACTIVE_2']."','".$_POST['FREQ_ACTIVE_3']."','".$_POST['TRU_INST1_1']."',
-		'".$_POST['TRU_INST1_2']."','".$_POST['TRU_INST1_3']."','".$_POST['TRU_TYPE1_1']."','".$_POST['TRU_TYPE1_2']."',
-		'".$_POST['TRU_TYPE1_3']."','".$_POST['TRU_INST2_1']."','".$_POST['TRU_INST2_2']."','".$_POST['TRU_INST2_3']."',
-		'".$_POST['TRU_TYPE2_1']."','".$_POST['TRU_TYPE2_2']."','".$_POST['TRU_TYPE2_3']."','".$_POST['CABTYPE']."',
-		'".$_POST['NR_OF_CAB']."','".$_POST['CDUTYPE']."','".$_POST['TMA_1']."','".$_POST['TMA_2']."','".$_POST['TMA_3']."',
-		'".$_POST['COMB_1']."','".$_POST['COMB_2']."','".$_POST['COMB_3']."','".$_POST['DCBLOCK_1']."','".$_POST['DCBLOCK_2']."',
-		'".$_POST['DCBLOCK_3']."','".$_POST['BBS']."','".$_POST['DXUTYPE1']."','".$_POST['DXUTYPE2']."','".$_POST['DXUTYPE3']."',
-		'".$_POST['FREQ_ACTIVE_1']."','".$_POST['TRU_INST1_4']."','".$_POST['TRU_TYPE1_4']."','".$_POST['TRU_INST2_4']."',
-		'".$_POST['TRU_TYPE2_4']."','".$_POST['TMA_4']."','".$_POST['COMB_4']."','".$_POST['DCBLOCK_4']."','".$_POST['PLAYSTATION']."',
-		'".$_POST['band']."','PRE','')";
-		$action="saved";
-	}else{
-		$query = "UPDATE BSDS_CU_GSM SET
-		 CHANGEDATE = SYSDATE,
-		 FREQ_ACTIVE_1='".$_POST['FREQ_ACTIVE_1']."',
-		 FREQ_ACTIVE_2='".$_POST['FREQ_ACTIVE_2']."',
-		 FREQ_ACTIVE_3='".$_POST['FREQ_ACTIVE_3']."',
-		 FREQ_ACTIVE_4='".$_POST['FREQ_ACTIVE_4']."',
-		 TRU_INST1_1='".$_POST['TRU_INST1_1']."',
-		 TRU_INST1_2='".$_POST['TRU_INST1_2']."',
-		 TRU_INST1_3='".$_POST['TRU_INST1_3']."',
-		 TRU_INST1_4='".$_POST['TRU_INST1_4']."',
-		 TRU_TYPE1_1='".$_POST['TRU_TYPE1_1']."',
-		 TRU_TYPE1_2='".$_POST['TRU_TYPE1_2']."',
-		 TRU_TYPE1_3='".$_POST['TRU_TYPE1_3']."',
-		 TRU_TYPE1_4='".$_POST['TRU_TYPE1_4']."',
-		 TRU_INST2_1='".$_POST['TRU_INST2_1']."',
-		 TRU_INST2_2='".$_POST['TRU_INST2_2']."',
-		 TRU_INST2_3='".$_POST['TRU_INST2_3']."',
-		 TRU_INST2_4='".$_POST['TRU_INST2_4']."',
-		 TRU_TYPE2_1='".$_POST['TRU_TYPE2_1']."',
-		 TRU_TYPE2_2='".$_POST['TRU_TYPE2_2']."',
-		 TRU_TYPE2_3='".$_POST['TRU_TYPE2_3']."',
-		 TRU_TYPE2_4='".$_POST['TRU_TYPE2_4']."',
-		 CABTYPE='".$_POST['CABTYPE']."',
-		 NR_OF_CAB='".$_POST['NR_OF_CAB']."',
-		 CDUTYPE='".$_POST['CDUTYPE']."',
-		 TMA_1='".$_POST['TMA_1']."',
-		 TMA_2='".$_POST['TMA_2']."',
-		 TMA_3='".$_POST['TMA_3']."',
-		 TMA_4='".$_POST['TMA_4']."',
-		 COMB_1='".$_POST['COMB_1']."',
-		 COMB_2='".$_POST['COMB_2']."',
-		 COMB_3='".$_POST['COMB_3']."',
-		 COMB_4='".$_POST['COMB_4']."',
-		 DCBLOCK_1='".$_POST['DCBLOCK_1']."',
-		 DCBLOCK_2='".$_POST['DCBLOCK_2']."',
-		 DCBLOCK_3='".$_POST['DCBLOCK_3']."',
-		 DCBLOCK_4='".$_POST['DCBLOCK_4']."',
-		 BBS= '".$_POST['BBS']."',
-		 DXUTYPE1='".$_POST['DXUTYPE1']."',
-		 DXUTYPE2='".$_POST['DXUTYPE2']."',
-		 DXUTYPE3='".$_POST['DXUTYPE3']."',
-		 PLAYSTATION='".$_POST['PLAYSTATION']."'
-		 WHERE SITEKEY= '".$_POST['lognode']."' AND STATUS='PRE' AND TECHNO='".$_POST['band']."'";
+	if ($_POST['onlyfeeder']!="yes"){ //We don't save current when only feeder data is updated/inserted
 
-		 $action="updated";
-	}
-	//echo $query."<br>";
-	$stmt2 = parse_exec_free($conn_Infobase, $query, $error_str);
-	if (!$stmt2) {
-		die_silently($conn_Infobase, $error_str);
-	}else{
-		$message="CURRENT DATA '".$action."' for ".$_POST['band']."!<br>";
-	}
-	OCICommit($conn_Infobase);
-
-
-	//UPDATE CURRENT FEEDERSHARE DATA
-	$feedershare_Count=check_feedershare_exists("CURRENT",$_POST['viewtype'],$_POST['bsdskey'],$_POST['bsdsbobrefresh']);
-
-	for ($i = 1; $i <= 4; $i++) { //foreach sector
-
-		$FEEDERSHARE_temp="FEEDERSHARE_".$i;
-
-		if ($_POST['band']=="G9"){
-			$query4_update .= "GSM900_$i='".$_POST[$FEEDERSHARE_temp]."',";
-			$FEEDERSHARE_GSM900=$_POST[$FEEDERSHARE_temp];
+		$check_current_exists=check_current_exists($_POST['band'],$_POST['bsdskey'],$_POST['bsdsbobrefresh'],'',$_POST['donor'],$_POST['lognode'],$_POST['viewtype']);
+		if ($check_current_exists=="0"){
+			//ONly a current PRE can be inserted or updated. (FOR POST => BSDS funded can not be updated)
+			$query = "INSERT INTO BSDS_CU_GSM2
+				VALUES ('".$_POST['bsdskey']."','".$_POST['lognode']."','PRE',SYSDATE,'','".$_POST['band']."',
+				'".$_POST['CDUTYPE']."','".$_POST['BBS']."','".$_POST['CABTYPE']."','".$_POST['NR_OF_CAB']."',
+				'".$_POST['DXUTYPE1']."','".$_POST['DXUTYPE2']."','".$_POST['DXUTYPE3']."','".$_POST['PLAYSTATION']."')";
+				$action="saved";
 		}else{
-			$FEEDERSHARE_GSM900="";
+			$query = "UPDATE BSDS_CU_GSM2 SET
+			 CHANGEDATE = SYSDATE,
+			 BSDSKEY='".$_POST['bsdskey']."',
+			 CABTYPE='".$_POST['CABTYPE']."',
+			 NR_OF_CAB='".$_POST['NR_OF_CAB']."',
+			 CDUTYPE='".$_POST['CDUTYPE']."',
+			 BBS= '".$_POST['BBS']."',
+			 DXUTYPE1='".$_POST['DXUTYPE1']."',
+			 DXUTYPE2='".$_POST['DXUTYPE2']."',
+			 DXUTYPE3='".$_POST['DXUTYPE3']."',
+			 PLAYSTATION='".$_POST['PLAYSTATION']."'
+			 WHERE SITEKEY= '".$_POST['lognode']."' AND STATUS='PRE' AND TECHNO='".$_POST['band']."'";
+			 $action="updated";
 		}
-		if ($_POST['band']=="G18"){
-			$query4_update .= "GSM1800_$i='".$_POST[$FEEDERSHARE_temp]."',";
-			$FEEDERSHARE_GSM1800=$_POST[$FEEDERSHARE_temp];
-		}else{
-			$FEEDERSHARE_GSM1800="";
-		}
-		if ($_POST['band']=="U9"){
-			$query4_update .= "UMTS900_$i='".$_POST[$FEEDERSHARE_temp]."',";
-			$FEEDERSHARE_UMTS900=$_POST[$FEEDERSHARE_temp];
-		}else{
-			$FEEDERSHARE_UMTS900="";
-		}
-		if ($_POST['band']=="U21"){
-			$query4_update .= "UMTS2100_$i='".$_POST[$FEEDERSHARE_temp]."',";
-			$FEEDERSHARE_UMTS2100=$_POST[$FEEDERSHARE_temp];
-		}else{
-			$FEEDERSHARE_UMTS2100="";
-		}
-		if ($_POST['band']=="L8"){
-			$query4_update .= "LTE800_$i='".$_POST[$FEEDERSHARE_temp]."',";
-			$FEEDERSHARE_LTE800=$_POST[$FEEDERSHARE_temp];
-		}else{
-			$FEEDERSHARE_LTE800="";
-		}
-		if ($_POST['band']=="L18"){
-			$query4_update .= "LTE1800_$i='".$_POST[$FEEDERSHARE_temp]."',";
-			$FEEDERSHARE_LTE1800=$_POST[$FEEDERSHARE_temp];
-		}else{
-			$FEEDERSHARE_LTE1800="";
-		}
-		if ($_POST['band']=="L26"){
-			$query4_update .= "LTE2600_$i='".$_POST[$FEEDERSHARE_temp]."',";
-			$FEEDERSHARE_LTE2600=$_POST[$FEEDERSHARE_temp];
-		}else{
-			$FEEDERSHARE_LTE2600="";
-		}
-		$query4_new .= "'".$FEEDERSHARE_GSM900."','".$FEEDERSHARE_GSM1800."',
-		'".$FEEDERSHARE_UMTS900."','".$UMTS2100_data."','".$FEEDERSHARE_LTE800."',
-		'".$FEEDERSHARE_LTE1800."','".$FEEDERSHARE_LTE2600."',";
-	}
-
-	if ($feedershare_Count=="0" || $feedershare_Count==""){
-		$query4 = "INSERT INTO BSDS_CU VALUES ('".$_POST['bsdskey']."',";
-		if ($_POST['viewtype']=="FUND"){
-			$query4 .="to_date('".$_POST['bsdsbobrefresh']."'),";
-		}else{
-			$query4 .="'',";
-		}
-		$query4 .= $query4_new;
-		$query4 .= "'".$_POST['viewtype']."')";
-		//echo $query4;
-		$action="inserted";
-	}else if ($feedershare_Count=="1" && $query4_update!=""){
-		$query4 = "UPDATE BSDS_CU SET ";
-		$query4 .= substr($query4_update,0,-1);
-		$query4 .=" WHERE BSDSKEY='".$_POST['bsdskey']."' AND STATUS='".$_POST['viewtype']."'";
-		if ($_POST['viewtype']=="FUND"){
-			$query4 .=" AND BSDS_BOB_REFRESH=to_date('".$_POST['bsdsbobrefresh']."')";
-		}
-		$action="updated";
-	}
-	if ($query4_new!="" or $query4_update!=""){
-		//echo $query4;
-		$stmt4 = parse_exec_free($conn_Infobase, $query4, $error_str);
-		if (!$stmt4) {
+		//echo $query."<br>";
+		$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
+		if (!$stmt) {
 			die_silently($conn_Infobase, $error_str);
 		}else{
-			//echo $feedershare_Count."=> $query4 <=";
-			$message.="CUR FEEDER SHARE '".$action."' for ".$_POST['band']."!<br>";
+			OCICommit($conn_Infobase);
+			$message="CURRENT DATA '".$action."' for ".$_POST['band']."!<br>";
 		}
-		OCICommit($conn_Infobase);
+		for ($n = 1; $n <= 6; $n++) {
+			require("height_conversion_concat.php");
+			$check_current_exists_SECT=check_current_exists($_POST['band'],$_POST['bsdskey'],$_POST['bsdsbobrefresh'],$n,$_POST['donor'],$_POST['lognode'],$_POST['viewtype']);
+			if ($check_current_exists_SECT=="0"){
+				$query2 = "INSERT INTO BSDS_CU_GSM_SEC2
+				VALUES ('".$_POST['bsdskey']."','".$_POST['lognode']."','PRE',SYSDATE,'','".$_POST['band']."','".$n."',
+				'".$_POST['CONFIG_'.$n]."','".$_POST['TMA_'.$n]."','".$_POST['FREQ_ACTIVE1_'.$n]."','".$_POST['FREQ_ACTIVE2_'.$n]."','".$_POST['FREQ_ACTIVE3_'.$n]."',
+				'".$_POST['TRU_INST1_1_'.$n]."','".$_POST['TRU_INST1_2_'.$n]."','".$_POST['TRU_INST2_1_'.$n]."','".$_POST['TRU_INST2_2_'.$n]."',
+				'".$_POST['TRU_INST3_1_'.$n]."','".$_POST['TRU_INST3_2_'.$n]."','".$_POST['TRU_TYPE1_1_'.$n]."','".$_POST['TRU_TYPE1_2_'.$n]."',
+				'".$_POST['TRU_TYPE2_1_'.$n]."','".$_POST['TRU_TYPE2_2_'.$n]."','".$_POST['TRU_TYPE3_1_'.$n]."','".$_POST['TRU_TYPE3_2_'.$n]."',
+				'".$_POST['ANTTYPE1_'.$n]."','".$_POST['ANTTYPE2_'.$n]."','".$_POST['ELECTILT1_'.$n]."','".$_POST['ELECTILT2_'.$n]."',
+				'".$_POST['MECHTILT1_'.$n]."','".$_POST['MECHTILT2_'.$n]."','".$_POST['MECHTILT_DIR1_'.$n]."','".$_POST['MECHTILT_DIR2_'.$n]."',
+				'".$_POST['ANTHEIGHT1_'.$n]."','".$_POST['ANTHEIGHT2_'.$n]."',
+				'".$_POST['AZI1_'.$n]."','".$_POST['AZI2_'.$n]."','".$_POST['FEEDER_'.$n]."','".$_POST['FEEDERLEN_'.$n]."','".$_POST['DCBLOCK_'.$n]."',
+				'".$_POST['COMB_'.$n]."','".$_POST['HR_ACTIVE_'.$n]."')";
+				$action="inserted";
+			}else{
+				$query2 = "UPDATE BSDS_CU_GSM_SEC2 SET
+				 CHANGEDATE = SYSDATE,
+				 BSDSKEY='".$_POST['bsdskey']."',
+				 CONFIG='".$_POST['CONFIG_'.$n]."',
+				 TMA='".$_POST['TMA_'.$n]."',
+				 FREQ_ACTIVE1='".$_POST['FREQ_ACTIVE1_'.$n]."',
+				 FREQ_ACTIVE2='".$_POST['FREQ_ACTIVE2_'.$n]."',
+				 FREQ_ACTIVE3='".$_POST['FREQ_ACTIVE3_'.$n]."',
+				 TRU_INST1_1='".$_POST['TRU_INST1_1_'.$n]."',
+				 TRU_INST1_2='".$_POST['TRU_INST1_2_'.$n]."',
+				 TRU_INST2_1='".$_POST['TRU_INST2_1_'.$n]."',
+				 TRU_INST2_2='".$_POST['TRU_INST2_2_'.$n]."',
+				 TRU_INST3_1='".$_POST['TRU_INST3_1_'.$n]."',
+				 TRU_INST3_2='".$_POST['TRU_INST3_2_'.$n]."',
+				 TRU_TYPE1_1='".$_POST['TRU_TYPE1_1_'.$n]."',
+				 TRU_TYPE1_2='".$_POST['TRU_TYPE1_2_'.$n]."',
+				 TRU_TYPE2_1='".$_POST['TRU_TYPE2_1_'.$n]."',
+				 TRU_TYPE2_2='".$_POST['TRU_TYPE2_2_'.$n]."',
+				 TRU_TYPE3_1='".$_POST['TRU_TYPE3_1_'.$n]."',
+				 TRU_TYPE3_2='".$_POST['TRU_TYPE3_2_'.$n]."',
+				 ANTTYPE1='".$_POST['ANTTYPE1_'.$n]."',
+				 ANTTYPE2='".$_POST['ANTTYPE2_'.$n]."',
+				 ELECTILT1='".$_POST['ELECTILT1_'.$n]."',
+				 ELECTILT2='".$_POST['ELECTILT2_'.$n]."',
+				 MECHTILT1='".$_POST['MECHTILT1_'.$n]."',
+				 MECHTILT2='".$_POST['MECHTILT2_'.$n]."',
+				 MECHTILT_DIR1='".$_POST['MECHTILT_DIR1_'.$n]."',
+				 MECHTILT_DIR2='".$_POST['MECHTILT_DIR2_'.$n]."',
+				 ANTHEIGHT1='".$_POST['ANTHEIGHT1_'.$n]."',
+				 ANTHEIGHT2='".$_POST['ANTHEIGHT2_'.$n]."',
+				 AZI1='".$_POST['AZI1_'.$n]."',
+				 AZI2='".$_POST['AZI2_'.$n]."',
+				 FEEDER='".$_POST['FEEDER_'.$n]."',
+				 FEEDERLEN='".$_POST['FEEDERLEN_'.$n]."',
+				 DCBLOCK='".$_POST['DCBLOCK_'.$n]."',
+				 COMB='".$_POST['COMB_'.$n]."',
+				 HR_ACTIVE='".$_POST['HR_ACTIVE_'.$n]."'
+				 WHERE SITEKEY= '".$_POST['lognode']."' AND STATUS='PRE' AND TECHNO='".$_POST['band']."' AND SECT='".$n."'";
+				 $action="updated";
+			}
+			//echo $query2;
+			$stmt2 = parse_exec_free($conn_Infobase, $query2, $error_str);
+			if (!$stmt2) {
+				die_silently($conn_Infobase, $error_str);
+			}else{
+				OCICommit($conn_Infobase);
+				$sectors.=$n."&nbsp;";
+			}
+		}
+		$message.="CURRENT DATA '".$action."' for ".$_POST['band']." sectors ".$sectors."!<br>";
+		//UPDATE CURRENT FEEDERSHARE DATA
+		$feedershare_Count=check_feedershare_exists("CURRENT",$_POST['viewtype'],$_POST['bsdskey'],$_POST['bsdsbobrefresh']);
+
+		for ($i = 1; $i <= 6; $i++) { //foreach sector
+
+			$FEEDERSHARE_temp="FEEDERSHARE_".$i;
+
+			if ($_POST['band']=="G9"){
+				$query4_update .= "GSM900_$i='".$_POST[$FEEDERSHARE_temp]."',";
+				$FEEDERSHARE_GSM900=$_POST[$FEEDERSHARE_temp];
+			}else{
+				$FEEDERSHARE_GSM900="";
+			}
+			if ($_POST['band']=="G18"){
+				$query4_update .= "GSM1800_$i='".$_POST[$FEEDERSHARE_temp]."',";
+				$FEEDERSHARE_GSM1800=$_POST[$FEEDERSHARE_temp];
+			}else{
+				$FEEDERSHARE_GSM1800="";
+			}
+			if ($_POST['band']=="U9"){
+				$query4_update .= "UMTS900_$i='".$_POST[$FEEDERSHARE_temp]."',";
+				$FEEDERSHARE_UMTS900=$_POST[$FEEDERSHARE_temp];
+			}else{
+				$FEEDERSHARE_UMTS900="";
+			}
+			if ($_POST['band']=="U21"){
+				$query4_update .= "UMTS2100_$i='".$_POST[$FEEDERSHARE_temp]."',";
+				$FEEDERSHARE_UMTS2100=$_POST[$FEEDERSHARE_temp];
+			}else{
+				$FEEDERSHARE_UMTS2100="";
+			}
+			if ($_POST['band']=="L8"){
+				$query4_update .= "LTE800_$i='".$_POST[$FEEDERSHARE_temp]."',";
+				$FEEDERSHARE_LTE800=$_POST[$FEEDERSHARE_temp];
+			}else{
+				$FEEDERSHARE_LTE800="";
+			}
+			if ($_POST['band']=="L18"){
+				$query4_update .= "LTE1800_$i='".$_POST[$FEEDERSHARE_temp]."',";
+				$FEEDERSHARE_LTE1800=$_POST[$FEEDERSHARE_temp];
+			}else{
+				$FEEDERSHARE_LTE1800="";
+			}
+			if ($_POST['band']=="L26"){
+				$query4_update .= "LTE2600_$i='".$_POST[$FEEDERSHARE_temp]."',";
+				$FEEDERSHARE_LTE2600=$_POST[$FEEDERSHARE_temp];
+			}else{
+				$FEEDERSHARE_LTE2600="";
+			}
+			$query4_new .= "'".$FEEDERSHARE_GSM900."','".$FEEDERSHARE_GSM1800."',
+			'".$FEEDERSHARE_UMTS900."','".$UMTS2100_data."','".$FEEDERSHARE_LTE800."',
+			'".$FEEDERSHARE_LTE1800."','".$FEEDERSHARE_LTE2600."',";
+		}
+
+		if ($feedershare_Count=="0" || $feedershare_Count==""){
+			$query4 = "INSERT INTO BSDS_CU VALUES ('".$_POST['bsdskey']."',";
+			if ($_POST['viewtype']=="FUND"){
+				$query4 .="to_date('".$_POST['bsdsbobrefresh']."'),";
+			}else{
+				$query4 .="'',";
+			}
+			$query4 .= $query4_new;
+			$query4 .= "'".$_POST['viewtype']."')";
+			//echo $query4;
+			$action="inserted";
+		}else if ($feedershare_Count=="1" && $query4_update!=""){
+			$query4 = "UPDATE BSDS_CU SET ";
+			$query4 .= substr($query4_update,0,-1);
+			$query4 .=" WHERE BSDSKEY='".$_POST['bsdskey']."' AND STATUS='".$_POST['viewtype']."'";
+			if ($_POST['viewtype']=="FUND"){
+				$query4 .=" AND BSDS_BOB_REFRESH=to_date('".$_POST['bsdsbobrefresh']."')";
+			}
+			$action="updated";
+		}
+		if ($query4_new!="" or $query4_update!=""){
+			//echo $query4;
+			$stmt4 = parse_exec_free($conn_Infobase, $query4, $error_str);
+			if (!$stmt4) {
+				die_silently($conn_Infobase, $error_str);
+			}else{
+				//echo $feedershare_Count."=> $query4 <=";
+				$message.="CUR FEEDER SHARE '".$action."' for ".$_POST['band']."!<br>";
+			}
+			OCICommit($conn_Infobase);
+		}
+
 	}
-
-
 /*************************
 // PLANNED SAVE OR UPDATE
 *************************/
@@ -187,7 +214,7 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 		if(empty($ERROR_MESSAGE)){
 
 			if ($_POST['onlyfeeder']!="yes"){
-				for ($n = 1; $n <= 4; $n++) {  // VARAIBELE VARIABLES !!!
+				for ($n = 1; $n <= 6; $n++) {  // VARAIBELE VARIABLES !!!
 								
 					require("height_conversion_concat.php");
 
@@ -276,7 +303,7 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 						$action="updated";
 					}
 
-//echo $query2."<br>";
+					//echo $query2."<br>";
 					$stmt2 = parse_exec_free($conn_Infobase, $query2, $error_str);
 					if (!$stmt2) {
 						die_silently($conn_Infobase, $error_str);
@@ -300,8 +327,7 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 						$query3.="'".$_POST['bsdsbobrefresh']."',SYSDATE)";
 					}else if ($_POST['viewtype']=="PRE"){
 						$query3.="'',SYSDATE)";
-					}				
-					
+					}
 					$action="inserted";
 				}else if ($pl_Count=="1"){
 					$query3 = "UPDATE BSDS_PL_GSM set
@@ -332,7 +358,7 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 
 
 			}else if ($_POST['onlyfeeder']=="yes"){
-				for ($n = 1; $n <= 4; $n++) {
+				for ($n = 1; $n <= 6; $n++) {
 					$pl_temp19="pl2_FEEDERLEN_$n";
 					$pl2_FEEDERLEN=$$pl_temp19;
 					$pl_temp20="pl_FEEDER_$n";
@@ -367,7 +393,7 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 			//UPDATE FEEDER SHARE DATA
 			$feedershare_Count=check_feedershare_exists("PLANNED",$_POST['viewtype'],$_POST['bsdskey'],$_POST['bsdsbobrefresh']);
 
-			for ($i = 1; $i <= 4; $i++) { //foreach sector
+			for ($i = 1; $i <= 6; $i++) { //foreach sector
 
 				$FEEDERSHARE_temp="pl_FEEDERSHARE_".$i;
 
@@ -467,7 +493,7 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 			if ($_POST['viewtype']!="POST"){
 				// UPDATE THE CHANGEDATE
 				if ($_POST['bsdskey']!=''){
-					$query4 = "UPDATE BSDS_GENERALINFO set CHANGE_DATE=SYSDATE, DESIGNER_UPDATE='".$guard_username."' WHERE BSDSKEY='".$_POST['bsdskey']."'";
+					$query4 = "UPDATE BSDS_GENERALINFO2 set CHANGE_DATE=SYSDATE, DESIGNER_UPDATE='".$guard_username."' WHERE BSDSKEY='".$_POST['bsdskey']."'";
 					//echo "$query4 <br>";
 					$stmt2 = parse_exec_free($conn_Infobase, $query4, $error_str);
 					if (!$stmt2) {
@@ -482,10 +508,10 @@ if ($_POST['NR_OF_CAB']=="Unknown"){
 					echo 'Infobase lost the BSDSKEY. Please contact Infobase admin asap!';
 					die;
 				}
-			}else{
+			}else{  //IF SITE FUNDED:
 				// UPDATE THE CHANGEDATE
 				if ($_POST['bsdskey']!=''){
-					$query4 = "UPDATE BSDS_GENERALINFO set UPDATE_AFTER_COPY=SYSDATE, UPDATE_BY_AFTER_COPY='$guard_username' WHERE BSDSKEY='".$_POST['bsdskey']."'";
+					$query4 = "UPDATE BSDS_GENERALINFO2 set UPDATE_AFTER_COPY=SYSDATE, UPDATE_BY_AFTER_COPY='$guard_username' WHERE BSDSKEY='".$_POST['bsdskey']."'";
 					//echo "$query4 <br>";
 					$stmt2 = parse_exec_free($conn_Infobase, $query4, $error_str);
 					if (!$stmt2) {

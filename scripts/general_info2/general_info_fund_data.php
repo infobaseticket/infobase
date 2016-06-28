@@ -121,6 +121,14 @@ if ($BSDSKEY==$BSDS_BSDSKEY){
        		if(strpos($technosInAsset, 'L18')!==false){
        			$output_fundata.='<li class="bsdsdetails2 '.$statuscolor.'" data-id="'.$popup.'" data-techno="L18" data-bsdskey="'.$BSDS_BSDSKEY.'">&nbsp; <span class="glyphicon glyphicon-eye-open"></span> L18</a></li>';
        		}
+          	$output_fundata.='</ul></li>'; 
+       		
+       		$output_fundata.='<li>
+       		<ul class="technoNav">';
+       		if(strpos($technosInAsset, 'L26')!==false){
+       			$output_fundata.='<li class="bsdsdetails2 '.$statuscolor.'" data-id="'.$popup.'" data-techno="L18" data-bsdskey="'.$BSDS_BSDSKEY.'">&nbsp; <span class="glyphicon glyphicon-eye-open"></span> L18</a></li>';
+       		}
+       		$output_fundata.='<li class="bsdsdetails2 '.$statuscolor.'" data-id="'.$popup.'" data-techno="BBU" data-bsdskey="'.$BSDS_BSDSKEY.'">&nbsp; <span class="glyphicon glyphicon-eye-open"></span> BBU</a></li>';
        		$output_fundata.='</ul></li>';
 
        		$output_fundata.='<li>

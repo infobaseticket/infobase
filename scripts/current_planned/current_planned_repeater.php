@@ -9,65 +9,22 @@ $conn_Infobase = oci_connect($user_Infobase,$passwd_Infobase, $sid_Infobase);
 $stmt = OCIParse($conn_Infobase,"ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY HH24:MI:SS'");
 OCIExecute($stmt,OCI_DEFAULT);
 
-if ($_POST['preoverride']=="yes"){
-	$bsdsdata="PRE READY TO BUILD";
-}else{
-	$bsdsdata=$_POST['bsdsdata'];
+if (empty($_POST['band'])){
+	echo "ERROR, no band specified!";
+	die;
 }
 //echo "<pre>".print_r($bsdsdata,true)."</pre>";
 if ($_POST['bsdsbobrefresh']=="PRE"){
 	$bsdsdata="PRE READY TO BUILD";
 	$_POST['bsdsbobrefresh']="";
-}else{
-	$bsdsdata=$_POST['bsdsdata'];
 }
-if ($_POST['status']=="FUNDHIST"){ //HISTORY VIEW
-	$viewtype="FUND";
-	$color="SITE_funded";
-	$viewhistory="yes";
-	$status="BSDS FUNDED";
-}else if ($_POST['status']=="POSTHIST"){//HISTORY VIEW
-	$viewtype="POST";
-	$viewhistory="yes";
-	$color="SITE_funded";
-	$status="SITE FUNDED";
-}else if ($_POST['status']=="BUILDHIST"){//HISTORY VIEW
-	$viewtype="BUILD";
-	$viewhistory="yes";
-	$color="BSDS_asbuild";
-	$status="BSDS AS BUILD";
-}else if ($_POST['status']=="PRE"){ //PRE VIEW
-	$viewtype="PRE";
-	$viewhistory="no";
-	$color="BSDS_preready";
-	$status="PRE READY TO BUILD";
-}else if ($_POST['status']=="PREHIST"){ //HISTORY PRE VIEW
-	$viewtype="PRE";
-	$viewhistory="yes";
-	$color="BSDS_preready";
-	$status="PRE READY TO BUILD HISTORY";
-}else{
-	$bsdsdata=json_decode($_POST['bsdsdata'],true);
-	//echo "<pre>".print_r($bsdsdata,true);
-	if ($bsdsdata[$_POST['band'].'STATUS']=="BSDS FUNDED"){
-		$viewtype="FUND";
-		$viewhistory="no";
-		$status="BSDS FUNDED";
-	}else if ($bsdsdata[$_POST['band'].'STATUS']=="SITE FUNDED"){
-		$viewtype="POST";
-		$viewhistory="no";
-		$status="SITE FUNDED";
-	}else if ($bsdsdata[$_POST['band'].'STATUS']=="BSDS AS BUILD"){
-		$viewtype="BUILD";
-		$viewhistory="no";
-		$status="BSDS AS BUILD";
-	}else if ($bsdsdata[$_POST['band'].'STATUS']=="PRE READY TO BUILD"){
-		$viewtype="PRE";
-		$viewhistory="no";
-		$status="PRE READY TO BUILD";
-	}
-	$color=$bsdsdata[$_POST['band'].'COLOR'];
-}
+
+$statusinfo=getStatusInfo($_POST['status']);
+$viewtype=$statusinfo['viewtype'];
+$viewhistory=$statusinfo['viewhistory'];
+$color=$statusinfo['color'];
+$status=$statusinfo['status'];
+
 if ($_POST['band']=="U21"){
 	$lognode=$_POST['lognodeID_UMTS2100'];
 	$tabletype="UMTS";
@@ -90,33 +47,21 @@ if ($_POST['band']=="U21"){
 }
 
 $check_current_exists=check_current_exists($_POST['band'],$_POST['bsdskey'],$_POST['bsdsbobrefresh'],'',$_POST['donor'],$lognode,$viewtype);
+//echo "----".$check_current_exists;
 
 if ($check_current_exists!=0 || $viewtype=="FUND"){
 	$check_planned_exists=check_planned_exists($_POST['bsdskey'],$_POST['bsdsbobrefresh'],$_POST['band'],'allsec',$viewtype,$_POST['donor']);
-	if ($check_planned_exists=="error"){
-		echo "error";
-		?>
-		<script language="JavaScript">
-			$('.top-right').notify({
-				message: { html: '<h1>Sytem error</h1>There are too many records in the database for <?=$_POST['band']?> BSDS! Please contact Frederick Eyland'},
-				type: 'info'
-			}).show();
-		</script>
-		<?
+	if ($check_planned_exists=="error"){ ?>
+		<div class="alert alert-danger" role="alert"><h3>TOO MANY RECORDS IN THE DB</h3>Please contact Infobase admin</div>
+		<?php
 	}
 }else{
 	$check_planned_exists=0;
 }
 
-if($check_planned_exists==0 && $status=="BSDS FUNDED"){
-	?>
-	<script language="JavaScript">
-	$('.top-right').notify({
-				message: { html: '<h3>No planned data available</h3>Please defund BSDS by removing U305 in NET1 and save data for <?=$_POST['band']?>.<br>Then you will be able to refund. (with a newer date)'''},
-				type: 'info'
-			}).show();
-	</script>
-	<?
+if($check_planned_exists==0 && $status=="BSDS FUNDED"){ ?>
+	<div class="alert alert-danger" role="alert"><h3>BSDS FUNDED WITHOUT DATA</h3>Please defund BSDS by removing U305 in NET1 (or via Infobase) so you  and save data</div>
+	<?php
 }
 
 $gen_info=get_BSDS_generalinfo($_POST['bsdskey']);

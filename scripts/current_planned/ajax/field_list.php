@@ -32,29 +32,7 @@ if ($_GET["field"]=="antenna"){
 	$arr[$extra]['id']='';
 	$arr[$extra]['text']='NONE';
 	echo json_encode($arr);
-}else if ($_GET["field"]=="cabtype2"){
 
-	$arr[0]['id']='BS8800:0';
-	$arr[0]['text']='BS8800:0';
-	$arr[1]['id']='BS8800:6';
-	$arr[1]['text']='BS8800:6';
-	$arr[2]['id']='BS8800:12';
-	$arr[2]['text']='BS8800:12';
-	$arr[3]['id']='BS8900:0';
-	$arr[3]['text']='BS8900:0';
-	$arr[4]['id']='BS8900:3';
-	$arr[4]['text']='BS8900:3';
-	$arr[5]['id']='BS8900A:6';
-	$arr[5]['text']='BS8900A:6';
-	$arr[6]['id']='BS8900A:12';
-	$arr[6]['text']='BS8900A:12';
-	$arr[7]['id']='BS8900A:9';
-	$arr[7]['text']='BS8900A:9';
-	$arr[8]['id']='BS8800:9';
-	$arr[8]['text']='BS8800:9';
-	$arr[9]['id']='';
-	$arr[9]['text']='NONE';
-	echo json_encode($arr);
 }else if ($_GET["field"]=="config"){
 	$query = "select DISTINCT IDNAME from ".$config['table_asset_cellequipment']." WHERE upper(IDNAME) LIKE '%".strtoupper($_GET["q"])."%'";
 	//echo "<br><br>$query";
@@ -120,7 +98,7 @@ if ($_GET["field"]=="antenna"){
 	    $arr[$key]['id']=$res['IDNAME'][$key];
 	    $arr[$key]['text']=$res['IDNAME'][$key];
 	}
-	$arr[$extra]['id']='';
+	$arr[$extra]['id']='NONE';
 	$arr[$extra]['text']='NONE';
 	echo json_encode($arr);
 }

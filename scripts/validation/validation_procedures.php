@@ -10,7 +10,7 @@ $stmt = OCIParse($conn_Infobase,"ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY H
 OCIExecute($stmt,OCI_DEFAULT);
 
 
-function generatebutton($siteupgnr,$checktype,$title,$status,$filedate,$filefullpath,$filename,$ran,$reason){
+function generatebutton($siteupgnr,$checktype,$title,$status,$filedate,$filefullpath,$filename,$ran,$reason,$rafid){
 	global $config,$guard_groups;
 	
 	$out="<tr>
@@ -53,7 +53,7 @@ function generatebutton($siteupgnr,$checktype,$title,$status,$filedate,$filefull
 	         
 	  	}else if ($status!=7){
 	  			if (substr_count($guard_groups, 'Administrators')==1 or substr_count($guard_groups, 'Base_delivery')==1 ){
-	           	$out.="<a class='btn btn-default btn-xs overruleVali tippy' data-checktype='".$checktype."' id='".$siteupgnr.$checktype."' data-siteupgnr='".$siteupgnr."' title='Overrule ".$title."' target='_blank' style='target-new: tab;'><span class='glyphicon glyphicon-ok'></span></a>";
+	           	$out.="<a class='btn btn-default btn-xs overruleVali tippy'  data-type='FILE' data-checktype='".$checktype."' id='".$siteupgnr.$checktype."' data-siteupgnr='".$siteupgnr."' data-rafid='".$rafid."' title='Overrule ".$title."' target='_blank' style='target-new: tab;'><span class='glyphicon glyphicon-ok'></span></a>";
 	         	} 
 	          } 
 	           $out.="</div>
@@ -64,7 +64,7 @@ function generatebutton($siteupgnr,$checktype,$title,$status,$filedate,$filefull
 	return $out;
 }
 
-function generateMilestone2($siteupgnr,$checktype,$MS,$descr,$date,$reason){
+function generateMilestone2($siteupgnr,$checktype,$MS,$descr,$date,$reason,$rafid){
 	global $guard_groups;
 	$out="<tr>
 		<td>".$MS."</td>
@@ -79,7 +79,7 @@ function generateMilestone2($siteupgnr,$checktype,$MS,$descr,$date,$reason){
 	$out.="<td><div class='btn-toolbar' role='toolbar'>
 	          <div class='btn-group'>";
 		if ((($reason=='' && $date=='') or ($reason!='' && $date!='')) && (substr_count($guard_groups, 'Administrators')==1 or substr_count($guard_groups, 'Base_delivery')==1)){
-       	$out.="<a class='btn btn-default btn-xs overruleVali tippy' data-checktype='".$checktype."' id='".$siteupgnr.$MS."' data-siteupgnr='".$siteupgnr."' title='Overrule ".$siteupgnr.": ".$descr."' target='_blank' style='target-new: tab;'><span class='glyphicon glyphicon-ok'></span></a>";
+       	$out.="<a class='btn btn-default btn-xs overruleVali tippy' data-type='MS' data-checktype='".$checktype."' id='".$siteupgnr.$MS."' data-siteupgnr='".$siteupgnr."' data-rafid='".$rafid."' title='Overrule ".$siteupgnr.": ".$descr."' target='_blank' style='target-new: tab;'><span class='glyphicon glyphicon-ok'></span></a>";
      	} 
 	$out.="</div>
 		    </div>

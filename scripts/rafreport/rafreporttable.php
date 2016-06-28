@@ -58,6 +58,7 @@ $regions=array(
 						}
 
 		                $query = "select DISTINCT(ACTION),ACTION_BY from VW_RAF_ACTIONS_BY ORDER BY ACTION_BY,'UNID'";
+		                echo $query;
 		                $stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res);
 		                if (!$stmt) {
 		                    die_silently($conn_Infobase, $error_str);
@@ -66,7 +67,7 @@ $regions=array(
 		                  OCIFreeStatement($stmt);
 		                  $amount_of_TYPE=count($res['ACTION']);
 		                  for ($i = 0; $i <$amount_of_TYPE; $i++){
-		                  	if (substr_count($guard_groups, 'Partner')==1 &&  $res['ACTION'][$i]=="PARTNER"){
+		                  	if (substr_count($guard_groups, 'Partner')==1 &&  $res['ACTION_BY'][$i]=="Partner"){
 		                  		echo "<option value='".$res['ACTION'][$i]."'>".$res['ACTION'][$i]."</option>";
 		                  	}elseif (substr_count($guard_groups, 'Partner')!=1){
 		                  		echo "<option value='".$res['ACTION'][$i]."'>".$res['ACTION_BY'][$i].": ".str_replace("_", " ", $res['ACTION'][$i])."</option>";

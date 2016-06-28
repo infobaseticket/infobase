@@ -10,19 +10,17 @@ OCIExecute($stmt,OCI_DEFAULT);
 
 if ($_POST['action']=="overruleValidation"){
 	if (trim($_POST['reason'])!=''){
-		$query = "INSERT INTO VALIDATION_OVERRULE VALUES ('".$_POST['siteupgnr']."','".$_POST['checktype']."',
-		'".escape_sq($_POST['reason'])."',SYSDATE,'".$guard_username."')";
+		$query = "INSERT INTO VALIDATION_OVERRULE VALUES ('".$_POST['rafid']."','".$_POST['checktype']."',
+		'".escape_sq($_POST['reason'])."',SYSDATE,'".$guard_username."','".$_POST['type']."')";
 		//echo "$query";
 		$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
 		if (!$stmt) {
 			die_silently($conn_Infobase, $error_str);
 		}else{
 			OCICommit($conn_Infobase);
-
 			$res["msg"] = "Override has been saved!";
 			$res["rtype"]="success";
 			echo json_encode($res);
-
 		}	
 	}else{
 		$res["msg"] = "You can override without any reason!";

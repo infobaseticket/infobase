@@ -44,7 +44,7 @@
     right: -50%; /* 6 columns */
   }
 
-  .row-offcanvas-left
+  .row-offcanvas-left,
   .sidebar-offcanvas {
     left: -50%; /* 6 columns */
   }
@@ -524,4 +524,7 @@ th.vertical
 
 .nav-tabs {
     border-bottom: 1px solid #ff7e00;
+}
+.nav-tabs>li>a,.nav-pills>li>a{
+  border-radius:0;
 }

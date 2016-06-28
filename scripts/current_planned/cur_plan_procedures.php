@@ -1,7 +1,53 @@
 <?PHP
-include_once($_SERVER['DOCUMENT_ROOT'].'/bsds/config.php');
+include_once('/var/www/html/bsds/config.php');
 require_once($config['sitepath_abs']."/bsds/PHPlibs/oci8_funcs.php");
 
+
+function getStatusInfo($viewtype){
+	if ($viewtype=="FUNDHIST" or $viewtype=="FUND"){ //HISTORY VIEW
+		$ret['viewtype']="FUND";
+		$ret['color']="BSDS_funded";
+		if ($viewtype=="FUNDHIST"){
+			$ret['viewhistory']="yes";
+		}else{
+			$ret['viewhistory']="no";
+		}
+		$ret['status']="BSDS FUNDED";
+	}else if ($viewtype=="POSTHIST" or $viewtype=="POST"){//HISTORY VIEW
+		$ret['viewtype']="POST";
+		if ($viewtype=="POSTHIST"){
+			$ret['viewhistory']="yes";
+		}else{
+			$ret['viewhistory']="no";
+		}
+		$ret['color']="SITE_funded";
+		$ret['status']="SITE FUNDED";
+	}else if ($viewtype=="BUILDHIST" or $viewtype=="BUILD"){//HISTORY VIEW
+		$ret['viewtype']="BUILD";
+		if ($viewtype=="BUILDHIST"){
+			$ret['viewhistory']="yes";
+		}else{
+			$ret['viewhistory']="no";
+		}
+		$ret['color']="BSDS_asbuild";
+		$ret['status']="BSDS AS BUILD";
+	}else if ($viewtype=="PRE" or $viewtype=="PREHIST" or $viewtype=="PRE READY TO BUILD"){ //PRE VIEW
+		$ret['viewtype']="PRE";
+		if ($viewtype=="PREHIST"){
+			$ret['viewhistory']="yes";
+		}else{
+			$ret['viewhistory']="no";
+		}
+		$ret['color']="BSDS_preready";
+		$ret['status']="PRE READY TO BUILD";
+	}else if ($viewtype=="PRE READY TO BUILD"){ 
+		$ret['viewtype']="PRE";
+		$ret['viewhistory']="no";
+		$ret['status']="PRE READY TO BUILD";
+		$ret['color']="BSDS_preready";
+	}
+	return $ret;
+}
 function check_current_exists($band,$BSDSKEY,$BSDS_BOB_REFRESH,$sector,$donor,$lognode,$view){
 	global $conn_Infobase;
 
@@ -38,9 +84,12 @@ function check_current_exists($band,$BSDSKEY,$BSDS_BOB_REFRESH,$sector,$donor,$l
 	}
 	if ($donor==""){		
 		if($sector=="allsec" or $sector==""){
-			$query = "SELECT count(".$key.") AS AMOUNT FROM BSDS_CU_".$tabletype." WHERE ".$key."='".$val."' AND STATUS='".$view."' AND TECHNO='".$band."'";
-		}else if($sector!=''){
-			$query = "SELECT count(".$key.") AS AMOUNT FROM BSDS_CU_".$tabletype."_SEC WHERE ".$key."='".$lognode."' AND STATUS='".$view."' AND SECT='".$sector."' AND TECHNO='".$band."'";
+			$query = "SELECT count(".$key.") AS AMOUNT FROM BSDS_CU_".$tabletype."2 WHERE ".$key."='".$val."' AND STATUS='".$view."' AND TECHNO='".$band."'";
+		}else if($sector!='' or $sector=='all'){
+			$query = "SELECT count(".$key.") AS AMOUNT FROM BSDS_CU_".$tabletype."_SEC2 WHERE ".$key."='".$val."' AND STATUS='".$view."' AND TECHNO='".$band."'";
+			if ($sector!='all'){
+				$query .= " AND SECT='".$sector."'";
+			}
 		}		
 	}else{ //REPEATER BSDS
 		$query = "SELECT count(SITEKEY) AS AMOUNT FROM BSDS_CU_REP_".$tabletype." WHERE SITEKEY='".$lognode."' AND STATUS='".$view."' AND TECHNO='".$band."'";
@@ -71,7 +120,7 @@ function check_planned_exists($BSDSKEY,$BSDS_BOB_date,$band,$sec,$view,$donor)
 		$tabletype="LTE";
 	}	
 	if ($donor==''){	
-		if($sec=="allsec" or $sec=="" or $sec=="5"){
+		if($sec=="allsec" or $sec==""){
 			$query = "SELECT BSDSKEY FROM BSDS_PL_".$tabletype." WHERE BSDSKEY='".$BSDSKEY."' AND STATUS='".$view."' AND TECHNO='".$band."'";
 			if ($view!="PRE"){
 				$query .=" AND BSDS_BOB_REFRESH=to_date('".$BSDS_BOB_date."')";
@@ -107,10 +156,10 @@ function check_planned_exists($BSDSKEY,$BSDS_BOB_date,$band,$sec,$view,$donor)
 	}
 }
 /*********************************************************************************************************************/
-function get_BSDS_generalinfo($BSDSKEY){
+function get_BSDS_GENERALINFO($BSDSKEY){
 	global $conn_Infobase;
 	$query = "SELECT TEAML_APPROVED, CHANGE_DATE, SITEKEY, SITEID, UPDATE_AFTER_COPY, 
-	UPDATE_BY_AFTER_COPY FROM BSDS_GENERALINFO WHERE BSDSKEY= '".$BSDSKEY."'";
+	UPDATE_BY_AFTER_COPY FROM BSDS_GENERALINFO2 WHERE BSDSKEY= '".$BSDSKEY."'";
 	//echo "$query<br>";
    	$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
    	if (!$stmt) {
@@ -124,6 +173,7 @@ function get_BSDS_generalinfo($BSDSKEY){
 /*********************************************************************************************************************/
 function get_data($type,$sect,$what,$viewtype,$BSDSKEY,$BSDS_BOB_REFRESH,$donor,$lognode){
 	global $conn_Infobase, $config;
+
 
 	if ($type=="G9" || $type=="G18"){
 		$tabletype="GSM";
@@ -174,27 +224,54 @@ function get_data($type,$sect,$what,$viewtype,$BSDSKEY,$BSDS_BOB_REFRESH,$donor,
 		}else if ($type=="L18" || $type=="L26" || $type=="L8"){
 			$query = "SELECT DISTINCT * from LTE1 WHERE LOGNODEFK='".$lognode."' ORDER BY UMTSCELLID ASC, INDEXNO DESC";
 		}
-		//echo $query."<br>";
+		//echo $type."mmmmmmmmmmmm".$query."<br>";
 	}else if ($what=="CURRENT_EXISTING"){		
 		if ($donor==""){
-			$table="BSDS_CU_".$tabletype;
+			$table="BSDS_CU_".$tabletype."2";
 		}else{
 			$key="sitekey";
-			$table="BSDS_CU_REP_".$tabletype;
+			$table="BSDS_CU_REP_".$tabletype."";
+		}
+		if ($viewtype=="BUILD"){
+			$query="SELECT BSDS_BOB_REFRESH FROM VW_STATUS_MAXBOB_FORASBUILD WHERE BSDSKEY='".$BSDSKEY."'";
+			$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
+			if (!$stmt){
+				die_silently($conn_Infobase, $error_str);
+				exit;
+			}else{
+				OCIFreeStatement($stmt);
+				$total_records=count($res1['BSDS_BOB_REFRESH']);
+				if ($total_records==1){
+					$BSDS_BOB_REFRESH=$res1['BSDS_BOB_REFRESH'][0];
+					/* IMPORTANT !!!!!!!! */
+					$viewtype="FUND";
+					//echo $BSDS_BOB_REFRESH;
+				}else{
+					echo "BSDS AS BUILD ERROR";
+					die;
+				}
+			}
 		}
 		if ($viewtype!="FUND"){ //Only for FUNDED a record is existing, else we look at the PRE
 			$viewtype="PRE";
 		}
+
 		if ($sect==""){
-			$query = "SELECT * FROM ".$table." WHERE ".$key."='".$lognode."' AND STATUS='".$viewtype."' AND TECHNO='".$type."'";		
+			$query = "SELECT * FROM ".$table." WHERE ".$key."='".$val."' AND STATUS='".$viewtype."' AND TECHNO='".$type."'";		
 		}else{
 			//for donor we don't have sector data
-			$query = "SELECT * FROM BSDS_CU_".$tabletype."_SEC WHERE ".$key."='".$lognode."' AND STATUS='".$viewtype."' AND TECHNO='".$type."' AND SECT='".$sect."'";
-		}
-		//echo $query."<br>";
+			$query = "SELECT * FROM BSDS_CU_".$tabletype."_SEC2 WHERE ".$key."='".$val."' AND STATUS='".$viewtype."' AND TECHNO='".$type."'";
+			if ($sect!="all"){
+				$query .= "AND SECT='".$sect."'";
+			}
+		}		
 		if ($viewtype=="FUND"){
 			$query .=" AND BSDS_BOB_REFRESH=to_date('".$BSDS_BOB_REFRESH."')";
 		}
+		if ($sect!=""){
+			$query .=" ORDER BY SECT";
+		}
+		//echo $query."<br>";
 	}else if ($what=="RNCNODEB_ASSET"){
 		$query = "SELECT * FROM VW_ASSET_RNC_NODEB WHERE LOGNODEPK='".$lognode."'";
 	}else if ($what=="PLANNED"){
@@ -217,6 +294,7 @@ function get_data($type,$sect,$what,$viewtype,$BSDSKEY,$BSDS_BOB_REFRESH,$donor,
 					$query .=" AND BSDS_BOB_REFRESH=to_date('".$BSDS_BOB_REFRESH."')";
 				}
 			}
+			//echo $query;
 		}else{
 			$query = "SELECT * FROM BSDS_PL_REP_".$tabletype." WHERE BSDSKEY= '".$BSDSKEY."' AND TECHNO='".$type."' AND STATUS='".$viewtype."'";
 			if ($viewtype!="PRE"){
@@ -239,7 +317,7 @@ function get_cols($table){
 	global $conn_Infobase;
 	$query="SELECT column_name
 	FROM USER_TAB_COLUMNS
-	WHERE table_name = '".$table."'";
+	WHERE table_name = '".$table."' ORDER BY column_name";
 	$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
 	if (!$stmt) {
 		die_silently($conn_Infobase, $error_str);
@@ -252,8 +330,10 @@ function get_cols($table){
 /*********************************************************************************************************************/
 function get_config($stat,$type){
 	global $conn_Infobase;
+
 	if ($type=="U21" or $type=="U9"){
 		$query = "select * from umtsbsds6 WHERE CELL_ID='".$stat."'";
+		//echo $query;
 		$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
 		if (!$stmt) {
 		  die_silently($conn_Infobase, $error_str);
@@ -303,19 +383,21 @@ function get_config($stat,$type){
 	}
 }
 /*********************************************************************************************************************/
-function get_freq($sect,$siteID){
+function get_freq($cell){
 
 	global $conn_Infobase;
 
-	$query1 = "Select count(MO) as amount,SUBSTR(
+	$query1 = "Select CELL,count(MO) as amount,SUBSTR(
 		MO,
 		INSTR(MO, '-', 1, 1)+ 1,
 		INSTR(MO, '-', 1, 2)- INSTR(MO, '-', 1, 1)- 1
-	) AS TG from switch_2G_rxmop_tx WHERE cell='".$siteID.$sect."' GROUP BY SUBSTR(
+	) AS TG from switch_2G_rxmop_tx WHERE cell LIKE '".$cell."%' 
+	GROUP BY CELL,
+	SUBSTR(
 		MO,
 		INSTR(MO, '-', 1, 1)+ 1,
 		INSTR(MO, '-', 1, 2)- INSTR(MO, '-', 1, 1)- 1
-	)";
+	) ORDER BY TG,CELL";
 	//echo $query1."<hr>";
 	$stmt1 = parse_exec_fetch($conn_Infobase, $query1, $error_str, $res1);
 	if (!$stmt1) {
@@ -323,22 +405,21 @@ function get_freq($sect,$siteID){
 		exit;
 	} else {
 		OCIFreeStatement($stmt1);
-
+		$start=1;
+		$k=1;
 		for ($i = 0; $i < count($res1['TG']); $i++) {
-			$freq[$i]=$res1['AMOUNT'][$i];
+			$TG=$res1['TG'][$i];
+			if ($TG!=$previousTG && $start!=1){
+				$k++;
+			}else{
+				$start=0;
+			}
+			$cell=$res1['CELL'][$i];
+			$freq[$k][$cell]=$res1['AMOUNT'][$i];
+			$previousTG=$TG;
 		}
 	}
-
-	if ($freq[0]==""){
-		$freq[0]="0";
-	}
-	if ($freq[1]==""){
-		$freq[1]="0";
-	}
-	if ($freq[2]==""){
-		$freq[2]="0";
-	}
-
+	//echo "<pre>".print_r($freq,true)."</pre>";
 	return $freq;
 }
 /*******************************************************************************************************/
@@ -347,10 +428,10 @@ function get_cabinettype($type,$site){
 	global $conn_Infobase;
 
 	if ($type=="G9"){
-		$query3 = "select MO, BSC from SWITCH_2G_RXMOP_TG WHERE rsite like '%".$site."E%'
+		$query3 = "select REPLACE(MO,'RXOTG-','') AS MO, BSC from SWITCH_2G_RXMOP_TG WHERE rsite like '%".$site."E%'
 		OR rsite like '%".$site."HE%'";
 	}else if ($type=="G18"){
-		$query3 = "select MO, BSC from SWITCH_2G_RXMOP_TG WHERE rsite not like '%".$site."E%'
+		$query3 = "select REPLACE(MO,'RXOTG-','') AS MO, BSC from SWITCH_2G_RXMOP_TG WHERE rsite not like '%".$site."E%'
 		and rsite not like '%".$site."HE%' and rsite like '%".$site."%'";
 	}
 	//echo $query3."<hr>";;
@@ -362,22 +443,20 @@ function get_cabinettype($type,$site){
 		OCIFreeStatement($stmt3);
 		$cab['number']=count($res3['MO']);
 		for ($i = 0; $i < count($res3['MO']); $i++) {
-			$TG=explode("-",$res3['MO'][$i]);
-			$TG=$TG[1];
+			$TG=$res3['MO'][$i];
 			$BSC=$res3['BSC'][$i];
-
 
 			if ($BSC!="" && $TG!=""){
 				$query4 = "select CABTYPE
-from SWITCH_2G_RXMFP_TRX a LEFT JOIN
-SWITCH_SHELVES b ON
-(trim(substr(RUPOSITION,instr(RUPOSITION, 'SH:')+3,3))=b.SH
-and trim(substr(RUPOSITION,instr(RUPOSITION, 'SH:')+3,3)) !='--')
-OR
-(
-(trim(substr(substr(RUREVISION,1,instr(RUREVISION, '/',1,1)-1),instr(substr(RUREVISION,1,instr(RUREVISION, '/',1,1)-1), 'KRC')+8,4)
-)=b.KRC) and trim(substr(RUPOSITION,instr(RUPOSITION, 'SH:')+3,3)) ='--')
-WHERE BSC='".$BSC."' AND MO LIKE'RXOTRX-".$TG ."-%'";
+				from SWITCH_2G_RXMFP_TRX a LEFT JOIN
+				SWITCH_SHELVES b ON
+				(trim(substr(RUPOSITION,instr(RUPOSITION, 'SH:')+3,3))=b.SH
+				and trim(substr(RUPOSITION,instr(RUPOSITION, 'SH:')+3,3)) !='--')
+				OR
+				(
+				(trim(substr(substr(RUREVISION,1,instr(RUREVISION, '/',1,1)-1),instr(substr(RUREVISION,1,instr(RUREVISION, '/',1,1)-1), 'KRC')+8,4)
+				)=b.KRC) and trim(substr(RUPOSITION,instr(RUPOSITION, 'SH:')+3,3)) ='--')
+				WHERE BSC='".$BSC."' AND MO LIKE'RXOTRX-".$TG ."-%'";
 				//echo $query4;
 				$stmt4 = parse_exec_fetch($conn_Infobase, $query4, $error_str, $res4);
 				if (!$stmt4) {
@@ -419,42 +498,47 @@ WHERE BSC='".$BSC."' AND MO LIKE'RXOTRX-".$TG ."-%'";
 			}
 		}
 	}
+	//echo "<pre>".print_r($cab,true)."</pre>";
 	return $cab;
 }
 /*********************************************************************************************************************/
-function get_TRU_data($sect,$siteID){
+function get_TRU_data($cell){
 
 	global $conn_Infobase;
 	
-$query1="SELECT
-	TRIM(SUBSTR(RUREVISION, 0, 14)) AS KRC,
-	COUNT(A .MO)AS MOCOUNT,
-	TRUTYPE,
-	SUBSTR(
-		A .MO,
-		INSTR(A .MO, '-', 1, 1)+ 1,
-		INSTR(A .MO, '-', 1, 2)- INSTR(A .MO, '-', 1, 1)- 1
-	)AS TG
-FROM
-	SWITCH_2G_RXMFP_TRX A
-LEFT JOIN SWITCH_SHELVES_TRU b ON TRIM(SUBSTR(RUREVISION, 0, 14))= b.KRC
-LEFT JOIN switch_2g_rxmop_tx c ON SUBSTR(A .MO, INSTR(A .MO, '-', 1, 1) + 1)= SUBSTR(c.MO, INSTR(c.MO, '-', 1, 1) + 1)
-AND A .BSC = c.BSC
-WHERE
-	CELL LIKE '".$siteID.$sect."'
-GROUP BY
-	TRUTYPE,
-	SUBSTR(
-		A .MO,
-		INSTR(A .MO, '-', 1, 1)+ 1,
-		INSTR(A .MO, '-', 1, 2)- INSTR(A .MO, '-', 1, 1)- 1
-	),TRIM(SUBSTR(RUREVISION, 0, 14))
-ORDER BY
-	SUBSTR(
-		A .MO,
-		INSTR(A .MO, '-', 1, 1)+ 1,
-		INSTR(A .MO, '-', 1, 2)- INSTR(A .MO, '-', 1, 1)- 1
-	)";
+	$query1="SELECT
+		CELL,
+		TRIM(SUBSTR(RUREVISION, 0, 14)) AS KRC,
+		COUNT(A .MO)AS MOCOUNT,
+		TRUTYPE,
+		SUBSTR(
+			A .MO,
+			INSTR(A .MO, '-', 1, 1)+ 1,
+			INSTR(A .MO, '-', 1, 2)- INSTR(A .MO, '-', 1, 1)- 1
+		)AS TG
+	FROM
+		SWITCH_2G_RXMFP_TRX A
+	LEFT JOIN SWITCH_SHELVES_TRU b ON TRIM(SUBSTR(RUREVISION, 0, 14))= b.KRC
+	LEFT JOIN switch_2g_rxmop_tx c ON SUBSTR(A .MO, INSTR(A .MO, '-', 1, 1) + 1)= SUBSTR(c.MO, INSTR(c.MO, '-', 1, 1) + 1)
+	AND A .BSC = c.BSC
+	WHERE
+		CELL LIKE '".$cell."'
+	GROUP BY
+		CELL,
+		TRUTYPE,
+		SUBSTR(
+			A .MO,
+			INSTR(A .MO, '-', 1, 1)+ 1,
+			INSTR(A .MO, '-', 1, 2)- INSTR(A .MO, '-', 1, 1)- 1
+		),TRIM(SUBSTR(RUREVISION, 0, 14))
+	ORDER BY
+		TG,
+		CELL,
+		SUBSTR(
+			A .MO,
+			INSTR(A .MO, '-', 1, 1)+ 1,
+			INSTR(A .MO, '-', 1, 2)- INSTR(A .MO, '-', 1, 1)- 1
+		)";
 //echo $query1;
 
 $stmt1 = parse_exec_fetch($conn_Infobase, $query1, $error_str, $res1);
@@ -462,32 +546,37 @@ if (!$stmt1) {
 	die_silently($conn_Infobase, $error_str);
 	exit;
 } else {
-	OCIFreeStatement($stmt1);
 	$j=0;
-	$k=0;
-	$start="yes";
-	for ($i=0;$i< count($res1['TRUTYPE']);$i++) {
+	$k=1;
+	$start=1;
+	for ($i=0;$i< count($res1['CELL']);$i++) {
+
+		$cell=$res1['CELL'][$i];
 		$TG=$res1['TG'][$i];
-		if ($start=="yes"){
-			$last_TG=$res1['TG'][$i];
-			$start="no";
-		}else if ($start!="yes"){
+
+		if ($TG!=$previousTG && $start!=1){
 			$k++;
 		}
 
-		if ($TG!=$last_TG){
-			$last_TG=$res1['TG'][$i];
-			$j++;
-			$k=0;
+		if ($cell!=$previousCell){
+			$j=0;
+			$start=0;
 		}
 
-		$TRU_data[$j]['TYPE'][$k]=$res1['TRUTYPE'][$i];
-		$TRU_data[$j]['INST'][$k]=$res1['MOCOUNT'][$i];
-		//echo $i."/". $res1['TRUTYPE'][$i]."<br>";
+		if ($res1['TRUTYPE'][$i]=="EDTRU" || $res1['TRUTYPE'][$i]=="DTRU"){
+			$MO=ceil($res1['MOCOUNT'][$i]/2);
+		}else{
+			$MO=$res1['MOCOUNT'][$i];
+		}
+		$TRU_data[$k][$cell]['TRUTYPE'][$j]=$res1['TRUTYPE'][$i];
+		$TRU_data[$k][$cell]['MO'][$j]=$MO;
 
+		$previousCell=$cell;
+		$previousTG=$TG;
+		$j++;
 	}
 }
-//echo "<pre>".print_r($TRU_data,true); 
+//echo "<pre>".print_r($TRU_data,true)."</pre>"; 
 return $TRU_data;
 }
 /*********************************************************************************************************************/
@@ -524,7 +613,7 @@ function get_select_BBS($BBS){
 function get_select_DXU($DXU){
 	$option.= "<option selected>$DXU</option>";
 	if ($DXU!="NONE" && $DXU!=""){
-		$option.= "<option value=''>NONE</option>";
+		$option.= "<option value='NONE'>NONE</option>";
 	}
 	if ($DXU!="DXU 01"){
 		$option.= "<option>DXU 01</option>";
@@ -616,7 +705,7 @@ function get_select_TMA($TMA){
 		$option.= "<option selected>$TMA</option>";
 
 	if ($TMA!="NONE" && $TMA!=""){
-		$option.= "<option value=''>NONE</option>";
+		$option.= "<option value='NONE'>NONE</option>";
 	}
 	if ($TMA!="TMA"){
 		$option.= "<option>TMA</option>";
@@ -638,7 +727,7 @@ function get_select_TMA($TMA){
 /*********************************************************************************************************************/
 function get_select_TRU($TRU){
 
-		$option.= "<option selected>$TRU</option>";
+	$option.= "<option selected>$TRU</option>";
 
 	if ($TRU!="None" && $TRU!="NONE" &&  $TRU!=""){
 		$option.= "<option value=''>NONE</option>";
@@ -769,11 +858,46 @@ function get_select_RRU($ASC){
 	if ($ASC!="RRU DC"){
 		$option.= "<option>RRU DC</option>";
 	}
+	if ($ASC!="KAT78210430"){
+		$option.= "<option>KAT78210430</option>";
+	}
+	if ($ASC!="KAT78210440"){
+		$option.= "<option>KAT78210440</option>";
+	}
+	if ($ASC!="KAT78210510"){
+		$option.= "<option>KAT78210510</option>";
+	}
+	if ($ASC!="KAT78210517"){
+		$option.= "<option>KAT78210517</option>";
+	}
+	if ($ASC!="KAT78210583"){
+		$option.= "<option>KAT78210583</option>";
+	}
+	if ($ASC!="KAT78210612"){
+		$option.= "<option>KAT78210612</option>";
+	}
+	if ($ASC!="KAT78210990"){
+		$option.= "<option>KAT78210990</option>";
+	}
+	if ($ASC!="KAT78211103"){
+		$option.= "<option>KAT78211103</option>";
+	}
+	
+
 	echo $option;
 }
 function get_select_RRU2($ASC){
 	if ($ASC){
 		$option.= "<option selected>$ASC</option>";
+	}
+	if ($ASC!="NA"){
+		$option.= "<option>NA</option>";
+	}
+	if ($ASC!="RU"){
+		$option.= "<option>RU</option>";
+	}
+	if ($ASC!="RRU"){
+		$option.= "<option>RRU</option>";
 	}
 	if ($ASC!="NONE"){
 		$option.= "<option>NONE</option>";
@@ -787,6 +911,15 @@ function get_select_RRU2($ASC){
 	if ($ASC!="RU 3"){
 		$option.= "<option>RU 3</option>";
 	}
+	if ($ASC!="RU 4"){
+		$option.= "<option>RU 4</option>";
+	}
+	if ($ASC!="RU 5"){
+		$option.= "<option>RU 5</option>";
+	}
+	if ($ASC!="RU 6"){
+		$option.= "<option>RU 6</option>";
+	}
 	if ($ASC!="RRU 1"){
 		$option.= "<option>RRU 1</option>";
 	}
@@ -796,18 +929,66 @@ function get_select_RRU2($ASC){
 	if ($ASC!="RRU 3"){
 		$option.= "<option>RRU 3</option>";
 	}
+	if ($ASC!="RRU 4"){
+		$option.= "<option>RRU 4</option>";
+	}
+	if ($ASC!="RRU 5"){
+		$option.= "<option>RRU 5</option>";
+	}
+	if ($ASC!="RRU 6"){
+		$option.= "<option>RRU 6</option>";
+	}
+	if ($ASC!="R8862 S8000"){
+		$option.= "<option>R8862 S8000</option>";
+	}
+	if ($ASC!="R8882 S8000"){
+		$option.= "<option>R8882 S8000</option>";
+	}
+	if ($ASC!="R8892N M8090"){
+		$option.= "<option>R8892N M8090</option>";
+	}
+	if ($ASC!="RSU82 S8000"){
+		$option.= "<option>RSU82 S8000</option>";
+	}
+	if ($ASC!="RSU82 S9000"){
+		$option.= "<option>RSU82 S9000</option>";
+	}
+	if ($ASC!="R8862 S9000"){
+		$option.= "<option>R8862 S9000</option>";
+	}
+	if ($ASC!="R8882 S1800"){
+		$option.= "<option>R8882 S1800</option>";
+	}
+	if ($ASC!="R8882 GUL1812"){
+		$option.= "<option>R8882 GUL1812</option>";
+	}
+	if ($ASC!="R8862 S1800"){
+		$option.= "<option>R8862 S1800</option>";
+	}
+	if ($ASC!="R8854 S1800"){
+		$option.= "<option>R8854 S1800</option>";
+	}
+	if ($ASC!="RSU82 S1800"){
+		$option.= "<option>RSU82 S1800</option>";
+	}
+	if ($ASC!="RSU82 GUL1816"){
+		$option.= "<option>RSU82 GUL1816</option>";
+	}
+	if ($ASC!="R8862 S2100"){
+		$option.= "<option>R8862 S2100</option>";
+	}
+	if ($ASC!="RSU40"){
+		$option.= "<option>RSU40</option>";
+	}
+	if ($ASC!="RSU60E"){
+		$option.= "<option>RSU60E</option>";
+	}
+	if ($ASC!="RSU82 S2100"){
+		$option.= "<option>RSU82 S2100</option>";
+	}
 
 	echo $option;
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1094,7 +1275,7 @@ function delete_BSDS($BSDSKEY,$POST){
 
    	//echo $query."<hr>";
    	if ($POST!="_POST"){
-		$query = "DELETE FROM BSDS_GENERALINFO WHERE BSDSKEY='".$BSDSKEY."'";
+		$query = "DELETE FROM BSDS_GENERALINFO2 WHERE BSDSKEY='".$BSDSKEY."'";
 		$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
 	   	if (!$stmt) {
 	      die_silently($conn_Infobase, $error_str);
@@ -1464,4 +1645,57 @@ function check_if_dup_records($BSDS_funded)
     }
 }
 /********************************************************************************************************************/
+function analyse_changes_Asset($name, $w1, $w2, $w3,$w4,$w5,$w6,$x1,$x2,$x3,$x4,$x5,$x6)
+{
+	
+	//echo $name."------->".$w1." ".$x1." / ".$w2." ".$x2." / ".$w3." ".$x3." / ".$w4." ".$x4."<br>";
+
+ 	if ($w1!=$x1 or $w2!=$x2 or $w3!=$x3 or $w4!=$x4 or $w5!=$x5 or $w6!=$x6){ 
+
+ 		echo '<tr>
+			 <td class="tableheader danger">'.$name.'</td>';
+			 if ($w1!=$x1 and $w1!='' and $x1!=''){ 
+				echo '<td class="danger">'.$w1.'</td>';
+			 }else{
+			 	echo '<td>&nbsp;</td>';
+			 }
+			 if ($w2!=$x2 and $w2!='' and $x2!=''){ 
+				echo '<td class="danger">'.$w2.'</td>';
+			 }else{
+			 	echo '<td>&nbsp;</td>';
+			 }
+			 if ($w3!=$x3 and $w3!='' and $x3!=''){ 
+				echo '<td class="danger">'.$w3.'</td>';
+			 }else{
+			 	echo '<td>&nbsp;</td>';
+			 }
+			 if ($w4!=$x4 and $w4!='' and $x4!=''){ 
+				echo '<td class="danger">'.$w4.'</td>';
+			 }else if ($w4!='' and $x4!=''){
+			 	echo '<td>&nbsp;</td>';
+			 }
+			 if ($w5!=$x5 and $w5!='' and $x5!=''){ 
+				echo '<td class="danger">'.$w5.'</td>';
+			 }else if ($w5!='' and $x5!=''){
+			 	echo '<td>&nbsp;</td>';
+			 }
+			 if ($w4!=$x6 and $w6!='' and $x6!=''){ 
+				echo '<td class="danger">'.$w6.'</td>';
+			 }else if ($w6!='' and $x6!=''){
+			 	echo '<td>&nbsp;</td>';
+			 }
+			 echo '<td class="borderleft danger" colspan="3"><b>CHANGE IN ASSET!!</b></td>';
+			 if (($w4!='' and $x4!='')){
+			 echo '<td>&nbsp;</td>';
+			 } 
+			 if (($w5!='' and $x5!='')){
+			 echo '<td>&nbsp;</td>';
+			 } 
+			 if (($w6!='' and $x6!='')){
+			 echo '<td>&nbsp;</td>';
+			 } 
+		echo '</tr>';
+	} 
+	
+}
 ?>

@@ -466,6 +466,7 @@ function get_3GZTE_data($siteID){
 			$techno=$res1['TECHNO'][$i];
 			$data[$techno]['RBS'][$i]=$res1['USERLABEL'][$i];
 			$NODEBNO=$res1['NODEBNO'][$i];
+			//echo $NODEBNO;
 			$data[$techno]['RNC']=$res1['OMCRNCID'][$i];
 
 			$query =  "select MAX(ENDTIME),CELLNAME, SERVICETIMEOFCELL, STATUS from SWITCH_3GZTE_CELLSERVICE_15MIN WHERE CELLNAME LIKE '".$res1['USERLABEL'][$i]."%' GROUP BY CELLNAME,SERVICETIMEOFCELL,STATUS";
@@ -496,7 +497,7 @@ function get_3GZTE_data($siteID){
 		}
 	}
 
-	$query =  "select SLOTNO, USERLABEL from SWITCH_3GZTE_PLUGINUNIT WHERE RACKNO = '".$NODEBNO."' ORDER BY SLOTNO ASC";
+	$query =  "select SLOTNO, USERLABEL,BBU_SLOTNO,BBU_CARD  from SWITCH_3GZTE_PLUGINUNIT WHERE RACKNO = '".ltrim(substr($siteID,2), '0')."' ORDER BY SLOTNO ASC";
 	//echo $query;
 	$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
  	if(!$stmt){
@@ -508,6 +509,8 @@ function get_3GZTE_data($siteID){
 		for ($i=0;$i< count($res1['SLOTNO']);$i++) {
 			$data[$techno]['SLOTS'][$j]['PRODNAME']=$res1['USERLABEL'][$i];
 			$data[$techno]['SLOTS'][$j]['SLOTNO']=$res1['SLOTNO'][$i];
+			$slot=$res1['BBU_SLOTNO'][$i];
+			$data[$techno]['SLOTDATA'][$slot]=$res1['BBU_CARD'][$i];
 			$j++;
 		}
 	}
@@ -573,8 +576,31 @@ function get_4GZTE_data($siteID){
 				$data['TECHNOS'][$techno]['CELLEQ'][$res1['CELLLOCALID'][$i]]['RU']=$resEQ['RU'][0];				
 			}
 
-			$prev_techno=$res1['TECHNO'][$i];			
+			$query =  "select BBU_SLOTNO,BBU_CARD,SLOT,DESCRIPTION from SWITCH_4GZTE_SDRDEVICEGROUP WHERE MEID = '".$res1['MEID'][0]."' ORDER BY BBU_SLOTNO ASC";
+			//echo $query;
+			$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $resSDR);
+		 	if(!$stmt){
+				die_silently($conn_Infobase, $error_str);
+				exit;
+			}else{
+				OCIFreeStatement($stmt);
+				$j=0;
+				for ($i=0;$i< count($resSDR['BBU_SLOTNO']);$i++) {
+					$data['TECHNOS'][$techno]['SLOTS'][$j]['PRODNAME']=$resSDR['DESCRIPTION'][$i];
+					$data['TECHNOS'][$techno]['SLOTS'][$j]['SLOTNO']=$resSDR['SLOT'][$i];
+					$slot=$resSDR['BBU_SLOTNO'][$i];
+					$data['TECHNOS'][$techno]['SLOTDATA'][$slot]=$resSDR['BBU_CARD'][$i];
+					$j++;
+				}
+			}
+
+			$prev_techno=$res1['TECHNO'][$i];
+
+
 		}
+
+
+		
 		
 	}
 		

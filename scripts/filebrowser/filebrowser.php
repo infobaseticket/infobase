@@ -177,7 +177,7 @@ if ($_POST['candidate']!=''){
                     <input type="checkbox" name="typeRANBENCH" id="typeRANBENCH" CHECKED value="BENCH"> BENCH
                   </label>
                   <label class="checkbox-inline">
-                    <input type="checkbox" name="typeRANBENCH" id="typeRANM4C" CHECKED value="M4C"> M4C
+                    <input type="checkbox" name="typeRANM4C" id="typeRANM4C" CHECKED value="M4C"> M4C
                   </label>
                   <label class="checkbox-inline">
                     <input type="checkbox" name="typeRANBENCH" id="typeRANBASE" CHECKED value="BASE"> BASE

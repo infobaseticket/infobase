@@ -89,16 +89,7 @@ if ($_POST['partner']=='' or $_POST['partner']=='all') {
   <?php
   
 
-  $query="SELECT DISTINCT(CLUSTERN || CLUSTERNUM) AS CLUST FROM BSDS_RAF_RADIO WHERE CLUSTERN IS NOT NULL";
-
-  if (substr_count($guard_groups, 'Benchmark')==1){
-    $query.=" AND ACQ_PARTNER='BENCHMARK' or CON_PARTNER='BENCHMARK'";
-  }elseif (substr_count($guard_groups, 'm4c')==1){
-    $query.=" AND ACQ_PARTNER='M4C' or CON_PARTNER='M4C'";
-  }elseif (substr_count($guard_groups, 'TechM')==1){
-    $query.=" AND ACQ_PARTNER='TECHM' OR CON_PARTNER='TECHM' OR ACQ_PARTNER='ALU' OR CON_PARTNER='ALU'";
-  }
-  $query.=" ORDER BY CLUSTERN || CLUSTERNUM";
+  $query="SELECT DISTINCT(CLUSTERN || CLUSTERNUM) AS CLUST FROM BSDS_RAF_RADIO WHERE CLUSTERN IS NOT NULL ORDER BY CLUSTERN || CLUSTERNUM";
   $stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
   if (!$stmt) {
       die_silently($conn_Infobase, $error_str);

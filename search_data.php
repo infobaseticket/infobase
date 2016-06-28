@@ -766,7 +766,9 @@ $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 
 				       		<ul class="nav">							
 							<li class="navicon bsds2" data-module='bsds2' data-candidate='<?=$site['candidate']?>' id="bsdsicon<?php echo $key; ?>"><span class='glyphicon glyphicon-book' rel='tooltip' title='Base Station Datasheet'> BSDS</span></li>
-							
+							<?php if (substr_count($guard_groups, 'Administrators')=="1"){ ?>
+							<li class="navicon bsds" data-module='bsds' data-candidate='<?=$site['candidate']?>' id="bsdsicon<?php echo $key; ?>"><span class='glyphicon glyphicon-book' rel='tooltip' title='Base Station Datasheet'> BSDS V4</span></li>
+							<?php } ?>
 							<li class="navicon asset" data-candidate='<?=$site['candidate']?>'  id="asseticon<?=$resP['SIT_UDK'][0]?>"><span class='glyphicon glyphicon-globe' rel='tooltip' title='ASSET'> ASSET</span></li>
 								<ul style="display:none;" id='asset<?=$site['candidate']?>'>
 									<?php if($site['lognodeID_GSM']!=""){ ?>

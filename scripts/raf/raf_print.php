@@ -310,6 +310,7 @@ if (!$stmt) {
 	$JUSTIFICATION=unescape_quotes($res1['JUSTIFICATION'][0]);
 	$BUDGET=unescape_quotes($res1['BUDGET'][0]);
 	$PACCOMMENTS=unescape_quotes($res1['PACCOMMENTS'][0]);
+	$CONFIG=$res1['CONFIG'][0];
 	$CLUSTERN=$res1['CLUSTERN'][0];
 	$CLUSTERNUM=$res1['CLUSTERNUM'][0];
 	$CLUSTER_TARGET_DATE=$res1['CLUSTER_TARGET_DATE'][0];
@@ -383,6 +384,10 @@ if ($CONGUIDES==1){
 				echo "L26 ";
 			}
 			?>
+	</tr>
+	<tr>
+		<td class="param_title">Site Config</td>
+		<td><?=$CONFIG?></td>
 	</tr>
 	<tr>
 		<td class="param_title">Cluster</td>
