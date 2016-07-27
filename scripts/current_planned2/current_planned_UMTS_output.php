@@ -403,8 +403,8 @@ $pl=""
 			<tr>
 				<td class="parameter_name"><font color="blue">Power supply</font></td>
 				<td><select NAME="POWERSUP" id="POWERSUP<?=$_POST['band']?>" class="form-control"><option selected><?=$POWERSUP?><option>ACTURA CS</option><option>B900</option><option>DC/DC</option><option>PC8910A</option><option>B121</option><option>B201</option><option>NONE</option></select></td>
-				<td class="parameter_name"><font color="blue">Data Service</font></td>
-				<td><select NAME="PSU" id="PSU<?=$_POST['band']?>" class="form-control"><option selected><?=$SERVICE?></option><option>R99</option><option>HSDPA</option></select></td>
+				<td class="parameter_name"><font color="blue">SA</font></td>
+				<td><select NAME="PSU" id="PSU<?=$_POST['band']?>" class="form-control"><option selected><?=$SERVICE?></option><option>SA0</option><option>SA3</option></select></td>
 			</tr>
 
 			<tr>
@@ -445,8 +445,8 @@ $pl=""
 			<tr>
 				<td class="parameter_name">Power supply</td>
 				<td><select NAME="pl_POWERSUP" id="pl_POWERSUP<?=$_POST['band']?>" class="tabledata cleardata form-control"><option selected><?=$pl_POWERSUP?></option><option>ACTURA CS</option><option>B900</option><option>DC/DC</option><option>PC8910A</option><option>B121</option><option>B201</option><option>NONE</option></select></td>
-				<td class="parameter_name">Data Service</td>
-				<td><select NAME="pl_SERVICE" id="pl_SERVICE<?=$_POST['band']?>" class="tabledata cleardata form-control"><option selected><?=$pl_SERVICE?></option><option>R99</option><option>HSDPA</option></select></td>
+				<td class="parameter_name">SA</td>
+				<td><select NAME="pl_SERVICE" id="pl_SERVICE<?=$_POST['band']?>" class="tabledata cleardata form-control"><option selected><?=$pl_SERVICE?></option><option>SA0</option><option>SA3</option></select></td>
 			</tr>
 			<tr>
 				<td class="parameter_name">BPC</td>

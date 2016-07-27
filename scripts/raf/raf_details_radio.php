@@ -251,7 +251,7 @@ if ($res1['CONGUIDES'][0]==1) $CONGUIDES_check="CHECKED";
 	                </div>
 	     		  	<? } ?>
 
-	     		  	<?php if ($_POST['type']=="MOD Upgrade" or substr_count($_POST['type'], 'v2')==1){ ?>
+	     		  	<?php if ($_POST['type']=="MOD Upgrade" or substr_count($_POST['type'], 'V2')==1){ ?>
 	     		  	<div class="form-group" id="CONFIG">
 	                  <label for="CONFIG" class="col-sm-4 control-label">SITE CONFIG</label>
 	                  <div class="col-sm-8">

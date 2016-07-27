@@ -98,11 +98,6 @@ if ($_POST['action']=="insert_new_raf"){
 	       		if ($_POST['type']=="CTX Upgrade" or $_POST['type']=="MSH Upgrade"){
 					$query.="OTHER_INP='NA',
 					RADIO_INP='NA',ACQ_PARTNER='BASE',CON_PARTNER='NOT OK',";
-				}else if ($_POST['type']!="New Indoor" && $_POST['type']!="IND Upgrade"){
-					$query.="RADIO_INP='OK',
-					RADIO_INP_DATE=SYSDATE,
-					RADIO_INP_BY='".$guard_username."',";
-					$query.="ACQ_PARTNER='NA',";
 				}else{
 					$query.="ACQ_PARTNER='NA',";
 				}
@@ -138,25 +133,19 @@ if ($_POST['action']=="insert_new_raf"){
 					TXMN_INP='NA',
 			   		TXMN_INP_DATE='', 
 			   		TXMN_INP_BY='',
-			   		RADIO_INP='NA',
-			   		RADIO_INP_BY='',
-			   		RADIO_INP_DATE='',
 			   		PARTNER_INP='NA',
 			   		PARTNER_INP_DATE='', 
 			   		PARTNER_INP_BY='',
-			   		BCS_NET1='NA',
 			   		NET1_LBP='NA',
 			   		PARTNER_ACQUIRED='NA',
 				   	PARTNER_ACQUIRED_DATE='',
 				   	PARTNER_ACQUIRED_BY='',
-			   		TXMN_ACQUIRED=='NA',
+			   		TXMN_ACQUIRED='NA',
 			   		TXMN_ACQUIRED_DATE='',
 			   		TXMN_ACQUIRED_BY='',
 			   		NET1_ACQUIRED='NA',
 			   		PARTNER_RFPAC='NOT OK',
-			   		PARTNER_RFPAC2='NOT OK',
 			   		RF_PAC='NA',
-			   		RADIO_FUND='DISM',
 			   		NET1_FUND='NA',";
 				}else{
 					$query.="TXMN_INP='OK',
@@ -412,6 +401,14 @@ if ($_POST['action']=="insert_new_raf"){
 				$cof_acq="NA";
 			}
 
+			if ($_POST['type']=="MOD TX Upgrade"){
+				$con_partner=$_POST['master_con_partner'];
+				$master_rafid=$_POST['master_rafid'];
+				$other_input="OK";
+				$other_input_by=$guard_username;
+				$other_input_date="SYSDATE";
+			}
+
 			$query = "INSERT INTO INFOBASE.BSDS_RAFV2 (
 			   RAFID, SITEID, CREATION_DATE,CREATED_BY, UPDATE_DATE, UPDATE_BY,
 			   CANDIDATE, BUFFER,
@@ -439,7 +436,7 @@ if ($_POST['action']=="insert_new_raf"){
 			   COF_CON,COF_CON_BY,COF_CON_DATE,
 			   NET1_A304, BP_NEEDED, BP_NEEDED_DATE, BP_NEEDED_BY,
 			   PARTNER_DESIGN,PARTNER_DESIGN_DATE,PARTNER_DESIGN_BY,
-			   EVENT
+			   EVENT, MASTER_RAFID
 			   )
 			VALUES ('' ,'".$SITEID."' , SYSDATE, '".$guard_username."', '', '',
 			    '".$_POST['candidate']."','".$buffer."',
@@ -467,7 +464,7 @@ if ($_POST['action']=="insert_new_raf"){
 				'".$cof_con."','".$cof_con_by."',".$cof_con_date.",
 				'".$NET1_A304."','".$BP_NEEDED."',".$BP_NEEDED_date.",'".$BP_NEEDED_by."',
 				'".$partner_design."',".$partner_design_date.",'".$partner_design_by."',
-				'".$_POST['EVENT']."')";
+				'".$_POST['EVENT']."','".$master_rafid."')";
 		}
 		//echo $query;
 		$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
@@ -669,7 +666,7 @@ if ($_POST['action']=="attach_BSDSKEY"){
 		}
 
 
-		if ($_POST['field']=="BP_NEEDED"){ 
+		if ($_POST['field']=="BP_NEEDED" && $_POST['value']!='REJECTED'){ 
 			
 			$query = "SELECT BP_NEEDED_REASON FROM BSDS_RAF_PARTNER WHERE RAFID='".$_POST['id']."'";
 			//echo $query;
@@ -681,12 +678,12 @@ if ($_POST['action']=="attach_BSDSKEY"){
 				OCIFreeStatement($stmt);
 			}
 
-			if ($res['BP_NEEDED_REASON'][0]!=''){
+			if ($res['BP_NEEDED_REASON'][0]!='' or substr_count($guard_groups, 'Admin')==1){
 				$may_update='yes';
 				//echo "----1";
-				if ($_POST['value']=='BASE BP NO'){ //Is only for AZdmin user
+				if ($_POST['value']=='BASE BP NO'){ //Is only for Admin user
 
-					$query = "SELECT BAND_900, BAND_1800, BAND_UMTS, BAND_UMTS900, BAND_LTE800, BAND_LTE1800, BAND_LTE2600  FROM BSDS_RAF_RADIO WHERE RAFID='".$_POST['id']."'";
+					$query = "SELECT BAND_900, BAND_1800, BAND_UMTS, BAND_UMTS900, BAND_LTE800, BAND_LTE1800, BAND_LTE2600, ACQ_PARTNER,NET1_LINK  FROM BSDS_RAF_RADIO t1 LEFT JOIN BSDS_RAFV2 t2 on t1.RAFID=t2.RAFID WHERE t1.RAFID='".$_POST['id']."'";
 					//echo $query;
 					$stmt= parse_exec_fetch($conn_Infobase, $query, $error_str, $res);
 					if (!$stmt) {
@@ -718,29 +715,31 @@ if ($_POST['action']=="attach_BSDSKEY"){
 					}
 
 
-					$query = "SELECT TASK_NAME FROM VW_RAF_PROCESSTAKS WHERE RAFTYPE='".$_POST['raftype']."' AND PHASE='skip'";
+					$query2 = "SELECT TASK_NAME FROM VW_RAF_PROCESSTAKS WHERE RAFTYPE='".$_POST['raftype']."' AND PHASE='skip'";
 					//echo $query;
-					$stmt= parse_exec_fetch($conn_Infobase, $query, $error_str, $res);
-					if (!$stmt) {
+					$stmt2= parse_exec_fetch($conn_Infobase, $query2, $error_str, $res2);
+					if (!$stmt2) {
 						die_silently($conn_Infobase, $error_str);
 					 	exit;
 					}else{
-						OCIFreeStatement($stmt);
-						$amount_of_skip=count($res['TASK_NAME']);
+						OCIFreeStatement($stmt2);
+						$amount_of_skip=count($res2['TASK_NAME']);
 					}
 					for ($i = 0; $i <$amount_of_skip; $i++) { 
-						$tasks.=$res['TASK_NAME'][$i]."='NA',";
+						$tasks.=$res2['TASK_NAME'][$i]."='NA',";
 					}
 
-					$query="UPDATE BSDS_RAFV2 SET
+					$tasks.="CON_PARTNER=ACQ_PARTNER,";
+
+					$query5="UPDATE BSDS_RAFV2 SET
 					UPDATE_DATE = SYSDATE,
 			       	UPDATE_BY     = '".$guard_username."',
 			       	".$tasks."
 			       	RADIO_FUND='".substr($band,0,-1)."'
 					WHERE RAFID='".$_POST['id']."'";
-					//echo $query;
-					$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
-					if (!$stmt) {
+					//echo $query5;
+					$stmt5 = parse_exec_free($conn_Infobase, $query5, $error_str);
+					if (!$stmt5) {
 						die_silently($conn_Infobase, $error_str);
 					}else{
 						OCICommit($conn_Infobase);
@@ -754,6 +753,25 @@ if ($_POST['action']=="attach_BSDSKEY"){
 						die_silently($conn_Infobase, $error_str);
 					}else{
 						OCICommit($conn_Infobase);
+					}
+
+					if ($res['ACQ_PARTNER'][0]!=''){
+						$queryUP = "INSERT INTO INFOBASE.NET1UPDATER_PARTIES VALUES ('".$res['NET1_LINK'][0]."','CON','".$res['ACQ_PARTNER'][0]."',SYSDATE,0,'".$_POST['id']."')";
+						//echo $queryUP.EOL;
+						$stmtUP = parse_exec_free($conn_Infobase, $queryUP, $error_str);
+						if (!$stmtUP) {
+							die_silently($conn_Infobase, $error_str);
+						}else{
+							OCICommit($conn_Infobase);
+						}
+						$query3="INSERT INTO INFOBASE.BSDS_RAF_HISTORY (RAFID, ACTION_DATE, STATUS, ACTION_BY, FIELD) VALUES ('".$_POST['id']."',SYSDATE,'".escape_sq($val)."','".$guard_username."','CON=ACQ_PARTNER IN N1')";
+						//echo $query3;
+						$stmt3 = parse_exec_free($conn_Infobase, $query3, $error_str);
+						if (!$stmt3) {
+							die_silently($conn_Infobase, $error_str);
+						}else{
+							OCICommit($conn_Infobase);
+						}
 					}
 				}else if ($_POST['value']=='BASE BP YES'){
 
@@ -778,7 +796,7 @@ if ($_POST['action']=="attach_BSDSKEY"){
 					}
 
 				}
-			}else if ($_POST['value']!='NA' AND $_POST['value']!='NOT OK' AND $_POST['value']!='REJECTED' && substr_count($guard_groups, 'Admin')!=1){
+			}else if ($_POST['value']!='NA' AND $_POST['value']!='NOT OK' AND $_POST['value']!='REJECTED'){
 				$res["msg"] = "The reason why ACQ IS REQUIRED or NOT REQUIRED has to be inserted into RAF 0!";
 				$res["rtype"]="error";
 				$may_update='no';
@@ -821,15 +839,50 @@ if ($_POST['action']=="attach_BSDSKEY"){
 			}else if ($_POST['field']=="NET1_FAC"){
 					$extra="PARTNER_VALREQ='REJECTED'";
 			}
-			$query = "UPDATE BSDS_RAFV2 SET ".$_POST['field']." ='NOT OK',".$extra;
+			if($extra==''){
+				$query = "UPDATE BSDS_RAFV2 SET ".$_POST['field']." ='REJECTED'";
+			}else{
+				$query = "UPDATE BSDS_RAFV2 SET ".$_POST['field']." ='NOT OK',".$extra;
+
+			}
+			
 		}else if (trim(substr($_POST['field'],-7))=="_REJECT"){
 			$query = "UPDATE BSDS_RAFV2 SET ".$_POST['field']." ='".escape_sq($val)."<br>' ||".$_POST['field']; //APPEND reason for rejection
 		}else{
 			$query = "UPDATE BSDS_RAFV2 SET ".$_POST['field']." ='".escape_sq($val)."'";
 		}
 
-		if (trim($_POST['field'])=="CON_PARTNER" && $_POST['value']!="NOT OK"){
+
+		if (trim($_POST['field'])=="CON_PARTNER" && $_POST['value']!="NOT OK" && $_POST['value']!="NA" && $_POST['raftype']!="MOD Upgrade"){
 			$query.=",NET1_FUND='AUTOMATIC'";
+		}else if($_POST['raftype']=="MOD Upgrade" && $_POST['field']=="CON_PARTNER" && $_POST['value']!="" && $_POST['value']!="NA"  && $_POST['value']!="NOT OK"){
+			$query4 = "SELECT N1_UPGNR FROM MASTER_REPORT WHERE IB_RAFID='".$_POST['id']."'";
+			//echo $query;
+			$stmt= parse_exec_fetch($conn_Infobase, $query4, $error_str, $res);
+			if (!$stmt) {
+				die_silently($conn_Infobase, $error_str);
+			 	exit;
+			}else{
+				OCIFreeStatement($stmt);
+			}
+			if ($res['N1_UPGNR'][0]!=''){
+				$queryUP = "INSERT INTO INFOBASE.NET1UPDATER_PARTIES VALUES ('".$res['N1_UPGNR'][0]."','CON','".$_POST['value']."',SYSDATE,0,'".$_POST['id']."')";
+				//echo $queryUP.EOL;
+				$stmtUP = parse_exec_free($conn_Infobase, $queryUP, $error_str);
+				if (!$stmtUP) {
+					die_silently($conn_Infobase, $error_str);
+				}else{
+					OCICommit($conn_Infobase);
+				}
+				$query3="INSERT INTO INFOBASE.BSDS_RAF_HISTORY (RAFID, ACTION_DATE, STATUS, ACTION_BY, FIELD) VALUES ('".$_POST['id']."',SYSDATE,'".escape_sq($val)."','".$guard_username."','".$_POST['field']." IN N1')";
+				//echo $query3;
+				$stmt3 = parse_exec_free($conn_Infobase, $query3, $error_str);
+				if (!$stmt3) {
+					die_silently($conn_Infobase, $error_str);
+				}else{
+					OCICommit($conn_Infobase);
+				}
+			}
 		}	
 
 		if ((trim(strtoupper($_POST['value']))=="REJECTED" || trim(strtoupper($_POST['value']))=="REJECT") && $_POST['field']=="NET1_LINK"){

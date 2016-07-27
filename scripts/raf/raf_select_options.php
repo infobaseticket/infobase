@@ -5,7 +5,7 @@ require_once($config['sitepath_abs']."/bsds/PHPlibs/oci8_funcs.php");
 
 $id=explode("-",$_GET['name']);
 
-if ($_POST['field']!="READY_BUILD" && $_POST['field']!="PARTNER_VALREQ" && $_POST['field']!="BP_NEEDED" && $_POST['field']!="COF_ACQ"  && $_POST['field']!="COF_CON" && $_POST['field']!="PARTNER_ACQUIRED" && $_POST['field']!="RADIO_FUND" && $_POST['field']!="SITELISTNOTPREF" && $_POST['field']!="UPGNRS" && $_POST['field']!="BSDS" && $_POST['field']!="NET1_LINK" && $_POST['field']!="ACQ_PARTNER" && $_POST['field']!="CON_PARTNER"){
+if ($_POST['field']!="READY_BUILD" && $_POST['field']!="BCS_NET1" && $_POST['field']!="PARTNER_VALREQ" && $_POST['field']!="BP_NEEDED" && $_POST['field']!="COF_ACQ"  && $_POST['field']!="COF_CON" && $_POST['field']!="PARTNER_ACQUIRED" && $_POST['field']!="RADIO_FUND" && $_POST['field']!="SITELISTNOTPREF" && $_POST['field']!="UPGNRS" && $_POST['field']!="BSDS" && $_POST['field']!="NET1_LINK" && $_POST['field']!="ACQ_PARTNER" && $_POST['field']!="CON_PARTNER"){
 	$array['OK']='OK';
 	if ($_POST['field']!="TXMN_ACQUIRED"){
 	$array['NOT OK']='NOT OK';
@@ -43,15 +43,17 @@ if ($_POST['field']=="PARTNER_DESIGN"){
 }
 
 if ($_POST['field']=="BP_NEEDED"){
-	if (($_POST['oldval']=='NOT OK' && substr_count($guard_groups, 'Partner')==1) or substr_count($guard_groups, 'Admin')==1){
+	if ((($_POST['oldval']=='NOT OK' or $_POST['oldval']=='REJECTED') && substr_count($guard_groups, 'Partner')==1) or substr_count($guard_groups, 'Admin')==1){
 		$array['PARTNER BP YES']='PARTNER BP YES';
 		$array['PARTNER BP NO']='PARTNER BP NO';
 	}
 	if (($_POST['oldval']=='PARTNER BP YES' && substr_count($guard_groups, 'Base')==1) or substr_count($guard_groups, 'Admin')==1){
 		$array['BASE BP YES']='BASE BP YES';
+		$array['REJECTED']='REJECT';
 	}
 	if (($_POST['oldval']=='PARTNER BP NO' && substr_count($guard_groups, 'Base')==1) or substr_count($guard_groups, 'Admin')==1){
 		$array['BASE BP NO']='BASE BP NO';
+		$array['REJECTED']='REJECT';
 	}
 	if (substr_count($guard_groups, 'Admin')==1){
 		$array['NOT OK']='NOT OK';

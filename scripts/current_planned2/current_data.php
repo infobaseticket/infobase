@@ -207,7 +207,7 @@ if($band=="G9" || $band=="G18"){
 			
 		}//END if ($viewtype=="FUND"){ 
 
-		//Here we overwrite if not data has been storead aat time of BSDS funding
+		//Here we overwrite if no data has been storead at time of BSDS funding
 		if (($viewtype=="FUND" && $check_current_exists_SECTOR==0) or $viewtype!="FUND"){ 
 			//echo "get asset data";
 			$$STATE=get_config($currentdata['CELLSTATUS'][$i],$band);
@@ -228,11 +228,12 @@ if($band=="G9" || $band=="G18"){
 				$$ANTTYPE=$currentdata['ANTENNATYPE'][$i];
 				$ANTHEIGHT="ANTHEIGHT".$k."_".$j;
 				$$ANTHEIGHT=number_format(round($currentdata['ANTENNAHEIGHT'][$i],2),2);
+
 				$MECHTILT="MECHTILT".$k."_".$j;
 				$MECHTILT_t="MECHTILT_DIR".$k."_".$j; 
 				$$MECHTILT=trim(abs($currentdata['DOWNTILT'][$i]));
-
 				$$MECHTILT_t=get_mechtilt_dir($currentdata['DOWNTILT'][$i]);
+
 				$ELECTILT="ELECTILT".$k."_".$j;
 				$$ELECTILT=$currentdata['ANTENNATYPE'][$i];
 				$$ELECTILT=substr($$ANTTYPE, -2);
@@ -636,33 +637,29 @@ if($band=="G9" || $band=="G18"){
 					//echo "$j -- $k SECTORID $SECTORID / $ANTTYPE1".$currentdata['ANTTYPE'][$i]."<br>";
 					$ANTHEIGHT1="ANTHEIGHT1_$j";
 					$$ANTHEIGHT1=number_format(round($currentdata['HEIGHT'][$i],2),2);
+
 					$ELECTILT1="ELECTILT1_$j";
-					$temp=explode("_",$$ANTTYPE1);
-					$amount1=count($temp)-1;
-					$amount2=count($temp)-2;
-					//echo $amount;
-					if(is_numeric($temp[$amount1])){
-						$$ELECTILT1=$temp[$amount1];
-					}else{
-						$$ELECTILT1=$temp[$amount2];
-					}
+					$$ELECTILT2=$currentdata['ELEC_TILT'][$i];
+
 					$MECHTILT1="MECHTILT1_$j";
 					$$MECHTILT1=trim(abs($currentdata['MECH_TILT'][$i]));
 					$MECHTILT1_t="MECHTILT1_".$j."_t";
 					$$MECHTILT1_t=get_mechtilt_dir($currentdata['MECH_TILT'][$i]);
 				}else if ($k=="2"){
 					$AZI2="AZI2_$j";
-					$$AZI2=$currentdata['AZIMUTH2'][$i];
+					$$AZI2=$currentdata['AZIMUTH'][$i];
 					$ANTTYPE2="ANTTYPE2_".$j;
 					$$ANTTYPE2=$currentdata['ANTTYPE'][$i];
 					$ANTHEIGHT2="ANTHEIGHT2_$j";
 					$$ANTHEIGHT2=number_format(round($currentdata['HEIGHT'][$i],2),2);
 					$MECHTILT2="MECHTILT2_$j";
 					$$MECHTILT2=$currentdata['MECH_TILT'][$i];
+
 					$ELECTILT2="ELECTILT2_$j";
 					$$ELECTILT2=$currentdata['ELEC_TILT'][$i];
+
 					$MECHTILT2_t="MECHTILT2_".$j."_t";
-					$$MECHTILT2_t=get_mechtilt_dir($currentdata['MECH_TILT'][$i]);
+					$$MECHTILT2_t=get_mechtilt_dir($currentdata[''][$i]);
 				}
 			}else{
 				

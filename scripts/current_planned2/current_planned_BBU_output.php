@@ -25,8 +25,8 @@ if (!$stmt){
 	}
 }
 
-$query =  "select BBU_SLOTNO,BBU_CARD,SLOT,DESCRIPTION from SWITCH_4GZTE_SDRDEVICEGROUP WHERE MEID = '".ltrim(substr($_POST['siteID'],2), '0')."' AND BBU_CARD IS NOT NULL ORDER BY BBU_SLOTNO ASC";
-//echo $query;
+$query =  "select BBU_SLOTNO,BBU_CARD,SLOT,DESCRIPTION from SWITCH_4GZTE_SDRDEVICEGROUP WHERE MEID = '".ltrim(substr($_POST['siteID'],2,-1), '0')."' AND BBU_CARD IS NOT NULL ORDER BY BBU_SLOTNO ASC";
+echo $query;
 $stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $resSDR);
 	if(!$stmt){
 	die_silently($conn_Infobase, $error_str);
@@ -54,7 +54,7 @@ if (!$stmt){
 		$technos4G.=$res1['TECHNO'][$i].",";
 	}
 }
-$query =  "select SLOTNO, USERLABEL,BBU_SLOTNO,BBU_CARD  from SWITCH_3GZTE_PLUGINUNIT WHERE RACKNO = '".ltrim(substr($_POST['siteID'],2), '0')."'  AND BBU_CARD IS NOT NULL ORDER BY SLOTNO ASC";
+$query =  "select SLOTNO, USERLABEL,BBU_SLOTNO,BBU_CARD  from SWITCH_3GZTE_PLUGINUNIT WHERE RACKNO = '".ltrim(substr($_POST['siteID'],2,-1), '0')."'  AND BBU_CARD IS NOT NULL ORDER BY SLOTNO ASC";
 //echo $query;
 $stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
 	if(!$stmt){
@@ -69,7 +69,9 @@ $stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
 		$hidden3G.="<input type='hidden' name='cur_C2_SLOT".$slot."' value='".$res1['BBU_CARD'][$i]."'>";
 	}
 }
-
+?>
+<div id="<?=$_POST['print']?>curpl_<?=$_POST['bsdskey']?><?=$_POST['band']?><?=$_POST['status']?><?php echo str_replace(':', '', str_replace('/', '', str_replace(' ', '', $_POST['bsdsbobrefresh']))); ?>"  style='page-break-after: always'>
+<?php
 if ($_POST['print']!="yes"){
 ?>
 <form action="scripts/current_planned2/save_pl_cu_BBU.php" method="post" id="current_planned_form<?=$_POST['band']?><?=$viewtype?>" role="form">
@@ -534,6 +536,9 @@ if ($_POST['print']!="yes"){
 	</td>
 </tr>
 </table>
+
+<p align='center'><input type="submit" class="btn btn-primary subCurPl" value="Save layout" id="save_bsdsdata" data-techno="<?=$_POST['band']?>" data-viewtype="<?=$viewtype?>"></p>
+
 <?php
 
 if ($_POST['print']!="yes"){
@@ -542,5 +547,5 @@ if ($_POST['print']!="yes"){
 <?php } 
 
 OCILogoff($conn_Infobase);
-
 ?>
+</div>

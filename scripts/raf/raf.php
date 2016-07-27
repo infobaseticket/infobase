@@ -103,7 +103,18 @@ if ($amount_of_RAFS>=1){
             $output_raf3="";
             $userdata="";
 
-            if ($res1['TYPE'][$i]=="New Indoor" || $res1['TYPE'][$i]=="Indoor Upgrade" || $res1['TYPE'][$i]=="IND Upgrade" || $res1['TYPE'][$i]=="RPT Upgrade"){
+
+            $query="SELECT INDOOR FROM RAF_PROCESS_STEPS WHERE RAFTYPE='".$res1['TYPE'][$i]."'";
+            //echo $query;
+            $stmtPR= parse_exec_fetch($conn_Infobase, $query, $error_str, $resPR);
+            if (!$stmtPR){
+                die_silently($conn_Infobase, $error_str);
+                exit;
+            } else {
+                OCIFreeStatement($stmtPR);
+            }
+
+            if ($resPR['INDOOR'][0]=="yes"){
                 $raf_type="indoor";
             }else{
                 $raf_type="outdoor";
@@ -121,6 +132,7 @@ if ($amount_of_RAFS>=1){
                 OCIFreeStatement($stmtPR);
                 $amount_of_TASKS=count($resPR['TASK_NAME']);
             }
+            
             $skip_ACQ_TASKS=array();
             $query="SELECT TASK_NAME FROM VW_RAF_PROCESSTAKS WHERE RAFTYPE='".$res1['TYPE'][$i]."' and PHASE='skip' AND STEPNUM IS NOT NULL";
             //echo $query;
@@ -405,18 +417,6 @@ if ($amount_of_RAFS>=1){
                 $gclass2="";
             }
 
-           
-            if($res1['BSDSKEY'][$i]!="" && substr_count($guard_groups, 'Administrators')!=1){
-            	$BSDSINFO="<span class='label label-warning'>BSDS: ".$res1['BSDSKEY'][$i]."</span>";
-            }else{
-                if ($res1['BSDSKEY'][$i]!=''){
-                    $BSDSKEY_CHANGE=$res1['BSDSKEY'][$i];
-                }else{
-                    $BSDSKEY_CHANGE="NOT OK";
-                }
-            	$BSDSINFO="<span id='BSDS-".$res1['RAFID'][$i]."' class='label label-warning editableSelectItem' data-type='select' data-pk='".$res1['RAFID'][$i]."' data-siteid='".$res1['SITEID'][$i]."' data-original-title='Provide the corresponding BSDS'>".$BSDSKEY_CHANGE."</span>";
-            }
-
             $$output_raf2.="<table class='table table-bordered tablefixecol table-condensed' style='table-layout: fixed;margin:0;' id='RAFTable".$_POST['siteID'].$res1['RAFID'][$i]."'>
             <colgroup>
                 <col style='width: 122px'>
@@ -466,7 +466,10 @@ if ($amount_of_RAFS>=1){
                     <span class='sr-only'>Toggle Dropdown</span>
                   </button>
                   <ul class='dropdown-menu' role='menu'>";
-                  if ($res1['NET1_LINK'][$i]!="NOT OK"){
+                    if ($res1['TYPE'][$i]=="MOD Upgrade" && ($res1['MASTERRAF'][$i]=="" or $res1['MASTERDEL'][$i]=="yes") && (substr_count($guard_groups, 'Administrators')==1 or substr_count($guard_groups, 'Base_TXMN')==1)){
+                    $$output_raf2.="<li><a href='#' class='rafnav' data-action='txmodupgrade' data-id='".$res1['RAFID'][$i]."' title='ADD MOD TX Upgrade'><span class='glyphicon glyphicon-plus-sign'> ADD TX UPG</span></a></li>";
+                    }
+                    if ($res1['NET1_LINK'][$i]!="NOT OK"){
                     $$output_raf2.="<li><a href='#' class='rafnav' data-action='net1explorer' data-siteid='".$res1['SITEID'][$i]."' data-net1link='".$res1['NET1_LINK'][$i]."' title='OPEN corresponding NET1 info'><span class='glyphicon glyphicon-th-large'> NET1</span></a></li>";
                     }
                     $$output_raf2.="<li><a href='scripts/raf/raf_details_history.php' class='rafnav' data-action='history' data-id='".$res1['RAFID'][$i]."' data-siteid='".$res1['SITEID'][$i]."'><span class='glyphicon glyphicon-time'></span> ACTION LOG</a></li>
@@ -484,8 +487,14 @@ if ($amount_of_RAFS>=1){
                     <li class='divider'></li>";
                     $$output_raf2.="<li><a href='scripts/tracking/tracking.php' class='rafnav' data-action='tracking' data-id='".$res1['RAFID'][$i]."' data-siteid='".$res1['SITEID'][$i]."'><span class='glyphicon glyphicon-pencil'></span> TRACKING</a></li>
                   </ul>
-                </div><br>
-                ".$BSDSINFO."<br>
+                </div><br>";
+                if ($res1['MASTERRAF'][$i]!='' &&  $res1['MASTERDEL'][$i]!="yes"){
+                    $$output_raf2.="  <span class='label label-success'>".$res1['MASTERRAF'][$i]."</span>";
+                }
+                if ($res1['MASTER_RAFID'][$i]!=''){
+                    $$output_raf2.="  <span class='label label-danger'>".$res1['MASTER_RAFID'][$i]."</span>";
+                }
+                $$output_raf2.="<br>
                 </td>";
 
                  $$output_raf2.="<td><div style='min-height:45px;'>".$res1['SITEID'][$i]."</div></td>
@@ -550,15 +559,16 @@ if ($_POST['siteID'] && (substr_count($guard_groups, 'Base')!=0 or substr_count(
 <?php } ?>
 
 
- 
 
-<button type="button" class="btn btn-default btn-xs rightArrowRAF" data-scrollid="scroll<?=$_POST['siteID']?><?=$_POST['rafid']?>">
-  <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
-</button>
-&nbsp;&nbsp;
-<button type="button" class="btn btn-default btn-xs leftArrowRAF" data-scrollid="scroll<?=$_POST['siteID']?><?=$_POST['rafid']?>" style="margin:0 5px 0 5px;">
-  <span class="glyphicon glyphicon-backward" aria-hidden="true" ></span>
-</button>
+<div id="scrollsRAF" class="scrolls rafScroll">
+    <button type="button" class="btn btn-default btn-xs leftArrow Arrows" data-scrollid="scroll<?=$_POST['siteID']?><?=$_POST['rafid']?>" style="margin:0 5px 0 5px;">
+      <span class="glyphicon glyphicon-backward" aria-hidden="true" ></span>
+    </button>
+    &nbsp;
+     <button type="button" class="btn btn-default btn-xs rightArrow Arrows" data-scrollid="scroll<?=$_POST['siteID']?><?=$_POST['rafid']?>">
+      <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
+    </button>
+</div>
 
 <?php
 if ($_POST['siteID'] or $_POST['rafid']) { 

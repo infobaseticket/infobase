@@ -270,7 +270,7 @@ if ($_POST['lognode']!="" && $_POST['bsdskey']!=""){
 				if ($_POST['band']=="L18" or $_POST['band']=="L26" or $_POST['band']=="L8"){
 					$query1 .= "BPL='".$_POST['pl_BPL']."',BPC='".$_POST['pl_BPC']."',BPK='".$_POST['pl_BPK']."',CC='".$_POST['pl_CC']."',BPN2='".$_POST['pl_BPN2']."',PM0='".$_POST['pl_PM0']."',FS5='".$_POST['pl_FS5']."',RECT='".$_POST['pl_RECT']."'";
 				}else if ($_POST['band']=="U21" or $_POST['band']=="U9"){
-					$query1 .= "BPC='".$_POST['pl_BPC']."',BPK='".$_POST['pl_BPK']."',CC='".$_POST['pl_CC']."',BPN2='".$_POST['pl_BPN2']."',PM0='".$_POST['pl_PM0']."',FS5='".$_POST['pl_FS5']."',RECT='".$_POST['pl_RECT']."'";
+					$query1 .= "BPL='".$_POST['pl_BPL']."',BPC='".$_POST['pl_BPC']."',BPK='".$_POST['pl_BPK']."',CC='".$_POST['pl_CC']."',BPN2='".$_POST['pl_BPN2']."',PM0='".$_POST['pl_PM0']."',FS5='".$_POST['pl_FS5']."',RECT='".$_POST['pl_RECT']."'";
 				}
 				$query1 .=" WHERE BSDSKEY= '".$_POST['bsdskey']."' AND TECHNO='".$_POST['band']."' AND STATUS='".$_POST['viewtype']."'";
 				if ($_POST['viewtype']=="POST" || $_POST['viewtype']=="FUND" || $_POST['viewtype']=="BUILD"){

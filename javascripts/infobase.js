@@ -15,6 +15,60 @@ function forceResponsiveTables(tableid) {
     }
 }
 
+function scrollContent(direction,content) {
+    var amount = (direction === "left" ? "-=15px" : "+=15px");
+    $('#'+content).animate({
+        scrollLeft: amount
+    }, 1, function() {
+       if (scrolling) {
+            scrollContent(direction,content);
+       }
+    });
+}
+
+function scrollToAnchor(aid){
+    var aTag = $("a[name='"+ aid +"']");
+    $('html,body').animate({scrollTop: aTag.offset().top},'slow');
+}
+
+	var hidWidth;
+	var scrollBarWidths = 40;
+
+	var widthOfList = function(){
+	  var itemsWidth = 0;
+	  $('.list li').each(function(){
+	    var itemWidth = $(this).outerWidth();
+	    itemsWidth+=itemWidth;
+	  });
+	  return itemsWidth;
+	};
+
+	var widthOfHidden = function(){
+	  return (($('.wrapper').outerWidth())-widthOfList()-getLeftPosi())-scrollBarWidths;
+	};
+
+	var getLeftPosi = function(){
+	  return $('.list').position().left;
+	};
+
+	var reAdjust = function(elem){
+	  //alert($('.wrapper').outerWidth() + "----"+widthOfList());
+	  if (($('#'+elem).outerWidth()) < widthOfList()) {
+	    $('#right'+'subTabs').show();
+	  }
+	  else {
+	    $('#right'+'subTabs').hide();
+	  }
+	  
+	  if (getLeftPosi()<0) {
+	    $('#left'+'subTabs').show();
+	  }
+	  else {
+	    $('#'+elem).animate({left:"-="+getLeftPosi()+"px"},'slow');
+	    $('#left'+'subTabs').hide();
+	  }
+	}
+
 $(document).ready( function(){
 /*
 	var url=window.location.pathname;
@@ -175,7 +229,7 @@ $(document).ready( function(){
 
 		var module=$(this).attr('id');
 		//alert(module);
-		$('#MainsiteTabs').addtab2('mod_'+module,'glyphicon-certificate',module);
+		$('#MainsiteTabs').addCtab('MainsiteTabs','mod_'+module,'glyphicon-certificate',module);
 		$('#mod_'+module).html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...');
 
 		$('#spinner').spin('large');	
@@ -286,15 +340,7 @@ $(document).ready( function(){
 	*/
 	$("body").on("click",".navicon",function( e ){
 		var techno='';
-		if ($(this).hasClass('bsds')==true){
-			var viewtype='BSDS';
-			var url = 'scripts/general_info/general_info.php';
-			var iconImg='glyphicon-book';
-		}else if ($(this).hasClass('bsds2')==true){
-			var viewtype='BSDS';
-			var url = 'scripts/general_info2/general_info.php';
-			var iconImg='glyphicon-book';
-		}else if ($(this).hasClass('oss')==true){
+		if ($(this).hasClass('oss')==true){
 			var viewtype='OSS';
 			var url = 'scripts/explorer/site_explorer/site_explorer.php';
 			var iconImg='glyphicon-tint';
@@ -302,15 +348,6 @@ $(document).ready( function(){
 			var viewtype='RAN';
 			var url = 'scripts/filebrowser/filebrowser.php';
 			var iconImg='glyphicon-folder-open';
-		}else if ($(this).hasClass('asset')==true){
-			var candidate = $(this).data('candidate');
-			$('#asset'+candidate).slideToggle('fast');
-			var url='';
-		}else if ($(this).hasClass('assettechno')==true){			
-			var url = 'scripts/explorer/asset_explorer/asset_explorer.php';
-			var iconImg='glyphicon-globe';
-			var techno = $(this).data('techno');
-			var viewtype='ASSET';
 		}else if ($(this).hasClass('emission')==true){
 			var viewtype='EMISSION';
 			var url = 'scripts/emission/emission.php';
@@ -355,6 +392,10 @@ $(document).ready( function(){
 			var viewtype='VALIDATION';
 			var url = 'scripts/validation/validation.php';
 			var iconImg='glyphicon-check';
+		}else if ($(this).hasClass('txmn')==true){
+			var viewtype='LLMW';
+			var url = 'scripts/txmn/txmn.php';
+			var iconImg='glyphicon-link';
 		}else{
 			alert('ICON CLICKED NOT PROGRAMMED');
 		}
@@ -367,22 +408,20 @@ $(document).ready( function(){
 			var the_form_id = form.attr("id");
 			var siteID = $('#'+the_form_id +' input[name="siteID"]').val();
 		    var candidate = $('#'+the_form_id +' input[name="candidate"]').val();
-		 	if (viewtype=='OSS' || viewtype=='ASSET'){	
+		 	if (viewtype=='OSS'){	
 		    var bypass = $('#'+the_form_id +' input[name="bypass"]').val();
 			}else{
 				bypass='';
 			}
 
-			if (viewtype=='BSDS' || viewtype=='ASSET'){
-				var title=viewtype+' '+techno+'<br><span class="badge pull-right">'+ candidate+'</span>';
-			}else if (viewtype=='EVENT'){
+			if (viewtype=='EVENT'){
 				var title=viewtype+' '+siteID+' '+techno;
 			}else if (viewtype=='EVENT'){
 				var title=siteID;
 			}else{
 				var title=viewtype+' '+techno;
 			}
-			$('#siteTabs').addtab(viewtype+siteID+techno,iconImg,title); 
+			$('#siteTabs').addCtab('siteTabs',viewtype+siteID+techno,iconImg,title); 
 
 			$("#"+viewtype+siteID+techno).html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...');
 		 
@@ -400,9 +439,6 @@ $(document).ready( function(){
 					}else if (viewtype=='LOS'){		
 						forceResponsiveTables('LOSTable'+siteID);
 						$('#LOSTable'+siteID).scroller('LOSTable'+siteID,3);
-					}else if (viewtype=='ASSET'){		
-						forceResponsiveTables('ASSETTable'+siteID+techno);
-						$('#ASSETTable'+siteID+techno).scroller('ASSETTable'+siteID+techno,1);
 					}else if (viewtype=='RAN'){
 						$('#searchbuttonFiles').click();
 						$('#filefilter').collapse('toggle');
@@ -602,6 +638,65 @@ $("body").on("click",".cluster",function( e ){
 			}
 		});
 	});
+
+	$("body").on("click",".bsds",function( e ){
+		var upgnr=$(this).data('upgnr');
+		var candidate=$(this).data('candidate');
+		var nbup=$(this).data('nbup');
+		var siteid=$(this).data('siteid');
+
+		$.ajax({
+			type: "POST",
+			url: 'scripts/general_info/general_info.php',
+			data: { upgnr:upgnr,candidate:candidate,nbup:nbup,siteid:siteid},
+			success : function(data){
+				$('#spinner').spin(false);
+				if (nbup!='UPG'){
+					var title='BSDS '+candidate;
+					var tab=candidate;
+				}else{
+					var title='BSDS '+' '+upgnr;
+					var tab=candidate+upgnr;
+				}
+				$('#siteTabs').addCtab('siteTabs','BSDS_'+tab,'glyphicon-book',title);
+				$('#BSDS_'+tab).html(data);
+			},
+			beforeSend: function ( xhr ) {
+				$('#spinner').spin();
+			}
+		});
+	});
+
+/****************************************************************************************
+* ASSET EXPLORER
+*****************************************************************************************/
+	$("body").on("click",".asset",function( e ){
+		var upgnr=$(this).data('upgnr');
+		var candidate=$(this).data('candidate');
+		var nbup=$(this).data('nbup');
+		var siteid=$(this).data('siteid');
+
+		$.ajax({
+			type: "POST",
+			url: 'scripts/asset_explorer/asset_explorer.php',
+			data: { upgnr:upgnr,candidate:candidate,nbup:nbup,siteid:siteid},
+			success : function(data){
+				$('#spinner').spin(false);
+				if (nbup!='UPG'){
+					var title='BSDS '+candidate;
+					var tab=candidate;
+				}else{
+					var title='BSDS '+' '+upgnr;
+					var tab=candidate+upgnr;
+				}
+				$('#siteTabs').addCtab('siteTabs','ASSET_'+tab,'glyphicon-globe',title);
+				$('#ASSET_'+tab).html(data);
+			},
+			beforeSend: function ( xhr ) {
+				$('#spinner').spin();
+			}
+		});
+	});
 	
 	
 /****************************************************************************************
@@ -629,17 +724,6 @@ $("body").on("click",".cluster",function( e ){
 	  '  </div>' +
 	  '</div>';
 
-		
-		//window.open(ranurl,'LIVERAN', 'width=800, height=600,menubar=yes,location=yes');
-		/*
-		$("#myModalDialog").addClass("modalwide");
-	   	$('#myModal .modal-header').html('<h4>LIVE RAN BROWSER:</h4>');
-	    $('#myModal'+' .modal-header').show();
-	    $("#savemodal").hide();
-	    $('#myModal .modal-body').html('<iframe src="'+ranurl+'" style="zoom:0.60" frameborder="0" height="800" width="99.6%"></iframe>');  
-	    $('#myModal').modal({show:true});
-		 return false;
-		 */
 		$(popupTemplate).modal();
 		 return false;
 
@@ -686,7 +770,7 @@ $("body").on("click",".cluster",function( e ){
 				'cluster':cluster
 			},
 			success : function(data){
-				$('#MainsiteTabs').addtab2('RAFREPORT','glyphicon-road','RAF ACTIONS');
+				$('#MainsiteTabs').addCtab('MainsiteTabs','RAFREPORT','glyphicon-road','RAF ACTIONS');
 				$("#RAFREPORT").html(data).fadeIn(1000); 
 				$("#displayRafform").click();
 			}
@@ -699,13 +783,13 @@ $("body").on("click",".cluster",function( e ){
 	$("body").on("click",".rafnav",function( e ){
 		e.preventDefault();
 
-		var action=$(this).data('action');		
+		var action=$(this).data('action');
+		var rafid=$(this).data('id');	
 		var siteid=$(this).data('site');
-		var rafid=$(this).data('id');
 		var type=$(this).data('type');
 		var file=$(this).data('file');
 		
-
+		
 		if (action=="view"){
 
 			var actiondo=$(this).data('actiondo');
@@ -869,7 +953,30 @@ $("body").on("click",".cluster",function( e ){
 			    }
 			  }
 			});
-		
+		}else if (action=="txmodupgrade"){
+
+			jQuery.ajax({
+			    type: 'POST',
+			    url: 'scripts/raf/raf_details_other.php',
+			    data: { master_rafid:rafid },
+			    success: function(data) {
+			        bootbox.dialog({
+			            message: data,
+			            title: '<h4>Create new MOD TX Upgrade RAF for '+rafid+':</h4>',
+			             buttons: {
+				            success: {
+				                label:"Create MOD TX Upgrade",
+				                className: "btn-success",
+				                callback: function() {								
+							        
+									$('#new_raf_form').ajaxSubmit(optionsRafnew);
+							    }
+				            }
+				        }
+			        });
+			    },
+			   
+			});
 		}else if (action=="delete_raf" || action=="undelete_raf" || action=="unlock_raf" || action=="lock_raf"){
 			e.preventDefault();
 			var rafid=$(this).data('id');
@@ -961,7 +1068,7 @@ $("body").on("click",".cluster",function( e ){
 			e.preventDefault();
  			var net1link=$(this).data('net1link');
 			var siteID =$(this).data('siteid');
-			$('#siteTabs').addtab('NET1_'+net1link,'glyphicon-th-large','NET1 '+net1link);
+			$('#siteTabs').addCtab('siteTabs','NET1_'+net1link,'glyphicon-th-large','NET1 '+net1link);
 			$.ajax({
 				type: "POST",
 				url: 'scripts/net1/MSexplorer.php',
@@ -992,7 +1099,7 @@ $("body").on("click",".cluster",function( e ){
 		var rafid=$(this).data('rafid');
 		var siteID=$(this).data('siteid');
 		
-		$('#siteTabs').addtab('RAF'+rafid,'glyphicon-road','RAF ID '+rafid);
+		$('#siteTabs').addCtab('siteTabs','RAF'+rafid,'glyphicon-road','RAF ID '+rafid);
 		$.ajax({
 			type: "POST",
 			url: 'scripts/raf/raf.php',
@@ -1312,49 +1419,6 @@ $("body").on("click",".cluster",function( e ){
 	   	return false; 
 	});
 
-	
-	$("body").on("mousedown",".leftArrowRAF",function( e ){
-	  	var content=$(this).data('scrollid');
-	  	scrolling = true;
-    	scrollContent("left",content);
-	});
-	$("body").on("mouseup",".leftArrowRAF",function( e ){
-	  	scrolling = false;
-	});
-
-	$("body").on("mousedown",".rightArrowRAF",function( e ){
-	  	var content=$(this).data('scrollid');
-	  	scrolling = true;
-    	scrollContent("right",content);
-	});
-	$("body").on("mouseup",".rightArrowRAF",function( e ){
-	  	scrolling = false;
-	});
-
-	function scrollContent(direction,content) {
-	    var amount = (direction === "left" ? "-=15px" : "+=15px");
-	    $('#'+content).animate({
-	        scrollLeft: amount
-	    }, 1, function() {
-	       if (scrolling) {
-	            scrollContent(direction,content);
-	       }
-	    });
-	}
-
-	/*
-	$("body").on("mouseover",".leftArrowRAF",function( e ){
-	  var scrollband=$(this).data('scrollid');
-	  var leftPos = $('#'+scrollband).scrollLeft();
-	  $('#'+scrollband).animate({scrollLeft: leftPos +1px}, 2000);
-	});
-	$("body").on("mouseover",".rightArrowRAF",function( e ){
-      var scrollband=$(this).data('scrollid');
-	  var leftPos = $('#'+scrollband).scrollLeft();
-	  alert(leftPos);
-	  $('#'+scrollband).animate({scrollLeft: leftPos + 450}, 2000);
-	});
-	*/
 
 /****************************************************************************************
 * LOS
@@ -1687,9 +1751,9 @@ $("body").on("click","#displayLosform",function( e ){
 	
 	if ($('#csvreport').is(':checked')){
 		var options = {
-		   	target:  '#reportoutput',
+		   	target:  '#LOSreportoutput',
 		    success:    function(responseText) {
-					$("#reportoutput").show('fast');
+					$("#LOSreportoutput").show('fast');
 					$('#spinner').spin(false);
 			},
 			url:'scripts/los/los_csv.php'
@@ -1795,77 +1859,441 @@ $("body").on("click","#Net1TaskListform",function( e ){
 /****************************************************************************************
 * BSDS
 *****************************************************************************************/
-	$("body").on("click",".new_BSDS",function( e ){
-		var siteid=$(this).data('siteid');
+
+	$("body").on("click",".BSDS_new",function( e ){
 		var candidate=$(this).data('candidate');
-		var addressfk=$(this).data('addressfk');
-		var url = $(this).attr('href');
-		$("#savemodal").data( "module","bsdsNew");
-		$("#savemodal").data( "id",siteid);
-		$('#myModal .modal-header').html('<h4>Create new BSDS for '+candidate+':</h4>');
-		$('#myModal .modal-body').load(url,{siteID:siteid,candidate:candidate,ADDRESSFK:addressfk});
-		$('#myModal').modal('show');
+		var upgnr=$(this).data('upgnr');
+		var nbup=$(this).data('nbup');
+		var siteid=$(this).data('siteid');
+
+		var optionsBSDSCreate = { 
+			data:{ action:'insert_new_bsds_raf'},
+			dataType:  'json',
+			success:  function(response) { 
+				if (response.type==='info'){					
+					Messenger().post({
+						  message:  response.msg
+					});
+					
+					$.ajax({
+						type: "POST",
+						url: 'scripts/general_info/general_info.php',
+						data: { upgnr:upgnr,candidate:candidate,nbup:nbup,siteid:siteid},
+						success : function(data){
+							$('#spinner').spin(false);
+							if (nbup!='UPG'){
+								var title='BSDS '+candidate;
+								var tab=candidate;
+							}else{
+								var title='BSDS '+upgnr;
+								var tab=candidate+upgnr;
+							}
+							$('#siteTabs').addCtab('siteTabs','BSDS_'+tab,'glyphicon-book',title);
+							$('#BSDS_'+tab).html(data);
+						},
+						beforeSend: function ( xhr ) {
+							$('#spinner').spin();
+						}
+					});
+					
+				}	
+			}						
+		}
+
+		jQuery.ajax({
+		    type: 'POST',
+		    url: 'scripts/general_info/general_info_newbsds.php',
+		    data: { candidate:candidate,upgnr:upgnr },
+		    success: function(data) {
+		        bootbox.dialog({
+		            message: data,
+		            title: '<h4>Create new BSDS for '+candidate+' '+upgnr+':</h4>',
+		             buttons: {
+			            success: {
+			                label:"Create BSDS",
+			                className: "btn-success",
+			                callback: function() {								
+						        
+								$('#new_bsds_form'+candidate+upgnr).ajaxSubmit(optionsBSDSCreate);
+						    }
+			            }
+			        }
+		        });
+		    }
+		});
 	});
-
-
+	
 	$("body").on("click",".bsdsdetails2",function( e ){
 		
-		var clicked_tab=$(this).data("techno");		
+		var clicked_tab=$(this).data("techno");	
 		var id=$(this).data("id");
-		var reloadAsset=$(this).data("reloadasset");	
+
+		if (clicked_tab=='PRINTBSDS' || clicked_tab=='PRINTBSDS2'){
+			var print='yes';
+		}else{
+			var print='no';
+		}
+
+		if (clicked_tab=='LOADTECHNO'){
+			var band=$(this).data('band');			
+		}else{
+			var band='';
+		}
+
+    	var createddate=$('#bsdsform_'+id+' input[name="createddate"]').val();
 		var bsdskey=$('#bsdsform_'+id+' input[name="bsdskey"]').val();
-		var status = $('#bsdsform_'+id+' input[name="status"]').val();
-		var candidate = $('#bsdsform_'+id+' input[name="candidate"]').val();
-		var siteid = $('#bsdsform_'+id+' input[name="siteid"]').val();
-		var bsdsbobrefresh=$('#bsdsform_'+id+' input[name="bsdsbobrefresh"]').val();
-		var rafid=$('#bsdsform_'+id+' input[name="rafid"]').val();
+		var upgnr=$('#bsdsform_'+id+' input[name="upgnr"]').val();
+		var candidate=$('#bsdsform_'+id+' input[name="candidate"]').val();
+		var siteid=$('#bsdsform_'+id+' input[name="candidate"]').val();
+		var nbup=$('#bsdsform_'+id+' input[name="nbup"]').val();
 
-		if (clicked_tab!=="CHANGEID" && clicked_tab!=="DELETE" && clicked_tab!=="REMOVEFUNDING"){ 			
+    	var formData= {
+			'datakey': 			$('#bsdsform_'+id+' input[name="datakey"]').val(),
+			'bsdskey': 			bsdskey,
+			'status' : 			$('#bsdsform_'+id+' input[name="status"]').val(),
+			'nbup' : 			nbup,
+			'candidate': 		candidate,
+			'upgnr': 			upgnr,
+			'siteid': 			siteid,
+			'bsdsbobrefresh': 	$('#bsdsform_'+id+' input[name="bsdsbobrefresh"]').val(),
+			'rafid': 			$('#bsdsform_'+id+' input[name="rafid"]').val(),
+			'raftype': 			$('#bsdsform_'+id+' input[name="raftype"]').val(),
+			'frozen': 			$('#bsdsform_'+id+' input[name="frozen"]').val(),
+			'cabtype': 			$('#bsdsform_'+id+' input[name="cabtype"]').val(),
+			'uniran': 			$('#bsdsform_'+id+' input[name="uniran"]').val(),
+			'rectifier': 		$('#bsdsform_'+id+' input[name="rectifier"]').val(),
+			'powersup': 		$('#bsdsform_'+id+' input[name="powersup"]').val(),
+			'technos': 			$('#bsdsform_'+id+' input[name="technos"]').val(),
+			'lognodeG9': 		$('#bsdsform_'+id+' input[name="lognodeG9"]').val(),
+			'lognodeG18': 		$('#bsdsform_'+id+' input[name="lognodeG18"]').val(),
+			'lognodeU9': 		$('#bsdsform_'+id+' input[name="lognodeU9"]').val(),
+			'lognodeU21': 		$('#bsdsform_'+id+' input[name="lognodeU21"]').val(),
+			'lognodeL8': 		$('#bsdsform_'+id+' input[name="lognodeL8"]').val(),
+			'lognodeL18': 		$('#bsdsform_'+id+' input[name="lognodeL18"]').val(),
+			'lognodeL26': 		$('#bsdsform_'+id+' input[name="lognodeL26"]').val(),
+			'technosCon': 		$('#bsdsform_'+id+' input[name="technosCon"]').val(),
+			'createddate': 		createddate,
+			'print': 			print,
+			'band': 			band,
+			'xycoord': 			$('#bsdsform_'+id+' input[name="xycoord"]').val(),
+			'address': 			$('#bsdsform_'+id+' input[name="address"]').val()
+		};
 
-			var targettype=clicked_tab+'_'+bsdskey+'_'+status;
+		if (clicked_tab==="DELETEBSDS"){
+			var key=$(this).data('key');
+		
+			bootbox.confirm('Click DELETE if you want to DELETE the BSDS with key "'+key, function(result) {
+				if (result==true){
+					$.post("scripts/general_info/general_info_actions.php", { 
+						action:"delete_bsds",
+						key: key
+					},function(response){
+						
+						$('.colorchange'+id).css('background-color', '#ebcccc');
 
-			if (clicked_tab==="PRINT"){
+						Messenger().post({
+						  message: response,
+						  type: 'info',
+						  showCloseButton: true
+						});
+					})
+				}
+			});	
+		}else if(clicked_tab==="ATTACHRAF"){
+
+			var optionsBSDSCreate = { 
+				data:{ action:'insert_new_bsds_raf'},
+				dataType:  'json',
+				success:  function(response) { 
+					if (response.type==='info'){					
+						Messenger().post({
+							  message:  response.msg
+						});
+						
+						$.ajax({
+							type: "POST",
+							url: 'scripts/general_info/general_info.php',
+							data: { upgnr:upgnr,candidate:candidate,nbup:nbup,siteid:siteid},
+							success : function(data){
+								$('#spinner').spin(false);
+								if (nbup!='UPG'){
+									var title='BSDS '+candidate;
+									var tab=candidate;
+								}else{
+									var title='BSDS '+upgnr;
+									var tab=candidate+upgnr;
+								}
+								$('#siteTabs').addCtab('siteTabs','BSDS_'+tab,'glyphicon-book',title);
+								$('#BSDS_'+tab).html(data);
+							},
+							beforeSend: function ( xhr ) {
+								$('#spinner').spin();
+							}
+						});
+						
+					}	
+				}						
+			}
+
+			
+			var bsdskey=$(this).data('bsdskey');
+			var title='<h4>ATTACH RAF to BSDS '+bsdskey+':</h4>';
+				
+			jQuery.ajax({
+			    type: 'POST',
+			    url: 'scripts/general_info/general_info_newbsds.php',
+			    data: { candidate:candidate,upgnr:upgnr, bsdskey:bsdskey },
+			    success: function(data) {
+			        bootbox.dialog({
+			            message: data,
+			            title: title,
+			             buttons: {
+				            success: {
+				                label:"OK",
+				                className: "btn-success",
+				                callback: function() {								
+							        
+									$('#new_bsds_form'+candidate+upgnr).ajaxSubmit(optionsBSDSCreate);
+							    }
+				            }
+				        }
+			        });
+			    }
+			});
+
+		}else if(clicked_tab==="FREEZEBSDS"){
+			var rafid=$(this).data('rafid');
+			var key=$(this).data('key');
+			var key2=$(this).data('key2');
+
+			bootbox.confirm('Click Ok if you want to FREEZE BSDS with RAFID "'+rafid+'"', function(result) {
+				if (result==true){
+				 	$.post("scripts/general_info/general_info_actions.php", { 
+						action:"freeze_bsds",
+						id: id,
+						rafid: rafid,
+						key: key,
+						key2: key2,
+						upgnr: upgnr,
+						candidate: candidate
+					},function(response){
+						var response = $.parseJSON(response);	
+						var type=response.responsetype;		
+
+						$('.colorchange'+id).css('background-color', '#FFB202');
+
+						Messenger().post({
+						  message: response.data,
+						  type: response.type,
+						  showCloseButton: true
+						});
+					})
+				}
+			}); 
+		
+	    }else if(clicked_tab==="ALLIN" || clicked_tab==="PRINTBSDS" || clicked_tab==="PRINTBSDS2"){
+	    	
+	    	var title=bsdskey+' ['+createddate+']<br><span class="badge pull-left">['+upgnr+']</span><span class="badge pull-right">'+candidate+'</span>';
+
+	    	if (clicked_tab==="ALLIN"){
+				$('#MainsiteTabs').addCtab('siteTabs',id,'glyphicon-book',title);
+				
+				$('#'+id).html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...');
+				$('#'+id).empty();
+			}
+
+			$.ajax({
+			type: "POST",
+			url: "scripts/current_planned/current_planned_BBU_output.php",
+			data: formData,
+			success : function(data){
+				
+				$('#spinner').spin(false);
+
+				if (clicked_tab==="PRINTBSDS"){
+
+					var win = window.open('about:blank', '_blank');
+           		    win.document.write(data);
+
+				}else if (clicked_tab==="PRINTBSDS2"){
+					bootbox.dialog({
+			            message: data,
+			            title: 'PRINT BSDS:</h4>',
+			            className: 'modalwide',
+			            buttons: {
+			                success: {
+			                    label: "PRINT",
+			                    className: "btn-primary",
+			                    callback: function() {
+			                    	var title=bsdskey+'_'+candidate+'_'+upgnr+'_'+createddate;			                    	
+			                    	$('#printArea'+id).printArea({pageTitle:title});
+							    }
+			                }
+			            }
+			        }).init(function () {
+            			//FOR BBU layout
+			            $('#ColorAnalysis'+id+" .form-control").each(function(){
+   	
+					    	var name =this.name;
+					    	var id=this.id;	
+
+					    	//The planned value		    	
+					    	var plval=$(this).val();
+					    	//console.log('name='+name+'/'+id+'pl:'+plval+'/'+id.substr(0,3));
+							
+							if (id.substr(0,3)==='pl_'){ 
+						    	right= id.split('pl_');
+					  			idname =right[1];
+					  			//The current value
+						    	var curval=$('#printArea'+id+' #cur_'+idname).val(); 
+						    	//console.log(idname+'-- name='+name+'/'+id+'=>pl:'+plval+'/cur:'+curval+'/');
+							    if (curval!==plval){	
+							    	$('#printArea'+id+' #pl_'+idname).replaceWith("<span class='notsame'>" + plval+ "</span>");
+							    }else{
+							    	$('#printArea'+id+' #pl_'+idname).replaceWith("<span class='same'>" + plval+ "</span>");
+							    }			    	
+							}else{
+								//console.log('=>>>> name='+name+'/'+id+'pl:'+plval+'/');
+							   	var currentVal=$('#printArea'+id+' #'+id).val();   	
+							    $('#printArea'+id+' #'+id).replaceWith("<span>" + currentVal+ "</span>");		    	
+							}					
+						});				            
+			        });    
+				}else{
+			    	$('#'+id).html(data);			    	 		   
+
+				    $(window).scroll(function(){ 
+						if( $('#scrollG9'+id).length > 0 ) {
+							if ($('#scrollG9'+id).is_on_screen()){
+								$('#scrolls_G9'+id).show();
+							}else{
+								$('#scrolls_G9'+id).hide();
+							}
+						}
+						if( $('#scrollG18'+id).length > 0 ) {
+							if ($('#scrollG18'+id).is_on_screen()){
+								$('#scrolls_G18'+id).show();
+							}else{
+								$('#scrolls_G18'+id).hide();
+							}
+						}
+						if( $('#scrollU9'+id).length > 0 ) {
+							if ($('#scrollU9'+id).is_on_screen()){
+								$('#scrolls_U9'+id).show();
+							}else{
+								$('#scrolls_U9'+id).hide();
+							}
+						}
+						if( $('#scrollU21'+id).length > 0 ) {
+							if ($('#scrollU21'+id).is_on_screen()){
+								$('#scrolls_U21'+id).show();
+							}else{
+								$('#scrolls_U21'+id).hide();
+							}
+						}
+						if( $('#scrollL8'+id).length > 0 ) {
+							if ($('#scrollL8'+id).is_on_screen()){
+								$('#scrolls_L8'+id).show();
+							}else{
+								$('#scrolls_L8'+id).hide();
+							}
+						}
+						if( $('#scrollL18'+id).length > 0 ) {
+							if ($('#scrollL18'+id).is_on_screen()){
+								$('#scrolls_L18'+id).show();
+							}else{
+								$('#scrolls_L18'+id).hide();
+							}
+						}
+						if( $('#scrollL26'+id).length > 0 ) {
+							if ($('#scrollL26'+id).is_on_screen()){
+								$('#scrolls_L26'+id).show();
+							}else{
+								$('#scrolls_L26'+id).hide();
+							}
+						}
+					});
+					/*
+				    //FOR BBU layout:
+					$('#printArea'+id+" .form-control").each(function(){
+   	
+				    	var name =this.name;
+				    	var id=this.id;	
+
+				    	//The planned value		    	
+				    	var plval=$(this).val();
+				    	//console.log('name='+name+'/'+id+'pl:'+plval+'/'+id.substr(0,3));
+						
+						if (id.substr(0,3)==='pl_'){ 
+					    	right= id.split('pl_');
+				  			idname =right[1];
+				  			//The current value
+					    	var curval=$('#printArea'+id+' #cur_'+idname).val(); 
+					    	console.log(idname+'-- name='+name+'/'+id+'=>pl:'+plval+'/cur:'+curval+'/');
+					    	if (curval=='NA' || curval=='0'|| curval=='00' || curval=='NONE' || curval=='NO') curval='';
+			  				if (plval=='NA' || plval=='0'|| plval=='00' || plval=='NONE' || plval=='NO') plval='';
+
+						    if (curval!==plval){	
+						    	$(this).parent("td").addClass("notsame");
+						    }		    	
+						}				
+					});
+					*/	
+				    $('#spinner').spin(false); 
+				}     
+			},
+			beforeSend: function ( xhr ) {
+				$('#spinner').spin();
+			}
+			});
+
+		}else if(clicked_tab==="LOADTECHNO"){
+			
+
+			if ($(this).hasClass('alreadyloaded')==true){
+				$(".banddata").hide();
+				$('#banddata'+band+id).show();
+			}else{
+			
+				$(this).addClass('alreadyloaded');
+				$(".banddata").hide();
+				$('#banddata'+band+id).show();
+
+				$.ajax({
+				type: "POST",
+				url: "scripts/current_planned/current_planned_output.php",
+				data: formData,
+				success : function(data){
+						$('#banddata'+band+id).html(data).slideDown();
+
+						$('#banddata'+band+id+" .form-control").each(function(){
+	   	
+					    	var name =this.name;
+					    	var id=this.id;		    	
+					    	var plval=$(this).val();
+							
+							if (id.substr(0,3)==='pl_'){ 
+						    	right= id.split('pl_');
+					  			idname =right[1];
+						    	var curval=$('#printArea'+id+' #cur_'+idname).val(); 
+						    	if (curval=='NA' || curval=='0'|| curval=='00' || curval=='NONE' || curval=='NO') curval='';
+				  				if (plval=='NA' || plval=='0'|| plval=='00' || plval=='NONE' || plval=='NO') plval='';
+
+							    if (curval!==plval){	
+							    	$(this).parent("td").addClass("notsame");
+							    }		    	
+							}				
+						});
+					},
+				beforeSend: function ( xhr ) {
+					$('#banddata'+band+id).html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...');
+					}
+				});
+			}
+		
+		}else if (clicked_tab==="SN"){
 				var title=clicked_tab+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-				$('#siteTabs').addtab(targettype,'glyphicon-book',title);
-				$('#'+targettype).empty();
-				var title= 'PRINT BSDS '+bsdskey+' <br>['+bsdsbobrefresh+']';
-				$('#'+targettype).append('<p align="right"><button id="bsds-print" data-title="'+title+'" class="btn btn-primary" data-id="'+targettype+'">PRINT</button></p>');
-				var technos=$(this).data("technos");
-
-				if (technos.indexOf('G9')!=-1){		
-					load_curpl2('G9',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-				}
-				if (technos.indexOf('G18')!=-1){	
-					load_curpl2('G18',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-				}
-				if (technos.indexOf('U9')!=-1){	
-					load_curpl2('U9',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);	
-				}
-				if (technos.indexOf('U21')!=-1){		
-					load_curpl2('U21',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-				}
-				if (technos.indexOf('L8')!=-1){	
-					load_curpl2('L8',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-				}
-				if (technos.indexOf('L18')!=-1){			
-					load_curpl2('L18',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-				}
-				if (technos.indexOf('L26')!=-1){			
-					load_curpl2('L26',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-				}		
-				load_curpl2('BBU',targettype,status,bsdskey,bsdsbobrefresh,id,'yes',reloadAsset);
-
-			}else if (clicked_tab==="BIPT"){
-
-				var title=clicked_tab+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-				$('#siteTabs').addtab(targettype,'glyphicon-book',title);
-				$('#'+targettype).empty();
-				var technos=$(this).data("technos");
-
-				load_curpl_BIPT(targettype,status,bsdskey,bsdsbobrefresh,id);
-			}else if (clicked_tab==="SN"){
-				var title=clicked_tab+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-				$('#siteTabs').addtab(targettype,'glyphicon-send',title);
+				$('#siteTabs').addCtab('siteTabs',targettype,'glyphicon-send',title);
 				$('#'+targettype).empty();
 
 				$.ajax({
@@ -1880,160 +2308,65 @@ $("body").on("click","#Net1TaskListform",function( e ){
 						$('#spinner').spin();
 					}
 				});
-
-			}else if (clicked_tab==="DELETEBSDS"){
-				var bsdsid=$(this).data('bsdskey');
-				var msg;
-
-				msg = Messenger().post({
-				  message: 'Are u sure you want to DELETE BSDS with ID '+bsdsid+'?',
-				  type: 'info',
-				  actions: {
-				    ok: {
-				      label: "I'm sure",
-				      action: function() {
-				      	msg.cancel();
-				      	Messenger().run({
-						  errorMessage: "This did not go well."
-						}, {
-						  url: "scripts/general_info2/general_info_actions.php",
-						  data: { action:"delete_bsds",
-				        	bsdsid:bsdsid },
-				          type:'POST',
-						  success: function(response) {
-							$('#bsdsrow_'+bsdsid).fadeOut( "slow" );
-							return response;	
-						  }
-						});	        
-				      }
-				    },
-				    cancel: {
-				      label: 'cancel',
-				      action: function() {
-						return msg.cancel(); 
-				      }
-				    }
-				  }
-				});
-			}else if(clicked_tab==="BSDSFUNDING"){
-				var bsdsid=$(this).data('bsdskey');
-				var rafid=$(this).data('rafid');
-				var todo=$(this).data('todo');
-				var siteid=$(this).data('siteid');
-				var msg;
-
-				msg = Messenger().post({
-				  message: 'Are u sure you want to '+todo+' FUNDING with ID '+bsdsid+'?',
-				  type: 'info',
-				  actions: {
-				    ok: {
-				      label: "I'm sure",
-				      action: function() {
-				      	msg.cancel();
-				      	Messenger().run({
-						  errorMessage: "This did not go well."
-						}, {
-						  url: "scripts/general_info2/general_info_actions.php",
-						  data: { 
-						  	action:"add_bsds_funded",
-				        	bsdsid:bsdsid, 
-				        	rafid:rafid,
-				        	todo: todo },
-				          type:'POST',
-						  success: function(response) {
-							$('#bsdsicon'+siteid).click();
-							return response;	
-						  }
-						});	        
-				      }
-				    },
-				    cancel: {
-				      label: 'cancel',
-				      action: function() {
-						return msg.cancel(); 
-				      }
-				    }
-				  }
-				});
-			}else if (clicked_tab==="ALL"){	
-				var technos=$(this).data("technos");	
-
-				if (technos.indexOf('G9')!=-1){		
-					var targettype='G9'+'_'+bsdskey+'_'+status;
-					var title='G9'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-					$('#siteTabs').addtab(targettype,'glyphicon-book',title);
-					load_curpl2('G9',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);
-				}
-				if (technos.indexOf('G18')!=-1){		
-					var targettype='G18'+'_'+bsdskey+'_'+status;
-					var title='G18'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-					$('#siteTabs').addtab(targettype,'glyphicon-book',title);
-					load_curpl2('G18',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);	
-				}
-				if (technos.indexOf('U9')!=-1){	
-					var targettype='U9'+'_'+bsdskey+'_'+status;	
-					var title='U9'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-					$('#siteTabs').addtab(targettype,'glyphicon-book',title);		
-					load_curpl2('U9',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);
-				}
-				if (technos.indexOf('U21')!=-1){	
-					var targettype='U21'+'_'+bsdskey+'_'+status;
-					var title='U21'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-					$('#siteTabs').addtab(targettype,'glyphicon-book',title);		
-					load_curpl2('U21',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);	
-				}
-				if (technos.indexOf('L8')!=-1){	
-					var targettype='L8'+'_'+bsdskey+'_'+status;
-					var title='L8'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-					$('#siteTabs').addtab(targettype,'glyphicon-book',title);		
-					load_curpl2('L8',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);	
-				}
-				if (technos.indexOf('L18')!=-1){	
-					var targettype='L18'+'_'+bsdskey+'_'+status;
-					var title='L18'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-					$('#siteTabs').addtab(targettype,'glyphicon-book',title);		
-					load_curpl2('L18',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);	
-				}
-				if (technos.indexOf('L26')!=-1){	
-					var targettype='L26'+'_'+bsdskey+'_'+status;
-					var title='L26'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-					$('#siteTabs').addtab(targettype,'glyphicon-book',title);	
-					load_curpl2('L26',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);
-				}	
-				var targettype='BBU'+'_'+bsdskey+'_'+status;
-				var title='BBU'+' '+bsdskey+' ['+bsdsbobrefresh+']<br><span class="badge pull-right">'+candidate+'</span>';
-				$('#siteTabs').addtab(targettype,'glyphicon-book',title);	
-				load_curpl2('BBU',targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);
-
-			}else{
-				var title=status+' '+clicked_tab+'<br><span class="badge pull-left">RAF '+rafid+'</span><span class="badge pull-right">'+candidate+'</span>';
-				$('#siteTabs').addtab(targettype,'glyphicon-book',title);
-				$('#'+targettype).append('<div id="'+targettype+clicked_tab+'"></div>');
-				load_curpl2(clicked_tab,targettype,status,bsdskey,bsdsbobrefresh,id,'no',reloadAsset);
-			}
-			
-		}else if(clicked_tab==="REMOVEFUNDING"){
-			var upgnr=$(this).data('upgnr');
-			var net1date=$(this).data('net1date');
-			var vraag=confirm('Click Ok if you want to remove funding date ('+net1date+') for '+upgnr+' for BSDS with ID "'+bsdskey+'"?');
-			if (vraag){	
-				$.post("scripts/general_info/general_info_actions.php", { 
-					action:"remove_funding",
-					id: id,
-					net1date : net1date,
-					status: status,
-					upgnr : upgnr
-				},function(data){
-					Messenger().post({
-					  message: 'The funding date has been temporarly removed!',
-					  type: 'info',
-					  showCloseButton: true
-					});
-				})
-			}
 		}else{
 			alert('NOT YET PROGRAMMED');
 		}	
+	});
+
+	function SavesubmitCurPl(viewtype){
+		var options = { 
+			beforeSubmit:  function() { 
+				$('#spinner').spin('large');
+			},
+ 			success:  function(response) { 
+				$('#spinner').spin(false);	
+				var response = $.parseJSON(response);	
+				var type=response.responsetype;		
+
+				Messenger().post({
+					  message: response.responsedata,
+					  type: response.responsetype,
+					  showCloseButton: true
+					});
+			}
+ 		}
+		$('#current_planned_form'+viewtype).ajaxSubmit(options); 
+		return false; 
+	};	
+
+	$("body").on("click",".saveSubCurPl",function(e){
+		e.preventDefault();
+		var viewtype=$(this).data('key');
+		SavesubmitCurPl(viewtype);
+		return false; 
+	});
+
+	function SavesubmitCurPlBBU(viewtype){
+		var options = { 
+			beforeSubmit:  function() { 
+				$('#spinner').spin('large');
+			},
+ 			success:  function(response) { 
+				$('#spinner').spin(false);	
+				var response = $.parseJSON(response);	
+				var type=response.responsetype;		
+
+				Messenger().post({
+					  message: response.responsedata,
+					  type: response.responsetype,
+					  showCloseButton: true
+					});
+			}
+ 		}
+		$('#current_planned_BBUform'+viewtype).ajaxSubmit(options); 
+		return false; 
+	};	
+
+	$("body").on("click",".saveSubCurPlBBU",function(e){
+		e.preventDefault();
+		var viewtype=$(this).data('key');
+		SavesubmitCurPlBBU(viewtype);
+		return false; 
 	});
 		
 
@@ -2043,31 +2376,7 @@ $("body").on("click","#Net1TaskListform",function( e ){
 		//$('#bsds-print').hide();
 		$('#'+targettype).printArea({pageTitle:title});
 	});	
-/*
-	$("body").on("mouseover",".teamleader_select",function(e){
-		var siteid=$(this).data('siteid');
-		$(this).editable({ 
-		    source: [
-	              {value: 'Pending', text: 'Pending'},
-	              {value: 'Declined', text: 'Declined'},
-	              {value: 'Accepted', text: 'Accepted'},
-		           ],
-		    url : "scripts/general_info/general_info_actions.php",
-		    params: function(params) {
-				params.action= "change_teamlacc";
-			    return params;
-			},
-			success:function(response, value) {
-				Messenger().post({
-				  message: 'RADIOPLANNER ACCEPTACNCE has been changed to: '+value+'<br>',
-				  showCloseButton: false
-				});
-				//alert(siteid);
-				$('#bsdsicon'+siteid).click();
-			}
-		});
-	});	
-*/
+
 	function submitCurPl(techno,viewtype){
 		var options = { 
 			beforeSubmit:  function() { 
@@ -2121,16 +2430,67 @@ $("body").on("click","#Net1TaskListform",function( e ){
 		$('#multioverride').ajaxSubmit(options); 
 		return false; 	
 	});
-	$("body").on("click",".leftArrow",function( e ){
-	  var scrollband=$(this).data('srollband');
-	  var leftPos = $('#'+scrollband).scrollLeft();
-	  $('#'+scrollband).animate({scrollLeft: leftPos - 250}, 800);
+
+	$("body").on("click",".clear",function(e){
+		var table=$(this).data('table');
+		bootbox.dialog({
+            message: 'Are u sure you want to clear? Everything will be removed/emptied when you hit save buttom?',
+            title: 'Clear table data',
+            buttons: {
+                success: {
+                    label:"I'm sure",
+                    className: "btn-success",
+                    callback: function() {
+                    	
+                    	$("#"+table+" .cleardata").each(
+							function(intIndex){
+								pl_attribute_type=$(this).attr('type');
+								pl_attribute_name=$(this).attr('name');
+								//alert(pl_attribute_name+pl_attribute_name.indexOf("ANTTYPE"));
+								//console.log(pl_attribute_name+'---'+pl_attribute_name);
+								if (pl_attribute_type==='select-one'){
+									$(this).find('option').remove().append("<option value='' selected='selected'></option>");
+								}else{
+									$(this).val('');
+								}
+							}
+						);
+					
+						$("#"+table+" .dynamic").select2('val',null);
+				    }
+                },
+            }
+        });	
+	});	
+
+	$("body").on("mousedown",".leftArrow",function( e ){
+	  	var content=$(this).data('scrollid');
+	  	scrolling = true;
+    	scrollContent("left",content);
 	});
-	$("body").on("click",".rightArrow",function( e ){
-      var scrollband=$(this).data('srollband');
-	  var leftPos = $('#'+scrollband).scrollLeft();
-	  $('#'+scrollband).animate({scrollLeft: leftPos + 250}, 800);
+	$("body").on("mouseup",".leftArrow",function( e ){
+	  	scrolling = false;
 	});
+
+	$("body").on("mousedown",".rightArrow",function( e ){
+	  	var content=$(this).data('scrollid');
+	  	scrolling = true;
+    	scrollContent("right",content);
+	});
+	$("body").on("mouseup",".rightArrow",function( e ){
+	  	scrolling = false;
+	});
+
+	$("body").on("click",".prevTechno",function( e ){
+	  	var content=$(this).data('scrollid');
+    	scrollToAnchor(content);
+	});
+	$("body").on("click",".nextTechno",function( e ){
+	  	var content=$(this).data('scrollid');
+	  	scrollToAnchor(content);
+	});
+
+
 /****************************************************************************************
 * SHIPPING NOTIFICATIONS
 *****************************************************************************************/
@@ -2428,23 +2788,54 @@ $("body").on("click","#genrateCOF",function(e){
 		});
 	});	
 
+
+
+	$("body").on("click",".newTrack",function( event ){
+		var siteid = $(this).data('siteid');
+
+		jQuery.ajax({
+		    type: 'POST',
+		    url: 'scripts/tracking/tracking_modal.php',
+		    data: { siteid:siteid },
+		    success: function(response) {
+
+		        bootbox.dialog({
+		            message: response,
+		            title: '<h4>Add comments to '+siteid+':</h4>',
+		             buttons: {
+			            success: {
+			                label:"Add comments",
+			                className: "btn-success",
+			                callback: function() {								
+						        
+								function after_tracking_save(response){ 
+									Messenger().post({
+										  message: response.responsedata,
+										  type: response.responsetype,
+										  showCloseButton: true
+									});	
+								}
+								var optionsTracking= {   
+							    	success:  after_tracking_save,
+									dataType:  'json',
+								};	
+
+								$('#addTrackingForm'+siteid).ajaxSubmit(optionsTracking);
+
+								$("#trackicon"+siteid).click();	
+						    }
+			            }
+			        }
+		        });
+		    },
+		   
+		});
+	});
+
 /**********************
 SAVEMODAL actions
 **********************/
-	function after_BSDSsave(response){ 
-		if (response.type==='info'){					
-			Messenger().post({
-				  message:  response.msg
-				});
-			$('#bsdsicon'+response.site).click();
-		}
-	}	
-	
-	var optionsBSDS = {
-		success: after_BSDSsave,
-		dataType:  'json'
-	};
-
+		
 	function after_LOS_save(response){ 
 
 		if (response.responsetype === "info") {
@@ -2685,9 +3076,6 @@ SAVEMODAL actions
 			$('#new_raf_form').ajaxSubmit(optionsRafnew);
 		}else if (module=="rafdelete"){
 			$('#del_raf_form').ajaxSubmit(optionsDeleteRaf);
-		}else if (module=="bsdsNew"){
-			$('#myModal').modal('hide');
-			$('#new_bsds_form').ajaxSubmit(optionsBSDS);
 		}else if (module=="losreject"){
 			var losid=$(this).data('id');
 			$('#Reject_form'+losid).ajaxSubmit(optionsLosreject);
@@ -2702,6 +3090,7 @@ SAVEMODAL actions
 		}
 	    return false;
 	});	
+	
 });
 
 
@@ -2739,28 +3128,24 @@ $.fn.scroller = function(tableid,cols) {
         $($fixedColumn).insertBefore('#'+tableid);
 };
 
-$.fn.addtab = function(target,iconImg,title) {
-	$("#siteTabs li.active").removeClass('active');
-	$("#contentTabs .tab-pane").removeClass('active');
+$.fn.addCtab = function(tabname,target,iconImg,title) { // tabname= siteTabs or MainsiteTabs
+	if (tabname=='siteTabs'){
+		var contentabs="contentTabs";
+	}else if (tabname=='MainsiteTabs'){
+		var contentabs="SuperContentTabs";
+	}
+	$("#"+tabname+" li.active").removeClass('active');
+	$("#"+contentabs+" .tab-pane").removeClass('active');
 
   	if ($("#"+target).length == 0){
-    	$("#siteTabs").append('<li class="active" id="tab_'+target+'"><a href="#'+target+'"  data-toggle="tab"><span class="glyphicon '+iconImg+'"></span> '+title+'</a></li>');
-		$("#contentTabs").append('<div class="tab-pane active" id="'+target+'"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</div>');
+    	$("#"+tabname).append('<li class="active" id="tab_'+target+'"><a href="#'+target+'"  data-toggle="tab"><span class="glyphicon '+iconImg+'"></span> '+title+'</a></li>');
+		$("#"+contentabs).append('<div class="tab-pane active" id="'+target+'"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</div>');
 	}
 	$("#tab_"+target).addClass('active');
-	$("#"+target).addClass('active');   
-};
-
-$.fn.addtab2 = function(target,iconImg,title) {
-	$("#MainsiteTabs li.active").removeClass('active');
-	$("#SuperContentTabs .tab-pane").removeClass('active');
-
-  	if ($("#"+target).length == 0){
-    	$("#MainsiteTabs").append('<li class="active" id="tab_'+target+'"><a href="#'+target+'"  data-toggle="tab"><span class="glyphicon '+iconImg+'"></span> '+title+'</a></li>');
-		$("#SuperContentTabs").append('<div class="tab-pane active" id="'+target+'"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</div>');
+	$("#"+target).addClass('active');
+	if (tabname=='siteTabs'){
+		reAdjust('subTabs'); 
 	}
-	$("#tab_"+target).addClass('active');
-	$("#"+target).addClass('active');   
 };
 
 $.fn.spin = function(opts, color) {
@@ -2796,7 +3181,7 @@ $.fn.spin = function(opts, color) {
 		throw "Spinner class not available.";
 	}
 };
-
+/*
 function load_curpl_BIPT(targettype,status,bsdskey,bsdsbobrefresh,id){
 	var bsdsdata=$('#bsdsform_'+id+' input[name="bsdsdata"]').val();
 	var siteid=$('#bsdsform_'+id+' input[name="siteid"]').val();
@@ -2857,181 +3242,7 @@ function load_curpl_BIPT(targettype,status,bsdskey,bsdsbobrefresh,id){
 	});	
 
 }
-
-function load_curpl2(band,targettype,loadstatus,bsdskey,bsdsbobrefresh,id,print,reloadAsset){
-
-	var bsdsdata=$('#bsdsform_'+id+' input[name="bsdsdata"]').val();
-	var siteid=$('#bsdsform_'+id+' input[name="siteid"]').val();
-	var candidate = $('#bsdsform_'+id+' input[name="candidate"]').val();
-	var donor = $('#bsdsform_'+id+' input[name="donor"]').val();
-	var rafid = $('#bsdsform_'+id+' input[name="rafid"]').val();
-	var disable_save=$('#bsdsform_'+id+' input[name="disable_save"]').val();
-
-	var lognodeID_GSM = $('#viewers_'+siteid+' input[name="lognodeID_GSM"]').val();			
-	var lognodeID_UMTS2100 = $('#viewers_'+siteid+' input[name="lognodeID_UMTS2100"]').val();	
-	var lognodeID_UMTS900 = $('#viewers_'+siteid+' input[name="lognodeID_UMTS900"]').val();
-	var lognodeID_LTE800 = $('#viewers_'+siteid+' input[name="lognodeID_LTE800"]').val();
-	var lognodeID_LTE1800 = $('#viewers_'+siteid+' input[name="lognodeID_LTE1800"]').val();
-	var lognodeID_LTE2600 = $('#viewers_'+siteid+' input[name="lognodeID_LTE2600"]').val();
-	var technosAsset = $('#viewers_'+siteid+' input[name="technos"]').val();
-	
-	if(typeof donor !== 'undefined' && donor !== ''){ 
-		var link="scripts/current_planned2/current_planned_repeater.php";
-	}else if(band==="G9" || band==="G18"){
-		var link="scripts/current_planned2/current_planned_GSM_output.php";
-	}else if(band==="U9" || band==="U21" || band==="L18" || band==="L26" || band==="L8"){
-		var link="scripts/current_planned2/current_planned_UMTS_output.php";
-	}else if(band==="BBU"){
-		var link="scripts/current_planned2/current_planned_BBU_output.php";
-	}	
-
-	var bsdsbobrefreshDiv=str_replace(':', '', bsdsbobrefresh);
-	bsdsbobrefreshDiv=str_replace('/', '', bsdsbobrefreshDiv);
-	bsdsbobrefreshDiv=str_replace(' ', '', bsdsbobrefreshDiv);
-	if (bsdsbobrefreshDiv=='PRE'){
-		var theDiv = bsdskey+band+loadstatus;
-	}else{
-		var theDiv = bsdskey+band+loadstatus+bsdsbobrefreshDiv;
-	}
-
-	//console.log(theDiv);
-	if (print!=="yes"){			
-		$.ajax({
-			type: "POST",
-			url: link,
-			data: { 
-				siteID:siteid,
-				candidate:candidate,
-				band:band,
-				bsdskey:bsdskey,
-				bsdsdata:bsdsdata,
-				bsdsbobrefresh:bsdsbobrefresh,
-				lognodeID_GSM: lognodeID_GSM,
-				lognodeID_UMTS2100: lognodeID_UMTS2100,
-				lognodeID_UMTS900: lognodeID_UMTS900,
-				lognodeID_LTE800: lognodeID_LTE800,
-				lognodeID_LTE1800: lognodeID_LTE1800,
-				lognodeID_LTE2600: lognodeID_LTE2600,
-				status: loadstatus,
-				print: print,
-				rafid:rafid,
-				donor:donor,
-				disable_save:disable_save,
-				bsdsformid:id,
-				reloadAsset:reloadAsset
-			},
-			success : function(data){
-			    $('#'+targettype).html(data); 
-			 //Highlight the difference between current and planned
-			    $(".dynamic").each(function(){
-			   		if (this.id.substr(0,3)=='pl_'){
-			   			var plval=$('#'+this.id).val();
-			   			right= this.id.split('pl_');
-		  				idname =right[1];
-			   			var curval=$('#nocurpl_'+theDiv+' #nocur_'+idname).val();
-			   			if (curval!==plval){
-				    		$(this).parent("td").addClass("notsame");
-				    	}
-			   		}
-			   	});
-			    $('#nocurpl_'+theDiv+" .tabledata").each(function (elem) {
-			    	var name =this.name;
-					//console.log(name+ ":"+curval+" - "+plval);
-			    	if (name.substr(0,3)=='pl_'){
-			    	
-				    	right= name.split('pl_');
-		  				idname =right[1];
-		  				var curval=$('#nocurpl_'+theDiv+' #nocur_'+idname+band).val();
-		  				var plval=this.value;
-		  				if (curval=='NA' || curval=='0'|| curval=='00' || curval=='NONE' || curval=='NO') curval='';
-		  				if (plval=='NA' || plval=='0'|| plval=='00' || plval=='NONE' || plval=='NO') plval='';
-		  				
-				    	if (curval!==plval){
-				    		$(this).parent("td").addClass("notsame");
-				    	}				    			    	
-				    }
-				}); 
-
-				forceResponsiveTables('bsds'+candidate+loadstatus+band);
-			    $('#spinner').spin(false);      
-			},
-			beforeSend: function ( xhr ) {
-				$('#spinner').spin();
-			}
-		});
-	}else{
-		$.ajax({
-			type: "POST",
-			url: link,
-			data: { 
-				siteID:siteid,
-				band:band,
-				bsdskey:bsdskey,
-				bsdsdata:bsdsdata,
-				bsdsbobrefresh:bsdsbobrefresh,
-				lognodeID_GSM: lognodeID_GSM,
-				lognodeID_UMTS2100: lognodeID_UMTS2100,
-				lognodeID_UMTS900: lognodeID_UMTS900,
-				lognodeID_LTE800: lognodeID_LTE800,
-				lognodeID_LTE1800: lognodeID_LTE1800,
-				lognodeID_LTE2600: lognodeID_LTE2600,
-				status: loadstatus,
-				donor:donor,
-				rafid:rafid,
-				print: print
-			},
-			success : function(data){
-			   	$('#'+targettype).append(data).slideDown(); 
-	
-
-					$('#yescurpl_'+theDiv+" .form-control").each(function(){
-				    	var name =this.name;
-				    	var id=this.id;	
-
-				    //The planned value		    	
-				    	var plval=$(this).val();
-				    	//console.log(idname+'name='+name+'/'+id+'pl:'+plval+'/'+band+'/cur:'+curval);
-						
-						if (id.substr(0,3)=='pl_'){ 
-					    	right= id.split('pl_');
-				  			idname =right[1];
-				  			
-				  		//The current value
-					    	var curval=$('#yescur_'+idname).val();  	
-						    if (curval!==plval){	
-						    	$('#yescurpl_'+theDiv+' #pl_'+idname).replaceWith("<span class='notsame'>" + plval+ "</span>");
-						    }else{
-						    	$('#yescurpl_'+theDiv+' #pl_'+idname).replaceWith("<span class='same'>" + plval+ "</span>");
-						    }			    	
-						}else{
-						    var currentVal=$('#yescurpl_'+theDiv+' #'+id).val();   	
-						    $('#yescurpl_'+theDiv+' #'+id).replaceWith("<span>" + currentVal+ "</span>");			    	
-						   }
-						
-					});	
-					$('#yescurpl_'+theDiv+" .dynamic").each(function(){
-				    	//var selection=$(this).select2('data').text;
-				   		if (this.id.substr(0,3)=='pl_'){
-				   			var plval=$('#'+this.id).val();
-				   			right= this.id.split('pl_');
-			  				idname =right[1];
-				   			var curval=$('#nocurpl_'+theDiv+' #nocur_'+idname).val();
-					    	if (curval!==plval){	
-						    	$(this).replaceWith("<span class='notsame'>" + plval+ "</span>");
-						    }else{
-						    	$(this).replaceWith("<span class='same'>" + plval+ "</span>");
-						    }
-				   		}
-				   	});
-					
-			    $('#spinner').spin(false);      
-			},
-			beforeSend: function ( xhr ) {
-				$('#spinner').spin();
-			}
-		});
-	}
-}
+*/
 
 
 /* jquery plugin to scroll window to the top */
@@ -3132,3 +3343,20 @@ function getQueryParams(qs) {
  * @version 2.1.3
  */
 ;(function(f){"use strict";"function"===typeof define&&define.amd?define(["jquery"],f):"undefined"!==typeof module&&module.exports?module.exports=f(require("jquery")):f(jQuery)})(function($){"use strict";function n(a){return!a.nodeName||-1!==$.inArray(a.nodeName.toLowerCase(),["iframe","#document","html","body"])}function h(a){return $.isFunction(a)||$.isPlainObject(a)?a:{top:a,left:a}}var p=$.scrollTo=function(a,d,b){return $(window).scrollTo(a,d,b)};p.defaults={axis:"xy",duration:0,limit:!0};$.fn.scrollTo=function(a,d,b){"object"=== typeof d&&(b=d,d=0);"function"===typeof b&&(b={onAfter:b});"max"===a&&(a=9E9);b=$.extend({},p.defaults,b);d=d||b.duration;var u=b.queue&&1<b.axis.length;u&&(d/=2);b.offset=h(b.offset);b.over=h(b.over);return this.each(function(){function k(a){var k=$.extend({},b,{queue:!0,duration:d,complete:a&&function(){a.call(q,e,b)}});r.animate(f,k)}if(null!==a){var l=n(this),q=l?this.contentWindow||window:this,r=$(q),e=a,f={},t;switch(typeof e){case "number":case "string":if(/^([+-]=?)?\d+(\.\d+)?(px|%)?$/.test(e)){e= h(e);break}e=l?$(e):$(e,q);case "object":if(e.length===0)return;if(e.is||e.style)t=(e=$(e)).offset()}var v=$.isFunction(b.offset)&&b.offset(q,e)||b.offset;$.each(b.axis.split(""),function(a,c){var d="x"===c?"Left":"Top",m=d.toLowerCase(),g="scroll"+d,h=r[g](),n=p.max(q,c);t?(f[g]=t[m]+(l?0:h-r.offset()[m]),b.margin&&(f[g]-=parseInt(e.css("margin"+d),10)||0,f[g]-=parseInt(e.css("border"+d+"Width"),10)||0),f[g]+=v[m]||0,b.over[m]&&(f[g]+=e["x"===c?"width":"height"]()*b.over[m])):(d=e[m],f[g]=d.slice&& "%"===d.slice(-1)?parseFloat(d)/100*n:d);b.limit&&/^\d+$/.test(f[g])&&(f[g]=0>=f[g]?0:Math.min(f[g],n));!a&&1<b.axis.length&&(h===f[g]?f={}:u&&(k(b.onAfterFirst),f={}))});k(b.onAfter)}})};p.max=function(a,d){var b="x"===d?"Width":"Height",h="scroll"+b;if(!n(a))return a[h]-$(a)[b.toLowerCase()]();var b="client"+b,k=a.ownerDocument||a.document,l=k.documentElement,k=k.body;return Math.max(l[h],k[h])-Math.min(l[b],k[b])};$.Tween.propHooks.scrollLeft=$.Tween.propHooks.scrollTop={get:function(a){return $(a.elem)[a.prop]()}, set:function(a){var d=this.get(a);if(a.options.interrupt&&a._last&&a._last!==d)return $(a.elem).stop();var b=Math.round(a.now);d!==b&&($(a.elem)[a.prop](b),a._last=this.get(a))}};return p});
+
+
+$.fn.is_on_screen = function(){
+    var win = $(window);
+    var viewport = {
+        top : win.scrollTop(),
+        left : win.scrollLeft()
+    };
+    viewport.right = viewport.left + win.width();
+    viewport.bottom = viewport.top + win.height();
+ 
+    var bounds = this.offset();
+    bounds.right = bounds.left + this.outerWidth();
+    bounds.bottom = bounds.top + this.outerHeight();
+ 
+    return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+};

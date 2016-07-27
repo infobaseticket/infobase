@@ -173,8 +173,7 @@ if (substr_count($_POST['actiondo'], 'BASE Delivery (RAF+NET1)')==1  || substr_c
 <div class="panel-group" id="accordion">
 <?php
 
-if ($_POST['type']=="MOD Upgrade" or  substr_count($_POST['type'], 'v2')==1) {
-
+if ($_POST['type']=="MOD Upgrade" or  substr_count($_POST['type'], 'V2')==1) {
 
 	if (substr_count($_POST['actiondo'], 'PARTNER (RAF 0)')==1){
 	$changeable_0="changeable";

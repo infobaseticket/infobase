@@ -1,4 +1,4 @@
-<?
+<?php
 include_once($_SERVER['DOCUMENT_ROOT'].'/bsds/config.php');
 require($config['phpguarddog_path']."/guard.php");
 require_once($config['sitepath_abs']."/bsds/PHPlibs/oci8_funcs.php");
@@ -136,7 +136,7 @@ echo $tagbadges;
 }
 ?>
 
-<div id="prio" class="label label-info pull-right" rel='tooltip' title='Rollout Ranking'>
+
 <?
 $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 	//echo $query;
@@ -148,8 +148,37 @@ $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 		OCIFreeStatement($stmtP);
 		$amountPRIO=count($resP['PRIO']);
 		if ($amountPRIO>0){
-			echo $resP['PRIO'][0];
+			echo "<div id='prio' class='label label-info pull-right' rel='tooltip' title='Rollout Ranking'>".$resP['PRIO'][0]."</div>";
 		}
+	}
+?>
+
+
+
+
+
+<?php
+//SITES_AT_RISK
+$query="SELECT BORDER_SITE, TRAIN_AREA from SITES_AT_RISK WHERE SITEID LIKE '%".$searchk."%'";
+	//echo $query;
+	$stmtP = parse_exec_fetch($conn_Infobase, $query, $error_str, $resP);
+	if (!$stmtP){
+		die_silently($conn_Infobase, $error_str);
+		exit;
+	}else{
+		OCIFreeStatement($stmtP);
+		$amountPRIO=count($resP['BORDER_SITE']);
+		if ($amountPRIO>0 && strtoupper($resP['BORDER_SITE'][0])=="YES"){
+			echo "<div id='sar' class='pull-right' rel='tooltip' title='BORDER SITE'><img src='".$config['explorer_url']."images/border2.png' width='25px' height='25px'></div>";
+		}
+		if ($amountPRIO>0 && strtoupper($resP['TRAIN_AREA'][0])=="YES"){
+			echo "<div id='sar' class='pull-right' rel='tooltip' title='TRAIN AREA'><img src='".$config['explorer_url']."images/nmbs.png'></div>";
+		}
+		/*
+		if ($amountPRIO>0){
+			echo "<div id='sar' class='pull-right label label-danger' rel='tooltip' title='SITE @ RISK'>S&R</div>";
+		}*/
+
 	}
 ?>
 </div>
@@ -372,18 +401,16 @@ $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 
 	if (strlen($searchk)>=4 && strlen($searchk)<=6 && is_numeric(substr($_POST['searchk'],2,4)))
 	{
-
 			echo "<form name='viewers' id='tracking_form' class='viewers'>
 			<input type='hidden' name='siteID' value='".$searchk."'>
 			<li class='navicon tracking' id='trackicon".$searchk."' data-module='tracking'><span class='glyphicon glyphicon-tasks' rel='tooltip' title='Site Tracking'> TRACKING</span></li>
 			</form>";
 	
 //OSS
-
 			echo "<form name='viewers' id='oss_form' class='viewers'>
 			<input type='hidden' name='siteID' value='".$searchk."'>
 			<input type='hidden' name='bypass' value='".$_POST['bypass']."'>
-			<li class='navicon oss' id='ossicon".$_POST['searchk']."' data-module='oss'><span class='glyphicon glyphicon-tint' rel='tooltip' title='OSS Live data'></span> &nbsp;&nbsp;OSS</li>
+			<li class='navicon oss' id='ossicon".$_POST['searchk']."' data-module='oss'><span class='glyphicon glyphicon-tint' rel='tooltip' title='OSS Live data'></span> &nbsp;&nbsp;OSS (daily)</li>
 			</form>";
 	}
 //EVENTCAL
@@ -411,6 +438,11 @@ $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 				<input type='hidden' name='siteID' value='".$searchk."'>
 				<li class='navicon ran' data-module='filebrowser'><span class='glyphicon glyphicon-folder-open' rel='tooltip' title='RAN'> DOCUMENTS</span></li>
 				</form>";
+
+		echo "<form name='viewers' id='txmn_form' class='viewers'>
+			<input type='hidden' name='siteID' value='".$searchk."'>
+			<li class='navicon txmn' data-module='txmn' id='txmn".$_POST['searchk']."'><span class='glyphicon glyphicon-link' rel='tooltip' title='Lease lines and microwave links'></span> &nbsp;&nbsp;LL & MW</li>
+			</form>";
 								
 ?>
 	</ul>
@@ -419,7 +451,8 @@ $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 
 
 <?php
-//BSDS,OSS,... links
+if (substr_count($guard_groups, 'Administrators')=="1"){
+//BSDS,ASSET,... links
 	if (strlen($searchk)>=4){		
 		//We first select the preferred candidate
 		$query="SELECT SIT_UDK, WOR_UDK from VW_NET1_ALL_NEWBUILDS WHERE WOR_UDK LIKE '%".$searchk."%' and WOE_RANK=1 AND  WOR_DOM_WOS_CODE='IS' AND WOR_UDK NOT LIKE 'T%'";
@@ -766,9 +799,8 @@ $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 
 				       		<ul class="nav">							
 							<li class="navicon bsds2" data-module='bsds2' data-candidate='<?=$site['candidate']?>' id="bsdsicon<?php echo $key; ?>"><span class='glyphicon glyphicon-book' rel='tooltip' title='Base Station Datasheet'> BSDS</span></li>
-							<?php if (substr_count($guard_groups, 'Administrators')=="1"){ ?>
-							<li class="navicon bsds" data-module='bsds' data-candidate='<?=$site['candidate']?>' id="bsdsicon<?php echo $key; ?>"><span class='glyphicon glyphicon-book' rel='tooltip' title='Base Station Datasheet'> BSDS V4</span></li>
-							<?php } ?>
+							
+						
 							<li class="navicon asset" data-candidate='<?=$site['candidate']?>'  id="asseticon<?=$resP['SIT_UDK'][0]?>"><span class='glyphicon glyphicon-globe' rel='tooltip' title='ASSET'> ASSET</span></li>
 								<ul style="display:none;" id='asset<?=$site['candidate']?>'>
 									<?php if($site['lognodeID_GSM']!=""){ ?>
@@ -822,6 +854,8 @@ $query="SELECT PRIO from ROLLOUTRANK WHERE SITE LIKE '%".$searchk."%'";
 		echo "</ul>";
 
 	}
+}
+
 }
 OCILogoff($conn_Infobase);
 ?>

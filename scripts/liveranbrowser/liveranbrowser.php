@@ -179,7 +179,8 @@ if ($ranexists==true){
            $isdir='LIVERAN';
    
           $fileExt = strtolower(pathinfo($_REQUEST['dir']."/".$dir->getFilename(), PATHINFO_EXTENSION));
-          $url=$ranurl.$_REQUEST['dir']."/".$dir->getFilename();
+          $url=urlencode($ran.$_REQUEST['dir']);
+          $url="../filebrowser/filedownload.php?file=".$url."/".$dir->getFilename()."&name=".$dir->getFilename();
         
           if (isset($extensions[$file_extension])) {
               $icon=$extensions[$file_extension];
@@ -189,7 +190,7 @@ if ($ranexists==true){
           }
         }
         $showup="yes";
-      }else{
+      }else{ //is a dir
           $pathArray = explode('/',  $_REQUEST['dir']);
           if(count($pathArray)>1){
               unset($pathArray[count($pathArray)-1]);
@@ -199,6 +200,7 @@ if ($ranexists==true){
                 $url=$_SERVER['PHP_SELF'].'?dir='.$url2.'&ran='.$_REQUEST['ran'];
               }else{
                 $url=$_SERVER['PHP_SELF'];
+                
               }
               $showup="yes";
           }else{
@@ -211,7 +213,7 @@ if ($ranexists==true){
       if (substr($dir->current(),0,5)!='thumb' && $showup=="yes" && (substr($dir->getFilename(),0,1)!='.' or (substr($dir->getFilename(),0,2)=='..' && $showup=="yes" )) ){
      ?>
        <li data-name="<?php echo $name; ?>" data-href="<?php echo $url; ?>">
-        <a href="<?=$url?>" class="clearfix" data-name="<?php echo $name; ?>" target="<?=$isdir?>">
+          <a href="<?=$url?>" class="clearfix" data-name="<?php echo $name; ?>" target="<?=$isdir?>">
            <div class="row">
               <span class="file-name col-md-5 col-sm-4 col-xs-8">
                   <span class="glyphicon glyphicon-<?=$icon?>"></span>

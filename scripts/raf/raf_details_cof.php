@@ -26,7 +26,7 @@ if (substr_count($guard_groups, 'Benchmark')==1 && $res2['ACQ_PARTNER'][0]!='BEN
 	echo '<div class="alert alert-danger" role="alert"><b>The partner is not set to Benchmark!<br>Please contact Base Delivery if you think this is not correct!</b></div>';
 	die;
 } 
-if (substr_count($guard_groups, 'TechM')==1 && $res2['ACQ_PARTNER'][0]!='TECHM' && $res2['ACQ_PARTNER'][0]!='TECHM FOR BASE OPS' && $res2['CON_PARTNER'][0]!='TECHM'){
+if (substr_count($guard_groups, 'TechM')==1 && $res2['ACQ_PARTNER'][0]!='TECHM' && $res2['ACQ_PARTNER'][0]!='ALU' && $res2['ACQ_PARTNER'][0]!='TECHM FOR BASE OPS' && $res2['CON_PARTNER'][0]!='TECHM'){
 	echo '<div class="alert alert-danger" role="alert"><b>The partner is not set to TechM!<br>Please contact Base Delivery if you think this is not correct!</b></div>';
 	die;
 } 

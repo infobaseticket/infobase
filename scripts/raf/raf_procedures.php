@@ -16,28 +16,28 @@ function create_query2($siteID,$rafid,$region,$type,$actionby,$orderby,$order,$s
 		
 		if ($type!="NA"){
 			if ($type=="Ind"){
-				$where .= " AND (TYPE LIKE '%".$type."%' OR TYPE LIKE '%RPT%')";
+				$where .= " AND (t.TYPE LIKE '%".$type."%' OR t.TYPE LIKE '%RPT%')";
 			}else{
-				$where .= "AND TYPE LIKE '%".$type."%'";
+				$where .= "AND t.TYPE LIKE '%".$type."%'";
 			}
 		}
 		if ($type!=""){
-			$where.=" AND DELETED !='yes'";
+			$where.=" AND t.DELETED !='yes'";
 		}
 
-		$where .= " AND LOCKEDD !='yes'";
+		$where .= " AND t.LOCKEDD !='yes'";
 
 		if ($rfinfo!="NA" && $rfinfo!=""){
 			if ($rfinfo=="Phase 1"){
-				$where .= " AND (RFINFO LIKE '%Phase 1%' AND RFINFO NOT LIKE '%Phase 1 +%' AND RFINFO NOT LIKE '%Phase 1+%')";
+				$where .= " AND (t.RFINFO LIKE '%Phase 1%' AND t.RFINFO NOT LIKE '%Phase 1 +%' AND t.RFINFO NOT LIKE '%Phase 1+%')";
 			}else if ($rfinfo=="Phase 2"){
-				$where .= " AND (RFINFO LIKE '%Phase 2%' OR RFINFO LIKE '%Phase 1 +%' OR RFINFO LIKE '%Phase 1+%')";
+				$where .= " AND (t.RFINFO LIKE '%Phase 2%' OR t.RFINFO LIKE '%Phase 1 +%' OR t.RFINFO LIKE '%Phase 1+%')";
 			}else{
 				$where .= " AND UPPER(RFINFO) = '".strtoupper($rfinfo)."'";
 			}
 		}
 		if ($commercial!="NA" and $commercial!=""){
-				$where .= " AND (UPPER(COMMERCIAL) LIKE '%".strtoupper($commercial)."%')";
+				$where .= " AND (UPPER(t.COMMERCIAL) LIKE '%".strtoupper($commercial)."%')";
 		}	
 	}
 	if ($actionby!=''){
@@ -45,28 +45,28 @@ function create_query2($siteID,$rafid,$region,$type,$actionby,$orderby,$order,$s
 	}
 
 	if ($deleted!=1 && !$siteID && !$rafid){ //only for reporting //&&  $actionby!="Base Delivery - FAC DATE" && $actionby!="Partner - ACQUIRED"
-		$where .= " AND LOWER(DELETED)!='yes' AND LOWER(LOCKEDD)!='yes'";
+		$where .= " AND LOWER(t.DELETED)!='yes' AND LOWER(t.LOCKEDD)!='yes'";
 	}
 
 
 	if ($allocated=='BENCHMARK' OR ((substr_count($guard_groups, 'Benchmark')==1) && substr_count($guard_groups, 'Administrators')!=1))
 	{
-		$where .= " AND (CON_PARTNER ='BENCHMARK' OR ACQ_PARTNER='BENCHMARK')";
+		$where .= " AND (t.CON_PARTNER ='BENCHMARK' OR t.ACQ_PARTNER='BENCHMARK')";
 	}
 	if ($allocated=='TECHM' OR  ((substr_count($guard_groups, 'TechM')==1) && substr_count($guard_groups, 'Administrators')!=1))
 	{
-		$where .= " AND (CON_PARTNER ='TECHM' OR CON_PARTNER ='ALU' OR ACQ_PARTNER='TECHM' OR ACQ_PARTNER='ALU')";
+		$where .= " AND (t.CON_PARTNER ='TECHM' OR t.CON_PARTNER ='ALU' OR t.ACQ_PARTNER='TECHM' OR t.ACQ_PARTNER='ALU')";
 	}
 	if ($allocated=='M4C' OR ((substr_count($guard_groups, 'ZTE')==1) && substr_count($guard_groups, 'Administrators')!=1))
 	{
-		$where .= " AND (CON_PARTNER ='M4C' OR ACQ_PARTNER='M4C')";
+		$where .= " AND (t.CON_PARTNER ='M4C' OR t.ACQ_PARTNER='M4C')";
 	}
 
 	if ($event!=''){
-		$where .= " AND (EVENT= '".$event."')";
+		$where .= " AND (t.EVENT= '".$event."')";
 	}
 	if ($cluster!=''){
-		$where .= " AND (CLUSTERN ||CLUSTERNUM= '".$cluster."')";
+		$where .= " AND (t.CLUSTERN ||t.CLUSTERNUM= '".$cluster."')";
 	}
 
 	if (!$orderby){
@@ -90,14 +90,17 @@ function create_query2($siteID,$rafid,$region,$type,$actionby,$orderby,$order,$s
     ACT.ACTION_BY,
     ACT.INOUTDOOR, 
     Row_Number() OVER (ORDER BY ".$orderby."  ".$order.") MyRow ,
-    G.BSDSKEY
+    G.BSDSKEY,
+    T2.RAFID AS MASTERRAF,
+    T2.DELETED AS MASTERDEL
     FROM  BSDS_RAFV2 t  
     LEFT JOIN VW_POPR_ACQ ACQ  ON T.RAFID=ACQ.RAFID 
     LEFT JOIN VW_POPR_CON CON ON T.RAFID=CON.RAFID 
     LEFT JOIN BSDS_GENERALINFO2 G ON T.RAFID= G.RAFID  
     LEFT JOIN RAF_HAS_BOQ COF on COF.BOQ_RAFID=t.RAFID
-    LEFT JOIN VW_RAF_ACTIONS_BY_DUPL ACT on ACT.RAFID=t.RAFID
+    LEFT JOIN VW_RAF_ACTIONS_BY_DUPL2 ACT on ACT.RAFID=t.RAFID
     LEFT JOIN BSDS_RAF_RADIO RA on RA.RAFID=t.RAFID
+    LEFT JOIN BSDS_RAFV2 T2 on t.RAFID=T2.MASTER_RAFID
     WHERE ".$where;
 	$query.=")";
 	if ($end!=""){

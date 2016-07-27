@@ -43,13 +43,15 @@ if (!$stmtR) {
 ?>
 
     
-<div class="row row-offcanvas row-offcanvas-right">
+<div class="row row-offcanvas">
     <div class="col-md-10">
-      <p class="pull-right visible-xs">
-        <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
-      </p>
-      <ul class="nav nav-pills" id="siteTabs"></ul>
-   
+      <div class="scroller scroller-left pull-left" id="leftsubTabs"><i class="glyphicon glyphicon-chevron-left"></i></div>
+      <div class="scroller scroller-right pull-right" id="rightsubTabs"><i class="glyphicon glyphicon-chevron-right"></i></div>
+      <div class="wrapper" id="subTabs">
+        <ul class="nav nav-tabs list pull-left" id="siteTabs" role="tablist"></ul>
+      </div>
+      
+
       <div class="tab-content" id="contentTabs">
 
        <?php if(!$_GET['module']){ ?>
@@ -249,4 +251,30 @@ $(document).ready( function(){
           }
   });
 });
+
+
+
+$('.scroller-right').click(function() {
+  
+  $('.scroller-left').fadeIn('slow');
+  $('.scroller-right').fadeOut('slow');
+  
+  $('.list').animate({left:"+="+widthOfHidden()+"px"},'slow',function(){
+
+  });
+});
+
+$('.scroller-left').click(function() {
+  
+  $('.scroller-right').fadeIn('slow');
+  $('.scroller-left').fadeOut('slow');
+  
+    $('.list').animate({left:"-="+getLeftPosi()+"px"},'slow',function(){
+    
+    });
+});
+
+  $(window).on('resize',function(e){  
+      reAdjust('subTabs');
+  });
 </script>

@@ -66,7 +66,7 @@ if ($_POST['cluster']!=''){
 }
 
 //Here we get the detailed sitelist per action
-$query="SELECT * FROM VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
+$query="SELECT * FROM MVW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
   if ($partner=='BENCHMARK') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='M4C') {
@@ -100,7 +100,7 @@ $query="SELECT
   ACTION,
   COUNT (SITEID) AS AMOUNT
 FROM
-  VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
+  MVW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
   if ($partner=='BENCHMARK') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='M4C') {
@@ -134,7 +134,7 @@ for ($i = 0; $i <$amount; $i++){
 //echo "<pre>".print_r($data,true)."</pre>";
 
 //Here we get the different actions for the headers
-$query="SELECT DISTINCT(ACTION),MAX(UNID),ACTION_BY from VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
+$query="SELECT DISTINCT(ACTION),MAX(UNID),ACTION_BY from MVW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
  if ($partner=='BENCHMARK') {
     $query.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='M4C') {
@@ -159,7 +159,7 @@ if (!$stmt) {
 
 
 //Here we get the regions
-$query2="SELECT DISTINCT(SUBSTR (SITEID, 0, 2)) AS REGION from VW_RAF_ACTIONS_BY2 WHERE RAFTYPE IS NOT NULL";
+$query2="SELECT DISTINCT(SUBSTR (SITEID, 0, 2)) AS REGION from MVW_RAF_ACTIONS_BY WHERE RAFTYPE IS NOT NULL";
  if ($partner=='BENCHMARK') {
     $query2.=" AND SAC='BENCHMARK' or CON='BENCHMARK'";
   }else if ($partner=='M4C') {

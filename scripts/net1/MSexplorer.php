@@ -311,40 +311,41 @@ if ($_POST['siteID']){
 		  	</div>
 		  	<div class="modal-body">
 		  		<?php if ($rafid!='NONE'){ ?>
-		  		<div class="well" id="add_comment_dataNB<?=$rafid?>"  style='display:none;'>
-		  		<form action="scripts/net1/net1_actions.php" class="form-inline" role="form" method="post" id="form_addNB<?=$rafid?>">
-				<input type="hidden" name="action" value="addComments">
-				<input type="hidden" name="rafid" value="<?=$rafid?>">
-				<input type="hidden" name="code" id="code<?=$rafid?>" value="<?=$code?>">
-				
-				Add comments for <span id='labelTask<?=$rafid?>'></span>
-				<div class="form-group">
-				    <label for="status" class="sr-only">STATUS</label>
-				    <select id="status" name="status" class="form-control">
-				    <option value="" class="text-info alert-info">Please select flag</option>
-				    <?php if (substr_count($guard_groups, 'Partner')!=1){ ?>
-				    <option value="General info" class="text-info alert-info">General info</option>
-				    <option value="Blocking" class="text-danger alert-danger">Blocking</option>
-				    <option value="Non-Blocking" class="text-warning alert-warning">Non-Blocking</option>
-				    <option value="Resolved" class="text-success alert-success">Resolved</option>
-				    <?php }else{ ?>
-				    <option value="Partner General info" class="text-info" style='font-weight:bolder;'>General info</option>
-				    <option value="Partner Blocking" class="text-danger" style='font-weight:bolder;'>Blocking</option>
-				    <option value="Partner Non-Blocking" class="text-warning" style='font-weight:bolder;'>Non-Blocking</option>
-				    <option value="Partner Resolved" class="text-success" style='font-weight:bolder;'>Resolved</option>
-				    <?php } ?>
-				    </select>
-				</div>
-				<div class="form-group">
-				    <label for="comments" class="sr-only">COMMENTS</label>
-				    <input type="text" name="comments" class="form-control comments" id="comments" placeholder="Comments">
-				</div>
-				<button type="submit" class="btn btn-default addCommentsSubmit" data-nbup="NB" data-rafid="<?=$rafid?>">Add Comment</button>
-				</form>
-				</div>
-				<?php }else{
+			  		<div class="well" id="add_comment_dataNB<?=$rafid?>"  style='display:none;'>
+			  		<form action="scripts/net1/net1_actions.php" class="form-inline" role="form" method="post" id="form_addNB<?=$rafid?>">
+					<input type="hidden" name="action" value="addComments">
+					<input type="hidden" name="rafid" value="<?=$rafid?>">
+					<input type="hidden" name="code" id="code<?=$rafid?>" value="<?=$code?>">
+					
+					Add comments for <span id='labelTask<?=$rafid?>'></span>
+					<div class="form-group">
+					    <label for="status" class="sr-only">STATUS</label>
+					    <select id="status" name="status" class="form-control">
+					    <option value="" class="text-info alert-info">Please select flag</option>
+					    <?php if (substr_count($guard_groups, 'Partner')!=1){ ?>
+					    <option value="General info" class="text-info alert-info">General info</option>
+					    <option value="Blocking" class="text-danger alert-danger">Blocking</option>
+					    <option value="Non-Blocking" class="text-warning alert-warning">Non-Blocking</option>
+					    <option value="Resolved" class="text-success alert-success">Resolved</option>
+					    <?php }else{ ?>
+					    <option value="Partner General info" class="text-info" style='font-weight:bolder;'>General info</option>
+					    <option value="Partner Blocking" class="text-danger" style='font-weight:bolder;'>Blocking</option>
+					    <option value="Partner Non-Blocking" class="text-warning" style='font-weight:bolder;'>Non-Blocking</option>
+					    <option value="Partner Resolved" class="text-success" style='font-weight:bolder;'>Resolved</option>
+					    <?php } ?>
+					    </select>
+					</div>
+					<div class="form-group">
+					    <label for="comments" class="sr-only">COMMENTS</label>
+					    <input type="text" name="comments" class="form-control comments" id="comments" placeholder="Comments">
+					</div>
+					<button type="submit" class="btn btn-default addCommentsSubmit" data-nbup="NB" data-rafid="<?=$rafid?>">Add Comment</button>
+					</form>
+					</div>
+				<?php 
+				}else{
 					echo '<div class="alert alert-danger" role="alert">You first need to create a RAF before you can add comments!</div>';
-					} ?>
+				} ?>
 
 		    	<div class="row">
 		    		<div class="col-md-6">
@@ -427,6 +428,7 @@ if ($_POST['siteID']){
 			            <button class='btn btn-default btn-xs' title='View' data-action='view'  data-toggle='modal' data-target='#NEW_".$res1['SIT_UDK'][$i].$res1['WOR_UDK'][$i]."'><span class='glyphicon glyphicon-eye-open'></span></button>
 						<button class='btn btn-default btn-xs validation' title='validation' data-rafid='".$rafid."' data-siteupgnr='".$res1['SIT_UDK'][$i]."' data-nbup='NB'><span class='glyphicon glyphicon-check'></span></button>			          
 			          	<button class='btn btn-default btn-xs liveran' title='View files LIVE on the RAN' data-ranurl='".$ranurl."'><span class='glyphicon glyphicon-folder-open'></span></button>	
+		       			<button class='btn btn-default btn-xs asset' title='View Asset info'  id='AsseticonN1".substr($res1['WOR_UDK'][$i],1,6)."' data-siteid='".substr($res1['WOR_UDK'][$i],1,6)."' data-candidate='".substr($res1['SIT_UDK'][$i],1)."'><span class='glyphicon glyphicon-globe'></span></button>
 			          </div>
 			        </div>
 			        <div class='btn-toolbar' role='toolbar'>
@@ -434,6 +436,8 @@ if ($_POST['siteID']){
 		        if (substr_count($guard_groups, 'Admin')==1){
 		          	$newbuild.="
 		          	<button class='btn btn-default btn-xs refreshN1' title='Live refresh from NET1' data-siteupgnr='".$res1['SIT_UDK'][$i]."' data-site='".$res1['WOR_UDK'][$i]."' data-nbup='NB'><span class='glyphicon glyphicon-refresh'></span></button>";
+		        } 	
+		       	$newbuild.="<button class='btn btn-default btn-xs bsds' title='Open BSDS'  id='bsdsiconN1".substr($res1['WOR_UDK'][$i],1,6)."' data-siteid='".substr($res1['WOR_UDK'][$i],1,6)."' data-candidate='".substr($res1['SIT_UDK'][$i],1)."' data-upgnr='NB' data-nbup='NB'><span class='glyphicon glyphicon-book'></span></button>";
 		        if ($rafid!='' && $rafid!='NONE'){
 		       		$newbuild.="
 		       		<button class='btn btn-default btn-xs correspondingRAFID' data-module='raf' data-rafid='".$rafid."' data-siteid='".substr($res1['WOR_UDK'][$i],1,6)."' title='Open corresponding RAF with ID ".$rafid."'><span class='glyphicon glyphicon-road'></span></button>";
@@ -442,7 +446,7 @@ if ($_POST['siteID']){
 		       	 	<button class='btn btn-default btn-xs NET1log' data-module='raf' data-siteupgnr='".$res1['SIT_UDK'][$i]."' data-nbup='NB' title='View LOG of MS toggling via IB'><span class='glyphicon glyphicon-time'></span></button>
 		          	</div>
 		          	</div>";
-		         }
+		         
 		        
 
 		       if ($res1['WOR_UDK'][$i]==$_POST['net1link']){
@@ -600,42 +604,42 @@ if ($_POST['siteID']){
 		  		</div>
 		  	</div>
 		  	<div class="modal-body">
-		  	<?php if ($rafid!='NONE'){ ?>
-		  		<div class="well" id="add_comment_dataUP<?=$rafid?>"  style='display:none;'>
-		  		<form action="scripts/net1/net1_actions.php" class="form-inline" role="form" method="post" id="form_addUP<?=$rafid?>">
-				<input type="hidden" name="action" value="addComments">
-				<input type="hidden" name="rafid" value="<?=$rafid?>">
-				<input type="hidden" name="code" id="code<?=$rafid?>" value="<?=$code?>">
-				
-				Add comments for <span id='labelTask<?=$rafid?>'></span>
-				<div class="form-group">
-				    <label for="status" class="sr-only">STATUS</label>
-				    <select id="status" name="status" class="form-control">
-				    <option value="" class="text-info alert-info">Please select flag</option>
-				    <?php if (substr_count($guard_groups, 'Partner')!=1){ ?>
-				    <option value="General info" class="text-info alert-info">General info</option>
-				    <option value="Blocking" class="text-danger alert-danger">Blocking</option>
-				    <option value="Non-Blocking" class="text-warning alert-warning">Non-Blocking</option>
-				    <option value="Resolved" class="text-success alert-success">Resolved</option>
-				    <?php }else{ ?>
-				    <option value="Partner General info" class="text-info" style='font-weight:bolder;'>General info</option>
-				    <option value="Partner Blocking" class="text-danger" style='font-weight:bolder;'>Blocking</option>
-				    <option value="Partner Non-Blocking" class="text-warning" style='font-weight:bolder;'>Non-Blocking</option>
-				    <option value="Partner Resolved" class="text-success" style='font-weight:bolder;'>Resolved</option>
-				    <?php } ?>
-				    </select>
-				</div>
-				<div class="form-group">
-				    <label for="comments" class="sr-only">COMMENTS</label>
-				    <input type="text" name="comments" class="form-control comments" id="comments" placeholder="Comments">
-				</div>
-				<button type="submit" class="btn btn-default addCommentsSubmit" data-nbup="UP" data-rafid="<?=$rafid?>">Add Comment</button>
-				</form>
-				</div>
-				<?php }else{
+			  	<?php if ($rafid!='NONE'){ ?>
+			  		<div class="well" id="add_comment_dataUP<?=$rafid?>"  style='display:none;'>
+			  		<form action="scripts/net1/net1_actions.php" class="form-inline" role="form" method="post" id="form_addUP<?=$rafid?>">
+					<input type="hidden" name="action" value="addComments">
+					<input type="hidden" name="rafid" value="<?=$rafid?>">
+					<input type="hidden" name="code" id="code<?=$rafid?>" value="<?=$code?>">
+					
+					Add comments for <span id='labelTask<?=$rafid?>'></span>
+					<div class="form-group">
+					    <label for="status" class="sr-only">STATUS</label>
+					    <select id="status" name="status" class="form-control">
+					    <option value="" class="text-info alert-info">Please select flag</option>
+					    <?php if (substr_count($guard_groups, 'Partner')!=1){ ?>
+					    <option value="General info" class="text-info alert-info">General info</option>
+					    <option value="Blocking" class="text-danger alert-danger">Blocking</option>
+					    <option value="Non-Blocking" class="text-warning alert-warning">Non-Blocking</option>
+					    <option value="Resolved" class="text-success alert-success">Resolved</option>
+					    <?php }else{ ?>
+					    <option value="Partner General info" class="text-info" style='font-weight:bolder;'>General info</option>
+					    <option value="Partner Blocking" class="text-danger" style='font-weight:bolder;'>Blocking</option>
+					    <option value="Partner Non-Blocking" class="text-warning" style='font-weight:bolder;'>Non-Blocking</option>
+					    <option value="Partner Resolved" class="text-success" style='font-weight:bolder;'>Resolved</option>
+					    <?php } ?>
+					    </select>
+					</div>
+					<div class="form-group">
+					    <label for="comments" class="sr-only">COMMENTS</label>
+					    <input type="text" name="comments" class="form-control comments" id="comments" placeholder="Comments">
+					</div>
+					<button type="submit" class="btn btn-default addCommentsSubmit" data-nbup="UP" data-rafid="<?=$rafid?>">Add Comment</button>
+					</form>
+					</div>
+				<?php 
+				}else{
 					echo '<div class="alert alert-danger" role="alert">You first need to create a RAF before you can add comments!</div>';
-					} ?>
-
+				} ?>
 
 		    	<div class="row">
 		    		<div class="col-md-6">
@@ -715,10 +719,12 @@ if ($_POST['siteID']){
 		         </div>
 		         <div class='btn-toolbar' role='toolbar'>
 		          	<div class='btn-group'>";
-		        if (substr_count($guard_groups, 'Admin')==1){
+		         if (substr_count($guard_groups, 'Admin')==1){
 		          	$upgrade.="
 		          	<button class='btn btn-default btn-xs refreshN1' title='Live refresh from NET1' data-siteupgnr='".$res1['WOR_UDK'][$i]."' data-site='".$res1['SIT_UDK'][$i]."' data-nbup='UPG'><span class='glyphicon glyphicon-refresh'></span></button>";
 		         }
+		         $upgrade.="<button class='btn btn-default btn-xs bsds' title='Open BSDS' id='bsdsiconN1".substr($res1['SIT_UDK'][$i],1).$res1['WOR_UDK'][$i]."' data-siteid='".substr($res1['SIT_UDK'][$i],1,6)."' data-rafid='".$rafid."' data-candidate='".substr($res1['SIT_UDK'][$i],1)."' data-nbup='UPG' data-upgnr='".$res1['WOR_UDK'][$i]."'><span class='glyphicon glyphicon-book'></span></button>";
+		         
 		         if ($rafid!='' && $rafid!='NONE'){
 		       $upgrade.="
 					<button class='btn btn-default btn-xs correspondingRAFID' data-module='raf' data-rafid='".$rafid."' data-siteid='".substr($res1['SIT_UDK'][$i],1,6)."' title='Open corresponding RAF with ID ".$rafid."'><span class='glyphicon glyphicon-road'></span></button>";
@@ -822,7 +828,7 @@ if ($_POST['siteID']){
 	<div class="table-responsive table-responsive-force">
 	<table class="table table-striped table-hover table-condensed" id="NET1NB<?=$_POST['siteID']?>" style="table-layout: fixed;">
 		<colgroup>
-			<col style="width: 80px">
+			<col style="width: 110px">
 		    <col style="width: 80px">
 		    <col style="width: 30px">
 		    <col style="width: 110px">
@@ -898,7 +904,7 @@ if ($_POST['siteID']){
 	<div class="table-responsive table-responsive-force">
 	<table class="table table-striped table-hover table-condensed" id="NET1UPG<?=$_POST['siteID']?>" style="table-layout: fixed;">
 	  	<colgroup>
-	  	 	<col style="width: 80px">
+	  	 	<col style="width: 110px">
 		    <col style="width: 80px">
 		    <col style="width: 30px">
 		    <col style="width: 110px">

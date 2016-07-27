@@ -67,7 +67,7 @@ for ($i = 0; $i <$amount_trx_data; $i++) {
 <input type="hidden" name="action" value="update_trx_raf">
 <input type="hidden" name="rafid" value="<?=$_POST['rafid']?>">
 <div class="form-group">
-	<label for="RFPLAN" class="control-label">TRU/BPC REQUIREMENTS</label>
+	<label for="RFPLAN" class="control-label">CAPACITY REQUIREMENTS</label>
 	<textarea class="form-control input-sm" rows="5" name="REQUIREMENTS" id="REQUIREMENTS"></textarea>
 </div>
 <?

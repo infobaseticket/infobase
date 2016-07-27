@@ -1,12 +1,12 @@
 <?php
 $popup=$popup+1;
 $pop_data.="
-<div id='".$BSDSKEY.$popup."' class='modal fade' role='dialog' aria-labelleby='myModelLabel' aria-hidden='true'>
+<div id='".$BSDSKEY.$_POST['candidate'].$_POST['upgnr'].$popup."' class='modal fade' role='dialog' aria-labelleby='myModelLabel' aria-hidden='true'>
 	<div class='modal-dialog'>
     	<div class='modal-content'>
 		<div class='modal-header'>
 			<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
-			<h3 id='myModalLabel ".$statuscolor."'>.:: ".$STATUS_BSDS." ::.</h3>
+			<h3 id='myModalLabel ".$class."'>.:: BSDS INFO ::.</h3>
 		</div>
 		<div class='modal-body'>
 		<table class='table table-striped'>
@@ -29,10 +29,7 @@ $pop_data.="
 				<td>".$technologies."</td></tr>";
 			}
 
-			if ($status!="PRE READY TO BUILD"){
-				$pop_data.="</td></tr><tr><td><b>Date copied from PRE to POST:</b></td><td valign=top>".$copied_date."</td></tr>";
-			}
-
+			
 			$userdetails=getuserdata($DESIGNER_UPDATE);
 			$email_update=trim($userdetails['email']);
 			$fullname_update=trim($userdetails['fullname']);
@@ -57,9 +54,6 @@ $pop_data.="
 			$fullname_update_AFTER_COPY=trim($userdetails['fullname']);
 			$mobile_update_AFTER_COPY=trim($userdetails['mobile']);
 
-			if (trim($fullname_update_AFTER_COPY)!=""){
-				$pop_data.="<tr><td valign=top><b>Latest update SITE FUNDED: </b></td><td>".$UPDATE_AFTER_COPY."<br>";
-			}
 			$pop_data.="<tr><td valign=top>";
 			if ($fullname_update_AFTER_COPY){
 			$pop_data.=$fullname_update_AFTER_COPY."<br>";
@@ -69,10 +63,6 @@ $pop_data.="
 			}
 			if ($email_update_AFTER_COPY){
 			$pop_data.=$email_update_AFTER_COPY."<br>";
-			}
-
-			if ( $status!="BSDS AS BUILD"){
-				$pop_data.="<tr><td valign=top><b>Date/moment of copy: </b></td><td>".$BSDS_copy_date."<br>";
 			}
 
 			$pop_data.="</td></tr>";

@@ -9,12 +9,15 @@ $stmt = OCIParse($conn_Infobase,"ALTER SESSION SET nls_date_format='DD/MM/YYYY H
 OCIExecute($stmt,OCI_DEFAULT);
 
 
-if ($res1['BUFFER'][0]==1){
-	$buffer="checked";
-}
+if ($_POST['rafid'] or $_POST['master_rafid']){
+	if($_POST['master_rafid']){
+		$query = "Select * FROM BSDS_RAFV2 WHERE RAFID = '".$_POST['master_rafid']."'";
+	}else{
+		$query = "Select * FROM BSDS_RAFV2 WHERE RAFID = '".$_POST['rafid']."'";
 
-if ($_POST['rafid']){
-	$query = "Select * FROM BSDS_RAFV2 WHERE RAFID = '".$_POST['rafid']."'";
+	}
+	
+	
 	$stmt = parse_exec_fetch($conn_Infobase, $query, $error_str, $res1);
 	if (!$stmt) {
 		die_silently($conn_Infobase, $error_str);
@@ -24,9 +27,9 @@ if ($_POST['rafid']){
 		$amount_of_RAFS=count($res1['SITEID'][0]);
 		$region=substr($res1['SITEID'][0],0,2);
 		$sitenum=substr($res1['SITEID'][0],2,4);
+		$CON_PARTNER=$res1['CON_PARTNER'][0];
 		$type=$res1['TYPE'][0];
 		$rafid=$_POST['rafid'];
-
 
 		if (strpos($res1['RADIO_FUND'][0],"G9")!==false){
 			$RADIO_FUND_G9="checked";
@@ -74,11 +77,16 @@ if ($_POST['rafid']){
 	$rafid="";
 }
 
+if ($res1['BUFFER'][0]==1){
+	$buffer="checked";
+}
+
 if ($amount_of_RAFS>=1){
 	$action="Update";
 }else{
 	$action="Create";
 }
+
 
 if (substr_count($guard_groups, 'Base_other')==1){
 	$group="Base_other";
@@ -134,6 +142,13 @@ for ($k = 0; $k <$amount_of_TYPES; $k++){
        	 	}
    	 	}
 	}
+}
+
+if($_POST['master_rafid']){
+	$type='MOD TX Upgrade';
+	$action="Create";
+	$buffer="";
+	$onlyIndoor="no";
 }
 
 ?>
@@ -253,6 +268,8 @@ $regions=array(
 <form action="scripts/raf/raf_actions.php" method="post" id="new_raf_form" class="form-horizontal">
 <input type="hidden" name="action" value="insert_new_raf">
 <input type="hidden" name="rafid" value="<?=$rafid?>">
+<input type="hidden" name="master_rafid" value="<?=$_POST['master_rafid']?>">
+<input type="hidden" name="master_con_partner" value="<?=$CON_PARTNER?>">
 <input type="hidden" name="GROUP" value="<?=$group?>">
 <input type="hidden" name="bufferchangeallowed" value="<?=$_POST['bufferchangeallowed']?>">
 
@@ -297,7 +314,7 @@ $regions=array(
 	</div>
 	<?php
 	
-	if (substr_count($guard_groups, 'Base_RF')=="1" || substr_count($guard_groups, 'Base_delivery')=="1" || substr_count($guard_groups, 'Administrators')=="1" && $_POST['bufferchangeallowed']=='yes'){ ?>
+	if (substr_count($guard_groups, 'Base_RF')=="1" || substr_count($guard_groups, 'Base_delivery')=="1" || substr_count($guard_groups, 'Administrators')=="1" && $_POST['bufferchangeallowed']=='yes' && !$_POST['master_rafid']){ ?>
 	<div class="form-group" id="bufferinput">
 	    <label for="Sitenumber" class="col-sm-4 control-label">Buffer</label>
 	    <div class="col-sm-8">
@@ -443,7 +460,9 @@ $regions=array(
         <label for="inputJUSTIFICATION" class="col-sm-4 control-label">JUSTIFICATION</label>
         <div class="col-sm-8">
             <?php
-            if ($res1['JUSTIFICATION'][0]==""){
+            if($_POST['master_rafid']){
+            	$justification="Install TX SUPPORT CABINET before MOD UPG to enable fibre connection";
+            }else if ($res1['JUSTIFICATION'][0]==""){
            	 	$justification="Minimum required info\n------------------------------\nReason for RAF.\nFor replacement/move: Onair date\nReason for replacement\nFor CWK: Due date\n";
             }else{
             	$justification=unescape_quotes($res1['JUSTIFICATION'][0]);

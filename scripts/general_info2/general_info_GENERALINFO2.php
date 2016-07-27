@@ -427,7 +427,7 @@ foreach ($res1['BSDSKEY'] as $key=>$attrib_id){
 
 		}else{
 
-			if ($STATUS_AS_PER_NET1=='PRE BSDS' or ($STATUS_AS_PER_NET1=='SITE FUNDED' && $resN1['EXECUTED'][0]!=0 )){
+			if ($STATUS_AS_PER_NET1=='PRE BSDS' or $STATUS_AS_PER_NET1=='SITE FUNDED' && $resN1['EXECUTED'][0]!=0){
 				$msg=special_STATUSCHANGE_insert($RAFID,$BSDSKEY);
 				echo "SPECIAL2";
 				if($STATUS_AS_PER_NET1=='PRE BSDS'){

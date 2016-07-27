@@ -13,7 +13,7 @@ if ($_POST['action']=="insert_new_bsds"){
 
 	$query = "INSERT INTO BSDS_GENERALINFO2 VALUES ('','".$_POST['ADDRESSFK']."' ,'".$_POST['candidate']."','no',
 	'Pending','Pending','no','". $guard_username."',SYSDATE, SYSDATE,'".$_POST['BSDS_TYPE']."','".$COMMENTS."','','".$_POST['BSDS_TR']."','','". $guard_username."','','','no','','','')";
-	echo $query;
+	//echo $query;
 	$stmt = parse_exec_free($conn_Infobase, $query, $error_str);
 	if (!$stmt) {
 		die_silently($conn_Infobase, $error_str);

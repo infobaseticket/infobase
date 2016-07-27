@@ -1,16 +1,20 @@
 <?php
-
+$updatables="";
 for ($k = 0; $k <$amount_of_TASKS; $k++){  
     $taskname=$resPR['TASK_NAME'][$k];
     $class=$taskname."_class";
     $info=$taskname."_info";
     $select=$taskname."_select";
-
+    if ($resPR['UPDATABLE'][$k]==1){
+        $updatables[]=$resPR['TASK_NAME'][$k];
+    }
+    
     $$taskname="";
     $$class="";
     $$select="";
 }
 
+//echo "<pre>".print_r($updatables,true)."</pre>";
 $status_acqSkipped="";
 
 $actions=explode(',', $res1['ACTION2'][$i]);
@@ -22,13 +26,18 @@ if (is_array($actions)){
             //echo  $res1['RAFID'][$i]."(".$guard_groups.")".$action."/".$actionbys[$key]."<br>";
             if (substr_count($guard_groups, $actionbys[$key])==1 or substr_count($guard_groups, 'Admin')==1){
                
-                $editable=$action."_select";
-                $$editable="editableSelectItem";
+                if(in_array($action,$updatables)){
+                    $editable=$action."_select";
+                    $$editable="editableSelectItem";
+                }   
+               
+                
                 $class=$action."_class";
                 $$class="selected_RAF";
                 /*if ($res1['RAFID'][$i]=='9783'){
                     echo $class."=".$$class."<br>";
                 }*/
+               
             }
         }
      }
@@ -36,6 +45,10 @@ if (is_array($actions)){
 //RADIO INPUT CAN BE PUT BACK TO NOT OK UNTILL RADIO_FUND
 if ($res1['RADIO_FUND'][$i]=='NOT OK' && (substr_count($guard_groups, 'Admin')==1 or substr_count($guard_groups, 'Base_RF')==1)){
     $RADIO_INP_select="editableSelectItem";
+}
+//You can update RADIO_FUND when BASE BP NEEDED= BASE BP NO untill PARTNER_DESIGN!=NOT OK
+if ($res1['BP_NEEDED'][$i]=='BASE BP NO' && $res1['PARTNER_DESIGN'][$i]!='NOT OK'){
+    $RADIO_FUND_select="editableSelectItem";
 }
 
 

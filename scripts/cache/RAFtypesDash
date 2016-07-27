@@ -20,7 +20,7 @@ FusionCharts.ready(function () {
             "data": [
                 {
           "label": "MOD Upgrade",
-          "value": "859"
+          "value": "1373"
       },{
           "label": "TECHNO Upgrade",
           "value": "801"
@@ -32,16 +32,16 @@ FusionCharts.ready(function () {
           "value": "175"
       },{
           "label": "New Replacement",
-          "value": "143"
+          "value": "138"
       },{
           "label": "New All Areas",
           "value": "111"
       },{
           "label": "New Indoor",
-          "value": "91"
+          "value": "92"
       },{
           "label": "DISM Upgrade",
-          "value": "83"
+          "value": "86"
       },{
           "label": "IND Upgrade",
           "value": "65"
@@ -53,13 +53,16 @@ FusionCharts.ready(function () {
           "value": "55"
       },{
           "label": "Dismantling",
-          "value": "46"
+          "value": "49"
       },{
           "label": "New Mobile Truck",
-          "value": "37"
+          "value": "36"
       },{
           "label": "ANT Upgrade",
-          "value": "34"
+          "value": "35"
+      },{
+          "label": "New Macro V2",
+          "value": "32"
       },{
           "label": "CWK Upgrade",
           "value": "32"
@@ -67,34 +70,37 @@ FusionCharts.ready(function () {
           "label": "RPT Upgrade",
           "value": "31"
       },{
-          "label": "New Macro (v2)",
-          "value": "26"
-      },{
           "label": "Add U900 to U2100 Upgrade",
           "value": "23"
-      },{
-          "label": "New Micro",
-          "value": "13"
       },{
           "label": "CAB Upgrade",
           "value": "13"
       },{
+          "label": "New Micro",
+          "value": "13"
+      },{
+          "label": "New Replacement V2",
+          "value": "11"
+      },{
+          "label": "New All Areas V2",
+          "value": "9"
+      },{
+          "label": "New Indoor V2",
+          "value": "7"
+      },{
           "label": "ASC Upgrade",
           "value": "7"
       },{
-          "label": "New Indoor (v2)",
-          "value": "6"
-      },{
-          "label": "New All Areas (v2)",
-          "value": "4"
-      },{
-          "label": "New Replacement (v2)",
+          "label": "",
           "value": "3"
+      },{
+          "label": "SWAP Upgrade",
+          "value": "2"
       },{
           "label": "New Temp Replacement",
           "value": "2"
       },{
-          "label": "SWAP Upgrade",
+          "label": "MOD TX Upgrade",
           "value": "2"
       },{
           "label": "New Macrocell",

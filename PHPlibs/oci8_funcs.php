@@ -92,14 +92,15 @@ function parse_exec_free($conn, $query, &$error_str)
 function parse_exec_fetch($conn, $query, &$error_str, &$res, $nulls=0)
 {
    global $firephp,$config,$guard_groups,$debug,$guard_username;
-   //echo $query."<br>";
-
+    if (substr_count($guard_groups, 'Administrators')=="1"){
+    //echo $query."<br>";
+ }
    if (substr_count($guard_groups, 'Administrators')=="1" && $config['debug']==true){
       //echo $query;
       $trace=debugPrintCallingFunction();
       $query_out = preg_replace("/[\\n\\r]+/", " ", $query);
       $query_out = preg_replace('/\s+/', ' ', $query_out);
-      echo $query_out."<hr>";
+      //echo $query_out."<hr>";
       ?>
       <script language="javascript">
       console.log(<? echo json_encode($trace.": ".$query_out); ?>);

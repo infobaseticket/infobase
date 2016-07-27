@@ -56,7 +56,7 @@ echo $pop_data;
 echo $output_form;
 ?>
 
-<div class="table-responsive">
+
 	<table class="table table-hover">
 	<tr style="background-color:#428bca;color:#fff;font-weight:bold;height:"><td colspan="7" style="text-align:center;font-size:12px;">OVERVIEW</td></tr>
 	<thead>
@@ -90,4 +90,3 @@ echo $output_form;
 	<? echo $output_HistoryPerDate; ?>
 	</tbody>
 	</table>
-</div>

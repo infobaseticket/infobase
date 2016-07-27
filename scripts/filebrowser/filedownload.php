@@ -49,7 +49,6 @@ function output_file($file, $name, $extension)
 		$mime_type="application/force-download";
 	 };
 	 
-	 echo $name;
 
 	 //turn off output buffering to decrease cpu usage
 	 @ob_end_clean(); 
@@ -81,12 +80,7 @@ function output_file($file, $name, $extension)
 		} else {
 			$range_end=intval($range_end);
 		}
-		/*
-		------------------------------------------------------------------------------------------------------
-		//This application is developed by www.webinfopedia.com
-		//visit www.webinfopedia.com for PHP,Mysql,html5 and Designing tutorials for FREE!!!
-		------------------------------------------------------------------------------------------------------
-	 	*/
+
 		$new_length = $range_end-$range+1;
 		header("HTTP/1.1 206 Partial Content");
 		header("Content-Length: $new_length");
@@ -126,12 +120,10 @@ set_time_limit(0);
 
 //path to the file
 
-
 $file=urldecode($_REQUEST['file']);
 $name=urldecode($_REQUEST['name']);
 $extension=urldecode($_REQUEST['extension']);
 
-//echo $file;
 //Call the download function with file path,file name and file type
 output_file($file,$name, $extension);
 
